@@ -15,11 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish:
+  package:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
       - name: Verify catalog package
@@ -28,5 +25,12 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: dist
+  deploy:
+    needs: package
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
       - uses: actions/deploy-pages@v4
         id: deploy
