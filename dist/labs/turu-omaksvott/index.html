@@ -1,0 +1,5343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Simfluence market adoption simulation widget showing how understanding, proof, and bridge reach accelerate awareness and adoption across market segments." />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#0A2540" />
+<title>Simfluence Market Adoption Curve Simulator</title>
+<style>
+:root{
+      --sf-bg:#f5f9ff;
+      --sf-bg-2:#e8f1fb;
+      --sf-panel:#ffffff;
+      --sf-panel-soft:#f4f8ff;
+      --sf-stroke:#d8e3f0;
+      --sf-text:#112640;
+      --sf-muted:#60758d;
+      --sf-accent:#2a7fff;
+      --sf-accent-2:#79b2ff;
+      --sf-cta:#f28b52;
+      --sf-success:#17b26a;
+      --sf-warning:#f79009;
+      --sf-danger:#f04438;
+      --sf-shadow:0 16px 34px rgba(19,52,86,.12);
+      --sf-radius:20px;
+      --sf-radius-sm:14px;
+      --sf-maxw:1200px;
+      --sf-ui-font:"Sora", "Nunito Sans", "Segoe UI", Arial, sans-serif;
+    }
+
+    *{ box-sizing:border-box; }
+
+    html,body{
+      margin:0;
+      padding:0;
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(42,127,255,.14), transparent 28%),
+        radial-gradient(circle at 85% 30%, rgba(242,139,82,.14), transparent 26%),
+        linear-gradient(180deg, var(--sf-bg) 0%, var(--sf-bg-2) 100%);
+      font-family:var(--sf-ui-font);
+      color:var(--sf-text);
+    }
+
+    body{
+      min-height:100vh;
+      padding:20px;
+    }
+
+    html.embed-mode,
+    body.embed-mode{
+      background:transparent;
+      min-height:1px;
+      height:auto;
+      overflow:hidden !important;
+    }
+
+    body.embed-mode{
+      padding:0;
+      overflow:hidden;
+      min-height:0 !important;
+    }
+
+    body.embed-mode .sf-shell{
+      width:100%;
+      max-width:none;
+      margin:0;
+      padding:10px;
+    }
+
+    body.embed-mode .sf-widget{
+      height:auto !important;
+      min-height:0 !important;
+      border-radius:24px;
+    }
+
+    body.embed-mode .sf-main{
+      align-items:stretch;
+    }
+
+    body.embed-mode .sf-left-stack,
+    body.embed-mode .sf-side--top{
+      height:auto !important;
+      min-height:0 !important;
+    }
+
+    body.embed-mode .sf-stage{
+      height:auto !important;
+      min-height:320px;
+    }
+
+    .sf-shell{
+      width:min(var(--sf-maxw), 100%);
+      margin:0 auto;
+    }
+
+    .sf-widget{
+      position:relative;
+      overflow:hidden;
+      border-radius:28px;
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)),
+        linear-gradient(180deg, rgba(7,21,33,.92), rgba(10,37,64,.96));
+      box-shadow:0 28px 80px rgba(0,0,0,.32);
+    }
+
+    .sf-widget::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 88% 18%, rgba(30,150,236,.14), transparent 22%),
+        radial-gradient(circle at 12% 86%, rgba(255,127,34,.10), transparent 18%);
+    }
+
+    .sf-topbar{
+      position:relative;
+      z-index:2;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      padding:22px 22px 0;
+    }
+
+    .sf-topbar-left{
+      min-width:0;
+    }
+
+    .sf-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:#d9e8f8;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      backdrop-filter:blur(8px);
+    }
+
+    .sf-badge-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--sf-accent);
+      box-shadow:0 0 0 6px rgba(30,150,236,.14);
+      flex:0 0 auto;
+    }
+
+    .sf-title{
+      margin:14px 0 0;
+      font-size:clamp(24px, 4vw, 38px);
+      line-height:1.06;
+      letter-spacing:-0.03em;
+      font-weight:900;
+      color:var(--sf-text);
+      max-width:760px;
+    }
+
+    .sf-sub{
+      margin:10px 0 0;
+      max-width:780px;
+      color:#bfd0e3;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .sf-sub b{
+      color:var(--sf-text);
+    }
+
+    .sf-timebar{
+      position:relative;
+      z-index:2;
+      height:12px;
+      margin:14px 22px 0;
+      border-radius:999px;
+      overflow:hidden;
+      background:linear-gradient(90deg, rgba(42,127,255,.08), rgba(242,139,82,.08));
+      border:1px solid rgba(124,153,188,.18);
+      box-shadow:inset 0 1px 2px rgba(255,255,255,.35);
+    }
+
+    .sf-timebar-fill{
+      width:0%;
+      height:100%;
+      border-radius:inherit;
+      background:linear-gradient(90deg, var(--sf-accent) 0%, var(--sf-cta) 100%);
+      box-shadow:0 0 16px rgba(42,127,255,.18);
+      transition:width .12s linear;
+    }
+
+    .sf-actions{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:flex-end;
+    }
+
+    .sf-action-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .sf-speed-row{
+      display:flex;
+      justify-content:flex-end;
+      width:100%;
+    }
+
+    .sf-speed-select{
+      appearance:none;
+      min-width:140px;
+      height:42px;
+      border-radius:12px;
+      border:1px solid var(--sf-stroke);
+      background-color:#fff;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #60758d 50%),
+        linear-gradient(135deg, #60758d 50%, transparent 50%);
+      background-position:
+        calc(100% - 18px) calc(50% - 2px),
+        calc(100% - 12px) calc(50% - 2px);
+      background-size:6px 6px, 6px 6px;
+      background-repeat:no-repeat;
+      color:var(--sf-text);
+      padding:0 34px 0 14px;
+      font:inherit;
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 8px 16px rgba(19,52,86,.08);
+    }
+
+    .sf-speed-select:focus{
+      outline:none;
+      border-color:rgba(42,127,255,.42);
+      box-shadow:0 0 0 3px rgba(42,127,255,.14);
+    }
+
+    .sf-btn{
+      appearance:none;
+      border:0;
+      cursor:pointer;
+      border-radius:12px;
+      padding:11px 14px;
+      font:inherit;
+      font-size:13px;
+      font-weight:800;
+      transition:.18s ease;
+      white-space:nowrap;
+    }
+
+    .sf-btn:active{ transform:translateY(1px); }
+
+    .sf-btn--ghost{
+      background:rgba(255,255,255,.08);
+      color:var(--sf-text);
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .sf-btn--ghost:hover{
+      background:rgba(255,255,255,.12);
+    }
+
+    .sf-btn--cta{
+      background:var(--sf-cta);
+      color:var(--sf-text);
+      box-shadow:0 10px 22px rgba(255,127,34,.26);
+    }
+
+    .sf-btn--cta:hover{
+      filter:brightness(1.03);
+    }
+
+    .sf-main{
+      position:relative;
+      z-index:2;
+      display:grid;
+      grid-template-columns:minmax(320px, 1.45fr) minmax(280px, .95fr);
+      gap:18px;
+      align-items:stretch;
+      padding:18px 22px 18px;
+    }
+
+    .sf-left-stack{
+      display:grid;
+      grid-template-rows:minmax(0,1fr) auto;
+      gap:14px;
+      min-height:0;
+    }
+
+    .sf-stage{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      border-radius:24px;
+      overflow:hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.10);
+      min-height:320px;
+      height:100%;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .sf-stage-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:16px 16px 0;
+    }
+
+    .sf-stage-label{
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color:#a9bfd6;
+    }
+
+    .sf-live{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      font-size:12px;
+      color:#d7e7f8;
+      font-weight:700;
+    }
+
+    .sf-live-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--sf-success);
+      box-shadow:0 0 0 6px rgba(23,178,106,.14);
+      animation:sfPulse 1.8s infinite ease;
+    }
+
+    @keyframes sfPulse{
+      0%,100%{ transform:scale(1); opacity:1; }
+      50%{ transform:scale(1.14); opacity:.82; }
+    }
+
+    .sf-canvas-wrap{
+      position:relative;
+      flex:1 1 auto;
+      padding:12px 16px 16px;
+      min-height:360px;
+    }
+
+    canvas{
+      display:block;
+      width:100%;
+      height:100%;
+      min-height:0;
+      border-radius:18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)),
+        linear-gradient(180deg, #0b1c2b 0%, #10283f 100%);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .sf-stage-overlay{
+      position:absolute;
+      left:28px;
+      right:28px;
+      bottom:28px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:end;
+      pointer-events:none;
+    }
+
+    .sf-insight{
+      padding:14px 16px;
+      border-radius:16px;
+      background:rgba(10,22,36,.72);
+      border:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(10px);
+      box-shadow:0 12px 30px rgba(0,0,0,.20);
+    }
+
+    .sf-insight-label{
+      margin:0 0 6px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color:#8fb9e1;
+    }
+
+    .sf-insight-text{
+      margin:0;
+      color:#eff6ff;
+      font-size:13px;
+      line-height:1.5;
+      font-weight:600;
+    }
+
+    .sf-mini-metrics{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .sf-mini-metric{
+      min-width:100px;
+      padding:12px 12px;
+      border-radius:16px;
+      background:rgba(10,22,36,.72);
+      border:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(10px);
+      text-align:left;
+      box-shadow:0 12px 30px rgba(0,0,0,.20);
+    }
+
+    .sf-mini-metric .k{
+      font-size:11px;
+      line-height:1.2;
+      color:#9bb8d4;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:800;
+    }
+
+    .sf-mini-metric .v{
+      margin-top:6px;
+      font-size:22px;
+      line-height:1;
+      color:var(--sf-text);
+      font-weight:900;
+      letter-spacing:-.03em;
+    }
+
+    .sf-side{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      align-content:stretch;
+    }
+
+    .sf-side--top{
+      min-height:0;
+    }
+
+    .sf-panel--outputs{
+      display:flex;
+      flex-direction:column;
+      flex:1 1 auto;
+      min-height:0;
+    }
+
+    .sf-panel--outputs .sf-panel-body{
+      flex:1 1 auto;
+    }
+
+    .sf-panel--howto{
+      margin-top:0;
+    }
+
+    .sf-side--top .sf-footer-actions{
+      margin-top:10px;
+    }
+
+    .sf-panel{
+      background:var(--sf-panel);
+      border:1px solid var(--sf-stroke);
+      border-radius:20px;
+      box-shadow:var(--sf-shadow);
+      overflow:hidden;
+    }
+
+    .sf-panel-head{
+      padding:16px 16px 12px;
+      border-bottom:1px solid var(--sf-stroke);
+      background:linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    }
+
+    .sf-panel-kicker{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin:0 0 8px;
+      font-size:11px;
+      color:#5b7087;
+      font-weight:800;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+    }
+
+    .sf-panel-kicker span:first-child{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--sf-accent);
+      box-shadow:0 0 0 6px rgba(30,150,236,.10);
+      flex:0 0 auto;
+    }
+
+    .sf-panel-title{
+      margin:0;
+      color:var(--sf-text);
+      font-size:18px;
+      line-height:1.15;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .sf-panel-sub{
+      margin:8px 0 0;
+      color:var(--sf-muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .sf-panel-body{
+      padding:14px 16px 16px;
+    }
+
+    .sf-metrics{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:10px;
+    }
+
+    .sf-metric{
+      border:1px solid var(--sf-stroke);
+      background:var(--sf-panel-soft);
+      border-radius:16px;
+      padding:14px 12px;
+      min-height:84px;
+    }
+
+    .sf-metric-k{
+      color:var(--sf-muted);
+      font-size:11px;
+      line-height:1.25;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:800;
+    }
+
+    .sf-metric-v{
+      margin-top:8px;
+      color:var(--sf-text);
+      font-size:28px;
+      line-height:1;
+      font-weight:900;
+      letter-spacing:-.04em;
+    }
+
+    .sf-metric-note{
+      margin-top:7px;
+      font-size:12px;
+      line-height:1.4;
+      color:#6a7f96;
+      font-weight:600;
+    }
+
+    .sf-controls{
+      display:grid;
+      gap:12px;
+    }
+
+    .sf-control{
+      display:grid;
+      gap:8px;
+    }
+
+    .sf-control-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .sf-control-label{
+      color:var(--sf-text);
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .sf-control-value{
+      color:var(--sf-accent);
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .sf-range{
+      appearance:none;
+      width:100%;
+      height:8px;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(30,150,236,.18), rgba(30,150,236,.40));
+      outline:none;
+      border:1px solid rgba(30,150,236,.10);
+    }
+
+    .sf-range::-webkit-slider-thumb{
+      appearance:none;
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      background:#fff;
+      border:3px solid var(--sf-accent);
+      box-shadow:0 4px 12px rgba(30,150,236,.25);
+      cursor:pointer;
+    }
+
+    .sf-range::-moz-range-thumb{
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      background:#fff;
+      border:3px solid var(--sf-accent);
+      box-shadow:0 4px 12px rgba(30,150,236,.25);
+      cursor:pointer;
+    }
+
+    .sf-control-help{
+      color:#73879d;
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .sf-label-with-info{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+    }
+
+    .sf-info-btn{
+      appearance:none;
+      border:1px solid #c9d7e6;
+      background:#ffffff;
+      color:#607992;
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font:inherit;
+      font-size:10px;
+      font-weight:900;
+      line-height:1;
+      cursor:pointer;
+      padding:0;
+      flex:0 0 auto;
+    }
+
+    .sf-info-btn:hover{
+      background:#f0f6fc;
+      border-color:#9fb9d3;
+      color:#335976;
+    }
+
+    .sf-info-btn[aria-expanded="true"]{
+      background:rgba(30,150,236,.10);
+      border-color:rgba(30,150,236,.42);
+      color:var(--sf-accent);
+    }
+
+    .sf-info-text{
+      display:none;
+    }
+
+    .sf-info-text.is-open{
+      display:block;
+    }
+
+    .sf-toggle-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .sf-chip{
+      border:1px solid var(--sf-stroke);
+      background:#fff;
+      color:var(--sf-text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .sf-chip.is-active{
+      background:rgba(30,150,236,.08);
+      border-color:rgba(30,150,236,.25);
+      color:var(--sf-accent);
+      box-shadow:inset 0 0 0 1px rgba(30,150,236,.08);
+    }
+
+    .sf-footer-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:4px;
+    }
+
+    .sf-btn-ui{
+      appearance:none;
+      border:1px solid var(--sf-stroke);
+      background:#fff;
+      color:var(--sf-text);
+      border-radius:12px;
+      padding:11px 13px;
+      font:inherit;
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .sf-btn-ui:hover{
+      background:var(--sf-panel-soft);
+    }
+
+    .sf-btn-ui--primary{
+      background:var(--sf-accent);
+      color:var(--sf-text);
+      border-color:transparent;
+      box-shadow:0 10px 20px rgba(30,150,236,.20);
+    }
+
+    .sf-btn-ui--primary:hover{
+      filter:brightness(1.03);
+    }
+
+    .sf-story{
+      display:grid;
+      gap:10px;
+    }
+
+    .sf-panel--howto .sf-story{
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+      align-items:stretch;
+    }
+
+    .sf-panel--howto .sf-story-item{
+      height:100%;
+    }
+
+    .sf-story-item{
+      border:1px solid var(--sf-stroke);
+      background:var(--sf-panel-soft);
+      border-radius:16px;
+      padding:12px 12px;
+    }
+
+    .sf-story-item-title{
+      margin:0;
+      color:var(--sf-text);
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .sf-story-item-desc{
+      margin:6px 0 0;
+      color:var(--sf-muted);
+      font-size:12.5px;
+      line-height:1.5;
+    }
+
+    .sf-note{
+      margin-top:10px;
+      font-size:12px;
+      line-height:1.55;
+      color:#73879d;
+    }
+
+    .sf-note b{
+      color:var(--sf-text);
+    }
+
+    @media (max-width: 980px){
+      .sf-main{
+        grid-template-columns:1fr;
+      }
+
+      .sf-side--top{
+        align-self:auto;
+        height:auto;
+        min-height:0;
+      }
+
+      .sf-left-stack{
+        height:auto;
+        min-height:0;
+        grid-template-rows:auto auto;
+      }
+
+      .sf-stage{
+        min-height:390px;
+        height:auto;
+      }
+
+      .sf-stage-overlay{
+        grid-template-columns:1fr;
+      }
+
+      .sf-mini-metrics{
+        justify-content:flex-start;
+      }
+
+      .sf-topbar{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .sf-actions{
+        align-items:flex-start;
+        width:100%;
+      }
+
+      .sf-action-row,
+      .sf-speed-row{
+        justify-content:flex-start;
+      }
+
+      .sf-panel--controls{
+        margin-top:0;
+      }
+
+      .sf-panel--outputs{
+        flex:0 0 auto;
+      }
+
+      .sf-panel--howto{
+        margin-top:0;
+      }
+
+      .sf-panel--howto .sf-story{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px){
+      body{
+        padding:12px;
+      }
+
+      body.embed-mode{
+        padding:0;
+      }
+
+      body.embed-mode .sf-shell{
+        padding:8px;
+      }
+
+      .sf-topbar{
+        padding:16px 16px 0;
+      }
+
+      .sf-timebar{
+        margin:12px 16px 0;
+      }
+
+      .sf-main{
+        padding:14px 16px 16px;
+      }
+
+      .sf-stage-head{
+        padding:14px 14px 0;
+      }
+
+      .sf-canvas-wrap{
+        padding:10px 14px 14px;
+        height:auto;
+        min-height:280px;
+      }
+
+      canvas{
+        min-height:0;
+      }
+
+      .sf-metrics{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .sf-panel--howto .sf-story{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+    @media (max-width: 480px){
+      .sf-metrics{
+        grid-template-columns:1fr;
+      }
+    }
+
+    /* Light palette refinements */
+    .sf-widget{
+      border:1px solid rgba(130,160,195,.34);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.94), rgba(250,253,255,.98)),
+        linear-gradient(180deg, #eef5ff, #e5effb);
+      box-shadow:0 26px 58px rgba(19,52,86,.14);
+    }
+
+    .sf-widget::before{
+      background:
+        radial-gradient(circle at 88% 18%, rgba(42,127,255,.12), transparent 22%),
+        radial-gradient(circle at 12% 86%, rgba(242,139,82,.10), transparent 18%);
+    }
+
+    .sf-badge{
+      border:1px solid #d5e3f2;
+      background:rgba(255,255,255,.82);
+      color:#33506c;
+    }
+
+    .sf-sub{
+      color:var(--sf-muted);
+    }
+
+    .sf-btn--ghost{
+      background:#ffffff;
+      color:var(--sf-text);
+      border:1px solid var(--sf-stroke);
+    }
+
+    .sf-btn--ghost:hover{
+      background:var(--sf-panel-soft);
+    }
+
+    .sf-btn--cta{
+      color:#fff;
+      box-shadow:0 10px 22px rgba(242,139,82,.30);
+    }
+
+    .sf-stage{
+      background:linear-gradient(180deg, #ffffff, #f3f8ff);
+      border:1px solid rgba(124,153,188,.28);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.82);
+    }
+
+    .sf-stage-label{
+      color:#5d7794;
+    }
+
+    .sf-live{
+      background:rgba(255,255,255,.90);
+      border:1px solid #d8e7f5;
+      color:#45607b;
+    }
+
+    canvas{
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.82)),
+        linear-gradient(180deg, #fdfefe 0%, #e9f1fd 100%);
+      border:1px solid rgba(124,153,188,.28);
+    }
+
+    .sf-insight{
+      background:rgba(255,255,255,.92);
+      border:1px solid #d8e7f5;
+      box-shadow:0 12px 24px rgba(21,54,88,.14);
+    }
+
+    .sf-insight-label{
+      color:#4f83b3;
+    }
+
+    .sf-insight-text{
+      color:var(--sf-text);
+    }
+
+    .sf-mini-metric{
+      background:rgba(255,255,255,.92);
+      border:1px solid #d8e7f5;
+      box-shadow:0 10px 22px rgba(21,54,88,.14);
+    }
+
+    .sf-mini-metric .k{
+      color:#6b84a0;
+    }
+
+    .sf-btn-ui--primary{
+      color:#fff;
+    }
+
+
+</style>
+<style>
+:root{
+  --bg-a:#0A2540;
+  --bg-b:#0D3156;
+  --ink:#FFFFFF;
+  --muted:rgba(255,255,255,0.80);
+  --card-line:rgba(255,255,255,0.24);
+  --desktop-side-pad:50px;
+}
+
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:transparent;
+}
+body{
+  color:var(--ink);
+  font-family:"Manrope","IBM Plex Sans",sans-serif;
+  overflow:auto;
+}
+
+.simfluence-hero{
+  position:relative;
+  width:100%;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  overflow:hidden;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background:linear-gradient(138deg, var(--bg-a), var(--bg-b));
+  isolation:isolate;
+}
+
+.simfluence-hero::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:4px;
+  background:#FF7F22;
+  z-index:3;
+  pointer-events:none;
+}
+
+.simfluence-hero.fixed-size{
+  height:100%;
+  min-height:0;
+  max-height:none;
+}
+
+.simfluence-hero.safe-embed{
+  contain:layout paint style;
+}
+
+.hero-canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+.hero-overlay{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:1fr;
+  grid-template-areas:
+    "top"
+    "copy"
+    "status"
+    "bottom";
+  grid-template-rows:auto auto auto auto;
+  height:auto;
+  padding:24px var(--desktop-side-pad) 31px;
+  gap:10px;
+  align-content:start;
+  pointer-events:none;
+}
+
+.top-row{
+  display:block;
+  width:min(620px, 58vw);
+  grid-area:top;
+}
+
+.top-left-stack{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:10px;
+  max-width:min(620px, 58vw);
+}
+
+.top-right-stack{
+  position:absolute;
+  top:18px;
+  right:var(--desktop-side-pad);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:9px;
+  width:min(430px, calc(100% - (var(--desktop-side-pad) * 2)));
+}
+
+.status-row{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:flex-start;
+  gap:8px;
+  margin-top:61px;
+  grid-area:status;
+  width:min(390px, 35vw);
+  max-width:min(390px, 35vw);
+  padding-bottom:0;
+}
+
+.mode-stack{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.state-key{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+  max-width:min(430px, 100%);
+}
+
+.state-key span{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.30);
+  background:rgba(10,37,64,0.66);
+  color:#FFFFFF;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:0.03em;
+  text-transform:uppercase;
+}
+
+.state-key i{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  display:inline-block;
+  box-shadow:0 0 14px currentColor;
+}
+
+.live-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  width:max-content;
+  max-width:100%;
+  padding:10px 16px;
+  border-radius:14px;
+  border:1px solid rgba(30,151,237,0.9);
+  background:linear-gradient(120deg, rgba(30,151,237,0.35), rgba(255,255,255,0.12));
+  color:#FFFFFF;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:0.11em;
+  text-transform:uppercase;
+  box-shadow:0 0 0 1px rgba(30,151,237,0.34) inset, 0 0 26px rgba(30,151,237,0.42);
+  animation:modePulse 1.1s ease-in-out infinite alternate;
+}
+
+.live-pill-text{
+  display:inline-flex;
+  align-items:center;
+}
+
+.live-pill-state{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-width:52px;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,98,98,0.6);
+  background:rgba(133,16,35,0.34);
+  font-size:11px;
+  letter-spacing:0.08em;
+}
+
+.live-pill-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#FF5D5D;
+  box-shadow:0 0 0 0 rgba(255,93,93,0.46);
+  animation:recordPulse 1.15s ease-in-out infinite;
+}
+
+.mode-label{
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  width:max-content;
+  max-width:100%;
+  padding:8px 10px 8px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.22);
+  background:linear-gradient(145deg, rgba(5,20,36,0.84), rgba(12,39,67,0.68));
+  color:#FFFFFF;
+  transition:border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 24px rgba(10,37,64,0.24);
+  backdrop-filter:blur(5px);
+}
+
+.mode-title{
+  display:inline-flex;
+  align-items:center;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:0.11em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+.mode-toggle{
+  display:inline-grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:4px;
+  padding:4px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.mode-option{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:48px;
+  padding:6px 11px;
+  border-radius:999px;
+  border:1px solid transparent;
+  background:transparent;
+  color:rgba(255,255,255,0.72);
+  font-family:inherit;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  transition:transform 180ms ease, color 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.mode-option.active{
+  color:#FFFFFF;
+  border-color:rgba(30,151,237,0.62);
+  background:linear-gradient(120deg, rgba(30,151,237,0.38), rgba(143,216,255,0.18));
+  box-shadow:0 0 0 1px rgba(30,151,237,0.24) inset, 0 8px 18px rgba(30,151,237,0.22);
+}
+
+.mode-option.inactive{
+  color:rgba(255,255,255,0.66);
+}
+
+.mode-label.active{
+  border-color:rgba(30,151,237,0.62);
+  box-shadow:0 0 0 1px rgba(30,151,237,0.18) inset, 0 0 22px rgba(30,151,237,0.18);
+}
+
+.mode-label.inactive{
+  opacity:0.9;
+}
+
+.metrics{
+  width:min(360px,48vw);
+  display:grid;
+  grid-template-columns:repeat(2, minmax(132px, 1fr));
+  gap:10px;
+}
+
+.metrics.interactive .metric{
+  box-shadow:0 0 0 1px rgba(30,151,237,0.18) inset, 0 0 26px rgba(30,151,237,0.18);
+}
+
+.metric{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:11px 12px 12px;
+  min-height:92px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.34);
+  background:linear-gradient(145deg, rgba(30,151,237,0.16), rgba(255,255,255,0.06));
+  backdrop-filter:blur(4px);
+  overflow:hidden;
+  box-shadow:0 12px 26px rgba(10,37,64,0.22);
+  text-align:center;
+}
+
+.metric::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:3px;
+  background:linear-gradient(90deg, #1E96EC, #FF7F22);
+  opacity:0.95;
+}
+
+.metric h3{
+  margin:0;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+
+.metric strong{
+  display:block;
+  margin-top:0;
+  font-size:26px;
+  font-weight:800;
+  color:#FFFFFF;
+  line-height:1.05;
+  text-shadow:0 0 18px rgba(30,151,237,0.18);
+}
+
+.hero-copy{
+  align-self:start;
+  justify-self:start;
+  width:min(620px, 58vw);
+  max-width:min(620px, 58vw);
+  padding:2px 0 0;
+  grid-area:copy;
+  transform:translateY(19px);
+}
+
+.hero-copy h1{
+  margin:0;
+  font-size:clamp(30px, 3.8vw, 52px);
+  line-height:0.94;
+  letter-spacing:-0.02em;
+  color:#FFFFFF;
+  text-wrap:balance;
+}
+
+.hero-copy .sub{
+  margin:10px 0 0;
+  color:var(--muted);
+  font-size:clamp(15px, 1.6vw, 22px);
+  font-weight:600;
+}
+
+.bottom-row{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:14px;
+  grid-area:bottom;
+  align-self:start;
+  margin-top:0;
+  transform:translateY(12px);
+}
+
+.live-commentary{
+  display:block;
+  width:min(620px, 100%);
+  padding:0;
+  background:none;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  backdrop-filter:none;
+  color:#FFFFFF;
+  font-size:clamp(13px, 1.15vw, 16px);
+  font-weight:800;
+  line-height:1.2;
+  letter-spacing:0.01em;
+  white-space:nowrap;
+}
+
+.live-commentary.interactive{
+  color:#FFFFFF;
+}
+
+.live-commentary.flash{
+  animation:commentaryPulse 1.15s ease-in-out infinite alternate;
+}
+
+.micro-chart{
+  width:min(612px, calc(100% - 310px));
+  max-width:100%;
+  border:1px solid var(--card-line);
+  border-radius:14px;
+  background:rgba(10,37,64,0.62);
+  padding:8px 10px 8px;
+}
+
+.chart-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:2px;
+  color:#FFFFFF;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+
+.chart-head .legend{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.legend span{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:10px;
+  letter-spacing:0.04em;
+}
+
+.legend i{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  display:inline-block;
+}
+
+.micro-chart canvas{
+  width:100%;
+  height:274px;
+  display:block;
+}
+
+.cta-panel{
+  width:min(296px, 42vw);
+  display:grid;
+  gap:9px;
+  margin-left:auto;
+  align-self:flex-end;
+  justify-items:end;
+  pointer-events:auto;
+}
+
+.cta-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  border:1px solid rgba(30,151,237,0.9);
+  border-radius:12px;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:0.02em;
+  color:#FFFFFF;
+  background:linear-gradient(95deg, #1E96EC, #0D3156);
+  box-shadow:0 11px 28px rgba(30,151,237,0.35);
+  cursor:pointer;
+  transition:transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+  text-decoration:none;
+}
+
+.cta-btn:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+}
+
+.cta-btn.emphasis{
+  animation:ctaPulse 820ms ease-in-out infinite alternate;
+}
+
+@keyframes ctaPulse{
+  from{transform:translateY(0);box-shadow:0 11px 28px rgba(30,151,237,0.35)}
+  to{transform:translateY(-1px) scale(1.015);box-shadow:0 16px 32px rgba(30,151,237,0.5)}
+}
+
+@keyframes commentaryPulse{
+  from{opacity:0.9;text-shadow:0 0 0 rgba(255,127,34,0)}
+  to{opacity:1;text-shadow:0 0 18px rgba(255,127,34,0.34)}
+}
+
+@keyframes modePulse{
+  from{box-shadow:0 0 0 1px rgba(30,151,237,0.34) inset, 0 0 18px rgba(30,151,237,0.28)}
+  to{box-shadow:0 0 0 1px rgba(30,151,237,0.42) inset, 0 0 30px rgba(30,151,237,0.46)}
+}
+
+@keyframes recordPulse{
+  0%{transform:scale(0.92);box-shadow:0 0 0 0 rgba(255,93,93,0.42)}
+  70%{transform:scale(1);box-shadow:0 0 0 8px rgba(255,93,93,0)}
+  100%{transform:scale(0.92);box-shadow:0 0 0 0 rgba(255,93,93,0)}
+}
+
+@media (max-width:980px){
+  .simfluence-hero{
+    height:auto;
+    min-height:0;
+    max-height:none;
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "live"
+      "copy"
+      "metrics"
+      "canvas"
+      "status"
+      "bottom";
+    grid-template-rows:auto auto auto minmax(248px,56vw) auto auto;
+  }
+  .hero-canvas{
+    grid-area:canvas;
+    position:relative;
+    inset:auto;
+    width:100%;
+    height:100%;
+    min-height:248px;
+  }
+  .hero-overlay{
+    display:contents;
+  }
+  .top-row{
+    display:contents;
+  }
+  .top-left-stack{
+    grid-area:live;
+    gap:8px;
+    max-width:100%;
+    padding:10px 10px 8px;
+  }
+  .live-pill{
+    padding:8px 12px;
+    font-size:11px;
+    letter-spacing:0.09em;
+  }
+  .live-pill-state{
+    min-width:48px;
+    padding:4px 8px;
+    font-size:10px;
+  }
+  .mode-label{
+    gap:10px;
+    padding:7px 8px 7px 12px;
+  }
+  .mode-title{
+    font-size:11px;
+    letter-spacing:0.09em;
+  }
+  .mode-option{
+    min-width:42px;
+    padding:5px 9px;
+    font-size:10px;
+  }
+  .status-row{
+    grid-area:status;
+    justify-content:flex-start;
+    gap:8px;
+    padding:4px 10px 0;
+    margin-top:0;
+    width:100%;
+    max-width:100%;
+    transform:none;
+    position:static;
+    z-index:auto;
+  }
+  .top-right-stack{
+    grid-area:metrics;
+    position:static;
+    top:auto;
+    right:auto;
+    align-items:stretch;
+    width:100%;
+    padding:0 10px 0;
+    gap:8px;
+  }
+  .metrics{
+    width:100%;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    justify-self:auto;
+    gap:8px;
+  }
+  .state-key{
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-start;
+    max-width:100%;
+    flex-wrap:wrap;
+    gap:6px 8px;
+  }
+  .state-key span{
+    font-size:10px;
+    padding:5px 8px;
+  }
+  .state-key i{
+    width:9px;
+    height:9px;
+  }
+  .metric{
+    padding:8px 9px 9px;
+    min-height:72px;
+  }
+  .metric strong{
+    font-size:18px;
+  }
+  .hero-copy{
+    width:100%;
+    max-width:100%;
+    align-self:start;
+    padding:0 10px 6px;
+    transform:none;
+  }
+  .hero-copy h1{
+    font-size:clamp(22px, 7vw, 32px);
+  }
+  .hero-copy .sub{
+    margin-top:8px;
+    font-size:clamp(12px, 3.2vw, 15px);
+  }
+  .bottom-row{
+    grid-area:bottom;
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+    padding:4px 10px 10px;
+    margin-top:0;
+    transform:none;
+  }
+  .live-commentary{
+    width:100%;
+    padding:0;
+    font-size:clamp(11px, 2.8vw, 13px);
+    margin:0;
+    line-height:1.1;
+  }
+  .micro-chart,
+  .cta-panel{
+    width:100%;
+  }
+  .cta-panel{
+    margin-left:0;
+    align-self:stretch;
+    justify-items:stretch;
+  }
+  .micro-chart canvas{
+    height:156px;
+  }
+  .cta-btn{
+    padding:11px 13px;
+    font-size:14px;
+  }
+}
+
+@media (max-width:420px){
+  .simfluence-hero{
+    grid-template-rows:auto auto auto minmax(196px,54vw) auto auto;
+  }
+  .hero-canvas{
+    min-height:196px;
+  }
+  .metrics{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+  .top-left-stack{
+    padding:8px 8px 6px;
+  }
+  .top-right-stack,
+  .hero-copy,
+  .status-row,
+  .bottom-row{
+    padding-left:8px;
+    padding-right:8px;
+  }
+  .state-key{
+    display:none;
+  }
+  .metric{
+    min-height:64px;
+    padding:7px 7px 8px;
+  }
+  .metric h3{
+    font-size:9px;
+    letter-spacing:0.09em;
+  }
+  .metric strong{
+    font-size:16px;
+  }
+  .hero-copy h1{
+    font-size:clamp(20px, 7vw, 28px);
+  }
+  .hero-copy .sub{
+    margin-top:6px;
+    font-size:12px;
+  }
+  .mode-label{
+    padding:6px 8px 6px 10px;
+  }
+  .mode-title{
+    font-size:10px;
+  }
+  .mode-option{
+    min-width:38px;
+    padding:4px 8px;
+    font-size:9px;
+  }
+  .micro-chart{
+    padding:7px 8px;
+  }
+  .micro-chart canvas{
+    height:118px;
+  }
+  .cta-btn{
+    padding:10px 12px;
+    font-size:13px;
+  }
+}
+
+:root{
+  --sf-bg:#eef5fb;
+  --sf-bg-2:#d8e5f1;
+  --sf-panel:#ffffff;
+  --sf-panel-soft:#f3f7fc;
+  --sf-stroke:#d9e4ef;
+  --sf-text:#112640;
+  --sf-muted:#617992;
+  --sf-accent:#1E96EC;
+  --sf-accent-2:#8FD8FF;
+  --sf-cta:#FF7F22;
+  --sf-success:#1E96EC;
+  --sf-shadow:0 18px 42px rgba(17,38,64,0.12);
+  --sf-maxw:1280px;
+  --sf-ui-font:"Manrope","Segoe UI",Arial,sans-serif;
+}
+
+html,body{
+  background:
+    radial-gradient(circle at 14% 18%, rgba(30,150,236,.18), transparent 30%),
+    radial-gradient(circle at 86% 16%, rgba(255,127,34,.18), transparent 24%),
+    linear-gradient(180deg, #f3f7fc 0%, #dae6f2 100%);
+}
+
+body{
+  margin:0;
+  padding:0;
+  font-family:var(--sf-ui-font);
+  color:var(--sf-text);
+}
+
+body:not(.embed-mode){
+  overflow:auto;
+}
+
+.sf-widget{
+  min-height:0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)),
+    linear-gradient(180deg, rgba(8,26,44,.98), rgba(13,49,86,.98));
+}
+
+.sf-widget::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.32;
+  background:
+    linear-gradient(rgba(143,216,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(143,216,255,.05) 1px, transparent 1px);
+  background-size:34px 34px;
+  mask-image:linear-gradient(180deg, rgba(0,0,0,.95), rgba(0,0,0,.2));
+}
+
+.sf-widget.fixed-size{
+  height:100%;
+  min-height:0;
+}
+
+.sf-widget.safe-embed{
+  contain:layout paint style;
+}
+
+body:not(.embed-mode) .sf-shell{
+  width:100%;
+  max-width:none;
+  margin:0;
+}
+
+body:not(.embed-mode) .sf-widget{
+  border-radius:0;
+  border-left:0;
+  border-right:0;
+}
+
+.sf-title{
+  color:#ffffff;
+  max-width:760px;
+}
+
+.sf-topbar-left,
+.sf-actions,
+.sf-stage-head-left,
+.sf-chart-head > :first-child,
+.legend,
+.sf-panel--outputs .sf-metric,
+.sf-story-item,
+.sf-control{
+  min-width:0;
+}
+
+.sf-sub{
+  color:#bfd0e3;
+  max-width:760px;
+}
+
+.sf-sub b{
+  color:#ffffff;
+}
+
+.sf-btn--ghost{
+  color:#eff6ff;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.sf-btn--ghost:hover{
+  background:rgba(255,255,255,.12);
+}
+
+.sf-btn--cta{
+  color:#ffffff;
+  background:linear-gradient(135deg, #FF7A1A 0%, #FF9A34 100%);
+  box-shadow:0 12px 28px rgba(255,127,34,.28);
+}
+
+.sf-speed-select{
+  background-color:rgba(9,28,46,.82);
+  border-color:rgba(255,255,255,.12);
+  color:#f1f7ff;
+  box-shadow:none;
+}
+
+.sf-speed-select option{
+  color:#112640;
+}
+
+.sf-stage-head-left{
+  display:grid;
+  gap:8px;
+}
+
+.sf-stage-legend{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.sf-legend-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.06);
+  color:#d9e6f5;
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+}
+
+.sf-legend-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  box-shadow:0 0 0 6px rgba(255,255,255,.08);
+  flex:0 0 auto;
+}
+
+.sf-live.is-paused .sf-live-dot{
+  background:#7F9BB3;
+  box-shadow:0 0 0 6px rgba(127,155,179,.18);
+  animation:none;
+}
+
+.sf-stage{
+  background:
+    linear-gradient(180deg, rgba(15,39,63,.82), rgba(8,24,39,.9));
+  border-color:rgba(143,216,255,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 16px 40px rgba(0,0,0,.18);
+}
+
+.sf-canvas-wrap{
+  padding:8px 10px 10px;
+  min-height:460px;
+}
+
+#simCanvas{
+  background:transparent;
+  border-color:rgba(143,216,255,.14);
+  box-shadow:0 16px 38px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.02);
+}
+
+.sf-stage-overlay{
+  gap:14px;
+}
+
+.sf-insight,
+.sf-mini-metric{
+  background:rgba(7,20,34,.88);
+  border-color:rgba(143,216,255,.14);
+  box-shadow:0 14px 32px rgba(0,0,0,.24);
+}
+
+.sf-insight-label{
+  color:#8fd8ff;
+}
+
+.sf-insight-text{
+  color:#f6fbff;
+  text-shadow:0 1px 2px rgba(0,0,0,.32);
+}
+
+.sf-mini-metric .k{
+  color:#a4c0da;
+}
+
+.sf-mini-metric .v{
+  color:#f5fbff;
+  text-shadow:0 1px 0 rgba(0,0,0,.26);
+}
+
+.sf-panel-body--split{
+  display:grid;
+  grid-template-columns:minmax(0, 1.18fr) minmax(280px, .92fr);
+  gap:14px;
+  align-items:start;
+}
+
+.sf-chart-card{
+  border:1px solid var(--sf-stroke);
+  border-radius:18px;
+  padding:14px;
+  background:linear-gradient(180deg, #ffffff 0%, #f5f9fd 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85);
+}
+
+.sf-panel--outputs .sf-chart-card{
+  margin-top:12px;
+}
+
+.sf-panel--outputs .sf-metrics{
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:8px;
+}
+
+.sf-panel--outputs .sf-metric{
+  display:grid;
+  grid-template-rows:auto auto;
+  gap:8px;
+  min-height:0;
+  padding:12px 12px 11px;
+}
+
+.sf-metric-row{
+  display:grid;
+  grid-template-columns:minmax(0, 1fr);
+  gap:5px;
+}
+
+.sf-panel--outputs .sf-metric-k{
+  max-width:none;
+  line-height:1.3;
+}
+
+.sf-panel--outputs .sf-metric-v{
+  margin-top:0;
+  font-size:clamp(22px, 1.8vw, 25px);
+  line-height:1.05;
+  text-align:left;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.sf-panel--outputs .sf-metric-note{
+  margin-top:0;
+  font-size:11.5px;
+  line-height:1.45;
+}
+
+.sf-chart-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.sf-chart-title{
+  margin:0;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#51677e;
+}
+
+.sf-chart-sub{
+  margin:4px 0 0;
+  color:#60758d;
+  font-size:13px;
+  line-height:1.45;
+}
+
+.legend{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.legend span{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:#eef4fb;
+  color:#425a72;
+  font-size:11px;
+  font-weight:700;
+}
+
+.legend i{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  display:inline-block;
+  box-shadow:none;
+}
+
+#microChart{
+  height:332px;
+  min-height:332px;
+  background:linear-gradient(180deg, #0d2237 0%, #12304b 100%);
+}
+
+@media (max-width: 1080px){
+  .sf-panel-body--split{
+    grid-template-columns:1fr;
+  }
+
+  .sf-panel--outputs .sf-metrics{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1600px){
+  .sf-topbar{
+    padding:26px 28px 0;
+    gap:22px;
+  }
+
+  .sf-title,
+  .sf-sub{
+    max-width:880px;
+  }
+
+  .sf-main{
+    grid-template-columns:minmax(0, 1.58fr) minmax(360px, .88fr);
+    gap:22px;
+    padding:20px 28px 24px;
+  }
+
+  .sf-canvas-wrap{
+    min-height:540px;
+    padding:10px 12px 12px;
+  }
+
+  .sf-stage-overlay{
+    left:24px;
+    right:24px;
+    bottom:24px;
+    gap:12px;
+  }
+
+  .sf-panel--outputs .sf-metrics{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:10px;
+  }
+
+  .sf-panel--outputs .sf-metric{
+    min-height:116px;
+  }
+
+  .sf-panel--howto .sf-story{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  #microChart{
+    height:360px;
+    min-height:360px;
+  }
+}
+
+@media (min-width: 1181px) and (max-width: 1599px){
+  .sf-topbar{
+    padding:20px 20px 0;
+    gap:16px;
+  }
+
+  .sf-title,
+  .sf-sub{
+    max-width:none;
+  }
+
+  .sf-main{
+    grid-template-columns:minmax(0, 1.22fr) minmax(340px, .98fr);
+    gap:16px;
+    padding:16px 20px 20px;
+  }
+
+  .sf-canvas-wrap{
+    min-height:440px;
+  }
+
+  .sf-stage-overlay{
+    left:18px;
+    right:18px;
+    bottom:18px;
+    gap:10px;
+  }
+
+  .sf-mini-metrics{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  .sf-panel--outputs .sf-metrics{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px;
+  }
+
+  .sf-panel--howto .sf-story{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  #microChart{
+    height:304px;
+    min-height:304px;
+  }
+}
+
+@media (min-width: 981px) and (max-width: 1180px){
+  .sf-topbar{
+    padding:18px 18px 0;
+    gap:14px;
+  }
+
+  .sf-title{
+    font-size:clamp(28px, 3.2vw, 34px);
+    max-width:none;
+  }
+
+  .sf-sub{
+    max-width:none;
+    font-size:13px;
+    line-height:1.55;
+  }
+
+  .sf-main{
+    grid-template-columns:1fr;
+    gap:16px;
+    padding:16px 18px 20px;
+    align-items:start;
+  }
+
+  .sf-left-stack{
+    grid-template-rows:auto auto;
+    height:auto;
+    min-height:0;
+  }
+
+  .sf-side--top{
+    height:auto;
+    min-height:0;
+  }
+
+  .sf-stage{
+    min-height:0;
+  }
+
+  .sf-canvas-wrap{
+    min-height:420px;
+  }
+
+  .sf-stage-overlay{
+    left:18px;
+    right:18px;
+    bottom:18px;
+    gap:10px;
+  }
+
+  .sf-mini-metrics{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  .sf-panel--outputs .sf-metrics{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:8px;
+  }
+
+  .sf-panel--howto .sf-story{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  .sf-chart-head{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .legend{
+    justify-content:flex-start;
+  }
+
+  #microChart{
+    height:292px;
+    min-height:292px;
+  }
+}
+
+@media (max-width: 980px){
+  .sf-topbar{
+    gap:14px;
+  }
+
+  .sf-title,
+  .sf-sub{
+    max-width:none;
+  }
+
+  .sf-actions{
+    width:100%;
+    align-items:stretch;
+  }
+
+  .sf-action-row,
+  .sf-speed-row{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .sf-stage{
+    min-height:0;
+  }
+
+  .sf-canvas-wrap{
+    min-height:400px;
+  }
+
+  .sf-stage-overlay{
+    left:22px;
+    right:22px;
+    bottom:22px;
+    gap:10px;
+  }
+
+  .sf-mini-metrics{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  .sf-panel--howto .sf-story{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  .sf-chart-head{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .legend{
+    justify-content:flex-start;
+  }
+
+  #microChart{
+    height:clamp(272px, 34vw, 320px);
+    min-height:clamp(272px, 34vw, 320px);
+  }
+}
+
+@media (max-width: 860px){
+  .sf-topbar{
+    padding:18px 18px 0;
+  }
+
+  .sf-timebar{
+    margin:12px 18px 0;
+  }
+
+  .sf-main{
+    padding:16px 18px 18px;
+    gap:14px;
+  }
+
+  .sf-title{
+    font-size:clamp(26px, 7vw, 34px);
+  }
+
+  .sf-sub{
+    font-size:13px;
+    line-height:1.55;
+  }
+
+  .sf-action-row{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:10px;
+  }
+
+  .sf-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    min-height:44px;
+  }
+
+  .sf-speed-select{
+    width:100%;
+    min-width:0;
+  }
+
+  .sf-stage-head{
+    gap:10px;
+    padding:14px 14px 0;
+  }
+
+  .sf-stage-head-left{
+    width:100%;
+  }
+
+  .sf-stage-legend{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    width:100%;
+    gap:8px;
+  }
+
+  .sf-legend-pill{
+    width:100%;
+    min-height:34px;
+    justify-content:flex-start;
+    padding:8px 10px;
+    font-size:10.5px;
+  }
+
+  .sf-canvas-wrap{
+    padding:8px;
+    min-height:360px;
+  }
+
+  .sf-stage-overlay{
+    left:16px;
+    right:16px;
+    bottom:16px;
+  }
+
+  .sf-insight{
+    padding:12px 13px;
+  }
+
+  .sf-insight-text{
+    font-size:12px;
+    line-height:1.45;
+  }
+
+  .sf-mini-metric{
+    min-width:0;
+    padding:10px;
+  }
+
+  .sf-mini-metric .k{
+    font-size:10px;
+  }
+
+  .sf-mini-metric .v{
+    font-size:18px;
+  }
+
+  .sf-panel-head{
+    padding:14px 14px 10px;
+  }
+
+  .sf-panel-body{
+    padding:12px 14px 14px;
+  }
+
+  .sf-panel-title{
+    font-size:17px;
+  }
+
+  .sf-panel-sub,
+  .sf-control-help,
+  .sf-story-item-desc{
+    font-size:12px;
+  }
+
+  .sf-control-top{
+    align-items:flex-start;
+  }
+
+  .sf-control-value{
+    white-space:nowrap;
+  }
+
+  .sf-panel--outputs .sf-metric-k{
+    max-width:none;
+  }
+
+  .sf-panel--outputs .sf-metric-v{
+    font-size:22px;
+  }
+
+  .sf-panel--outputs .sf-metric-note{
+    font-size:11px;
+  }
+
+  .sf-chart-card{
+    padding:12px;
+    border-radius:16px;
+  }
+
+  .legend span{
+    padding:5px 8px;
+    font-size:10.5px;
+  }
+
+  #microChart{
+    height:clamp(248px, 40vw, 300px);
+    min-height:clamp(248px, 40vw, 300px);
+  }
+}
+
+@media (max-width: 640px){
+  .sf-topbar{
+    padding:16px 14px 0;
+  }
+
+  .sf-timebar{
+    margin:10px 14px 0;
+    height:10px;
+  }
+
+  .sf-main{
+    padding:14px;
+    gap:12px;
+  }
+
+  .sf-badge{
+    padding:7px 10px;
+    font-size:11px;
+  }
+
+  .sf-title{
+    margin-top:12px;
+    font-size:clamp(24px, 8.6vw, 30px);
+    line-height:1.08;
+  }
+
+  .sf-sub{
+    margin-top:8px;
+    font-size:12.5px;
+    line-height:1.5;
+  }
+
+  .sf-stage-head{
+    padding:12px 12px 0;
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .sf-live{
+    align-self:flex-start;
+  }
+
+  .sf-canvas-wrap{
+    display:grid;
+    gap:10px;
+    padding:8px;
+    min-height:0;
+  }
+
+  #simCanvas{
+    height:clamp(272px, 68vw, 360px);
+    min-height:272px;
+  }
+
+  .sf-stage-overlay{
+    display:none;
+  }
+
+  .sf-mini-metrics{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:8px;
+  }
+
+  .sf-insight{
+    border-radius:14px;
+  }
+
+  .sf-mini-metric{
+    border-radius:14px;
+  }
+
+  .sf-panel--howto .sf-story{
+    grid-template-columns:1fr;
+  }
+
+  .sf-panel--outputs .sf-metrics{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px;
+  }
+
+  .sf-chart-head{
+    gap:8px;
+    margin-bottom:10px;
+  }
+
+  #microChart{
+    height:clamp(232px, 58vw, 280px);
+    min-height:clamp(232px, 58vw, 280px);
+  }
+}
+
+@media (max-width: 480px){
+  .sf-action-row{
+    grid-template-columns:1fr;
+  }
+
+  .sf-stage-legend{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .sf-legend-pill{
+    font-size:10px;
+  }
+
+  .sf-mini-metrics{
+    grid-template-columns:1fr;
+  }
+
+  #simCanvas{
+    height:clamp(248px, 74vw, 320px);
+    min-height:248px;
+  }
+
+  .sf-panel--outputs .sf-metrics{
+    grid-template-columns:1fr;
+  }
+
+  .sf-panel--outputs .sf-metric{
+    padding:10px;
+  }
+
+  .sf-panel--outputs .sf-metric-v{
+    font-size:21px;
+  }
+
+  #microChart{
+    height:clamp(220px, 62vw, 256px);
+    min-height:clamp(220px, 62vw, 256px);
+  }
+}
+
+body.embed-mode.embed-optimized .sf-shell{
+  padding:10px;
+}
+
+body.embed-mode.embed-optimized .sf-main{
+  align-items:stretch;
+}
+
+@media (min-width: 641px) and (max-width: 860px){
+  body.embed-mode.embed-optimized .sf-topbar{
+    flex-direction:row;
+    align-items:flex-start;
+    gap:18px;
+    padding:22px 22px 0;
+  }
+
+  body.embed-mode.embed-optimized .sf-actions{
+    width:auto;
+    align-items:flex-end;
+  }
+
+  body.embed-mode.embed-optimized .sf-action-row{
+    display:flex;
+    width:auto;
+    justify-content:flex-end;
+  }
+
+  body.embed-mode.embed-optimized .sf-btn{
+    width:auto;
+  }
+
+  body.embed-mode.embed-optimized .sf-speed-row{
+    width:auto;
+    justify-content:flex-end;
+  }
+
+  body.embed-mode.embed-optimized .sf-speed-select{
+    width:auto;
+    min-width:140px;
+  }
+
+  body.embed-mode.embed-optimized .sf-stage-head{
+    padding:16px 16px 0;
+    gap:12px;
+    align-items:center;
+  }
+
+  body.embed-mode.embed-optimized .sf-stage-legend{
+    display:flex;
+    width:auto;
+    gap:8px;
+  }
+
+  body.embed-mode.embed-optimized .sf-legend-pill{
+    width:auto;
+    min-height:0;
+    padding:7px 10px;
+    font-size:11px;
+  }
+
+  body.embed-mode.embed-optimized .sf-canvas-wrap{
+    padding:8px 10px 10px;
+    min-height:420px;
+  }
+
+  body.embed-mode.embed-optimized .sf-stage-overlay{
+    display:grid;
+    left:22px;
+    right:22px;
+    bottom:22px;
+  }
+
+  body.embed-mode.embed-optimized .sf-insight{
+    padding:14px 16px;
+  }
+
+  body.embed-mode.embed-optimized .sf-insight-text{
+    font-size:13px;
+    line-height:1.5;
+  }
+
+  body.embed-mode.embed-optimized .sf-mini-metrics{
+    display:flex;
+    width:auto;
+  }
+
+  body.embed-mode.embed-optimized .sf-mini-metric{
+    padding:12px;
+  }
+
+  body.embed-mode.embed-optimized .sf-panel-head{
+    padding:16px 16px 12px;
+  }
+
+  body.embed-mode.embed-optimized .sf-panel-body{
+    padding:14px 16px 16px;
+  }
+
+  body.embed-mode.embed-optimized .sf-panel-title{
+    font-size:18px;
+  }
+
+  body.embed-mode.embed-optimized .sf-panel-sub,
+  body.embed-mode.embed-optimized .sf-control-help,
+  body.embed-mode.embed-optimized .sf-story-item-desc{
+    font-size:13px;
+  }
+
+  body.embed-mode.embed-optimized .sf-control-top{
+    align-items:center;
+  }
+
+  body.embed-mode.embed-optimized .sf-chart-card{
+    padding:14px;
+    border-radius:18px;
+  }
+
+  body.embed-mode.embed-optimized .legend span{
+    padding:6px 9px;
+    font-size:11px;
+  }
+
+  body.embed-mode.embed-optimized #microChart{
+    height:320px;
+    min-height:320px;
+  }
+}
+
+@media (min-width: 641px){
+  body.embed-mode.layout-desktop .sf-topbar{
+    flex-direction:row;
+    align-items:flex-start;
+    gap:18px;
+    padding:22px 22px 0;
+  }
+
+  body.embed-mode.layout-desktop .sf-actions{
+    width:auto;
+    align-items:flex-end;
+  }
+
+  body.embed-mode.layout-desktop .sf-action-row{
+    display:flex;
+    width:auto;
+    justify-content:flex-end;
+  }
+
+  body.embed-mode.layout-desktop .sf-btn{
+    width:auto;
+  }
+
+  body.embed-mode.layout-desktop .sf-speed-row{
+    width:auto;
+    justify-content:flex-end;
+  }
+
+  body.embed-mode.layout-desktop .sf-speed-select{
+    width:auto;
+    min-width:140px;
+  }
+
+  body.embed-mode.layout-desktop .sf-stage-head{
+    padding:16px 16px 0;
+    gap:12px;
+    align-items:center;
+  }
+
+  body.embed-mode.layout-desktop .sf-stage-legend{
+    display:flex;
+    width:auto;
+    gap:8px;
+  }
+
+  body.embed-mode.layout-desktop .sf-legend-pill{
+    width:auto;
+    min-height:0;
+    padding:7px 10px;
+    font-size:11px;
+  }
+
+  body.embed-mode.layout-desktop .sf-canvas-wrap{
+    padding:8px 10px 10px;
+    min-height:430px;
+  }
+
+  body.embed-mode.layout-desktop .sf-stage-overlay{
+    display:grid;
+    left:22px;
+    right:22px;
+    bottom:22px;
+  }
+
+  body.embed-mode.layout-desktop .sf-mini-metrics{
+    display:flex;
+    width:auto;
+  }
+
+  body.embed-mode.layout-desktop .sf-panel-head{
+    padding:16px 16px 12px;
+  }
+
+  body.embed-mode.layout-desktop .sf-panel-body{
+    padding:14px 16px 16px;
+  }
+
+  body.embed-mode.layout-desktop .sf-panel-title{
+    font-size:18px;
+  }
+
+  body.embed-mode.layout-desktop .sf-panel-sub,
+  body.embed-mode.layout-desktop .sf-control-help,
+  body.embed-mode.layout-desktop .sf-story-item-desc{
+    font-size:13px;
+  }
+
+  body.embed-mode.layout-desktop .sf-panel--outputs .sf-metrics{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  body.embed-mode.layout-desktop #microChart{
+    height:332px;
+    min-height:332px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 899px){
+  body.embed-mode.layout-desktop .sf-main{
+    grid-template-columns:1fr;
+    padding:18px 22px 18px;
+    gap:18px;
+  }
+
+  body.embed-mode.layout-desktop .sf-panel--howto .sf-story{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px){
+  body.embed-mode.embed-optimized .sf-main{
+    grid-template-columns:minmax(320px, 1.45fr) minmax(280px, .95fr);
+    padding:18px 22px 18px;
+    gap:18px;
+  }
+
+  body.embed-mode.embed-optimized .sf-left-stack{
+    display:grid;
+    grid-template-rows:minmax(0, 1fr) auto;
+    gap:14px;
+    height:auto !important;
+    min-height:0 !important;
+  }
+
+  body.embed-mode.embed-optimized .sf-side--top{
+    height:auto !important;
+    min-height:0 !important;
+  }
+
+  body.embed-mode.embed-optimized .sf-panel--outputs .sf-metrics{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  body.embed-mode.embed-optimized .sf-panel--howto .sf-story{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  body.embed-mode.layout-desktop .sf-main{
+    grid-template-columns:minmax(320px, 1.45fr) minmax(280px, .95fr);
+    padding:18px 22px 18px;
+    gap:18px;
+  }
+
+  body.embed-mode.layout-desktop .sf-left-stack{
+    display:grid;
+    grid-template-rows:minmax(0, 1fr) auto;
+    gap:14px;
+    min-height:0;
+  }
+
+  body.embed-mode.layout-desktop .sf-side--top{
+    min-height:0;
+  }
+
+  body.embed-mode.layout-desktop .sf-panel--howto .sf-story{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+}
+</style>
+</head>
+<body>
+<div class="sf-shell">
+  <section class="sf-widget" id="simfluenceHero">
+    <div class="sf-topbar">
+      <div class="sf-topbar-left">
+        <div class="sf-badge">
+          <span class="sf-badge-dot"></span>
+          <span>Market Adoption Simulation</span>
+        </div>
+        <h1 class="sf-title">Market Adoption Curve Simulator</h1>
+        <p class="sf-sub">
+          Explore how <b>understanding</b>, proof, and bridge strength change diffusion across innovators, early adopters,
+          mainstream buyers, and risk-averse segments.
+        </p>
+      </div>
+
+      <div class="sf-actions">
+        <div class="sf-action-row">
+          <button class="sf-btn sf-btn--ghost" id="pauseBtn" type="button">Pause</button>
+          <button class="sf-btn sf-btn--cta" id="resetBtn" type="button">Reset</button>
+        </div>
+        <div class="sf-speed-row">
+          <select class="sf-speed-select" id="speedSelect" aria-label="Simulation speed">
+            <option value="0.75">Speed 0.75x</option>
+            <option value="1" selected>Speed 1x</option>
+            <option value="1.5">Speed 1.5x</option>
+            <option value="2">Speed 2x</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="sf-timebar" aria-hidden="true">
+      <div class="sf-timebar-fill" id="timeProgress"></div>
+    </div>
+
+    <div class="sf-main">
+      <div class="sf-left-stack">
+        <div class="sf-stage">
+          <div class="sf-stage-head">
+            <div class="sf-stage-head-left">
+              <div class="sf-stage-label">Live diffusion map</div>
+              <div class="sf-stage-legend" aria-label="Simulation legend">
+                <span class="sf-legend-pill"><i class="sf-legend-dot" style="background:#FFFFFF"></i>Neutral</span>
+                <span class="sf-legend-pill"><i class="sf-legend-dot" style="background:#1E96EC"></i>Aware</span>
+                <span class="sf-legend-pill"><i class="sf-legend-dot" style="background:#8FD8FF"></i>Confident</span>
+                <span class="sf-legend-pill"><i class="sf-legend-dot" style="background:#FF7F22"></i>Adopted</span>
+              </div>
+            </div>
+
+            <div class="sf-live" id="liveBadge">
+              <span class="sf-live-dot"></span>
+              <span id="simStatus">Running</span>
+            </div>
+          </div>
+
+          <div class="sf-canvas-wrap">
+            <canvas id="simCanvas" aria-label="Market adoption diffusion simulation"></canvas>
+
+            <div class="sf-stage-overlay">
+              <div class="sf-insight">
+                <div class="sf-insight-label" id="phaseLabel">Baseline Market</div>
+                <p class="sf-insight-text" id="phaseText">Every product enters a market.</p>
+              </div>
+
+              <div class="sf-mini-metrics">
+                <div class="sf-mini-metric">
+                  <div class="k">Awareness</div>
+                  <div class="v" id="miniAware">0%</div>
+                </div>
+                <div class="sf-mini-metric">
+                  <div class="k">Adoption</div>
+                  <div class="v" id="miniAdopt">0%</div>
+                </div>
+                <div class="sf-mini-metric">
+                  <div class="k">Time to 50%</div>
+                  <div class="v" id="miniT50">--</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section class="sf-panel sf-panel--howto" id="howtoPanel">
+          <div class="sf-panel-head">
+            <div class="sf-panel-kicker"><span></span><span>How to use</span></div>
+            <h2 class="sf-panel-title">Read the system, not just the curve</h2>
+            <p class="sf-panel-sub">The network shows where momentum starts, how it crosses clusters, and when adoption becomes self-reinforcing.</p>
+          </div>
+
+          <div class="sf-panel-body">
+            <div class="sf-story">
+              <div class="sf-story-item">
+                <p class="sf-story-item-title">1. Tune understanding lift</p>
+                <p class="sf-story-item-desc">Higher understanding speeds early awareness and improves the odds that confident buyers emerge fast enough to seed the market.</p>
+              </div>
+              <div class="sf-story-item">
+                <p class="sf-story-item-title">2. Strengthen social proof</p>
+                <p class="sf-story-item-desc">Proof amplifies neighbor effects, turning isolated wins into visible signals that push adoption forward.</p>
+              </div>
+              <div class="sf-story-item">
+                <p class="sf-story-item-title">3. Watch the bridges</p>
+                <p class="sf-story-item-desc">Bridge nodes carry momentum between segments. If they convert, diffusion reaches the mainstream much earlier.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="sf-side sf-side--top">
+        <section class="sf-panel sf-panel--controls" id="controlsPanel">
+          <div class="sf-panel-head">
+            <div class="sf-panel-kicker"><span></span><span>Controls</span></div>
+            <h2 class="sf-panel-title">Adjust the adoption drivers</h2>
+            <p class="sf-panel-sub">Keep the network fixed, then adjust understanding, proof, or bridge strength to compare diffusion behavior.</p>
+          </div>
+
+          <div class="sf-panel-body">
+            <div class="sf-controls">
+              <div class="sf-control">
+                <div class="sf-control-top">
+                  <label class="sf-control-label" for="understanding">Understanding lift</label>
+                  <div class="sf-control-value" id="understandingV">72%</div>
+                </div>
+                <input class="sf-range" id="understanding" type="range" min="25" max="100" value="72" />
+                <div class="sf-control-help">Raises early awareness and makes confident adoption more likely once people engage.</div>
+              </div>
+
+              <div class="sf-control">
+                <div class="sf-control-top">
+                  <label class="sf-control-label" for="proof">Social proof</label>
+                  <div class="sf-control-value" id="proofV">64%</div>
+                </div>
+                <input class="sf-range" id="proof" type="range" min="20" max="100" value="64" />
+                <div class="sf-control-help">Strengthens neighbor effects so each adopter produces more visible downstream confidence.</div>
+              </div>
+
+              <div class="sf-control">
+                <div class="sf-control-top">
+                  <label class="sf-control-label" for="bridges">Bridge strength</label>
+                  <div class="sf-control-value" id="bridgesV">58%</div>
+                </div>
+                <input class="sf-range" id="bridges" type="range" min="15" max="100" value="58" />
+                <div class="sf-control-help">Improves spread between segments so momentum reaches the mainstream before it stalls.</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="sf-panel sf-panel--outputs" id="outputsPanel">
+          <div class="sf-panel-head">
+            <div class="sf-panel-kicker"><span></span><span>Key outputs</span></div>
+            <h2 class="sf-panel-title">Signals worth watching</h2>
+            <p class="sf-panel-sub">These metrics translate the network state into adoption signals you can compare across scenarios.</p>
+          </div>
+
+          <div class="sf-panel-body">
+            <div class="sf-metrics">
+              <div class="sf-metric">
+                <div class="sf-metric-row">
+                  <div class="sf-metric-k">Awareness</div>
+                  <div class="sf-metric-v" id="awareV">0%</div>
+                </div>
+                <div class="sf-metric-note">Market share that has registered the product.</div>
+              </div>
+              <div class="sf-metric">
+                <div class="sf-metric-row">
+                  <div class="sf-metric-k">Adoption</div>
+                  <div class="sf-metric-v" id="adoptV">0%</div>
+                </div>
+                <div class="sf-metric-note">Market share that has moved from interest to adoption.</div>
+              </div>
+              <div class="sf-metric">
+                <div class="sf-metric-row">
+                  <div class="sf-metric-k">Velocity</div>
+                  <div class="sf-metric-v" id="velocityV">0.0 pts/s</div>
+                </div>
+                <div class="sf-metric-note">Current adoption-growth slope.</div>
+              </div>
+              <div class="sf-metric">
+                <div class="sf-metric-row">
+                  <div class="sf-metric-k">Lift vs baseline</div>
+                  <div class="sf-metric-v" id="liftV">1.0x</div>
+                </div>
+                <div class="sf-metric-note">Dynamic scenario advantage over the static baseline.</div>
+              </div>
+              <div class="sf-metric">
+                <div class="sf-metric-row">
+                  <div class="sf-metric-k">Time to 50%</div>
+                  <div class="sf-metric-v" id="t50V">--</div>
+                </div>
+                <div class="sf-metric-note">Projected or actual time to cross 50% adoption.</div>
+              </div>
+              <div class="sf-metric">
+                <div class="sf-metric-row">
+                  <div class="sf-metric-k">Bridge coverage</div>
+                  <div class="sf-metric-v" id="bridgeV">0%</div>
+                </div>
+                <div class="sf-metric-note">Adoption among nodes that bridge segments.</div>
+              </div>
+            </div>
+
+            <div class="sf-chart-card">
+              <div class="sf-chart-head">
+                <div>
+                  <p class="sf-chart-title">Adoption Curve</p>
+                  <p class="sf-chart-sub">Compare dynamic simulation performance against a slow static baseline.</p>
+                </div>
+
+                <div class="legend">
+                  <span><i style="background:#FFFFFF"></i>Baseline</span>
+                  <span><i style="background:#1E96EC"></i>Dynamic</span>
+                </div>
+              </div>
+
+              <canvas id="microChart" aria-label="Adoption curve chart"></canvas>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const SIM_DURATION_SECONDS = 7.5;
+  const HERO_SECONDS = SIM_DURATION_SECONDS;
+  const SIM_SPEED = 0.7;
+  const SIM_DT = 1 / 30;
+  const BASE_SEED = 1337;
+  const MOBILE_BREAKPOINT = 860;
+  const PHONE_BREAKPOINT = 640;
+  const EMBED_COMPACT_BREAKPOINT = 760;
+  const DYNAMIC_ON_SECONDS = 0.8;
+  const LOCK_SECONDS = 6.8;
+  const AWARE_ENTER_THRESHOLD = 0.4;
+  const AWARE_EXIT_THRESHOLD = 0.32;
+  const URL_PARAMS = new URLSearchParams(window.location.search);
+  const IS_EMBEDDED = (() => {
+    try {
+      return window.self !== window.top || !!window.frameElement;
+    } catch (err) {
+      void err;
+      return true;
+    }
+  })();
+  const SAFE_EMBED_MODE = URL_PARAMS.get("embedMode") === "safe" || URL_PARAMS.get("safeEmbed") === "1";
+  const FORCE_FIXED_SIZE = URL_PARAMS.get("sizeMode") === "fixed";
+  const RAW_LAYOUT_MODE = (URL_PARAMS.get("layoutMode") || URL_PARAMS.get("layout") || "auto").toLowerCase();
+  const FORCED_LAYOUT_MODE = ["auto", "desktop", "compact", "phone"].includes(RAW_LAYOUT_MODE) ? RAW_LAYOUT_MODE : "auto";
+  const MIN_WIDGET_HEIGHT = 240;
+  const DEFAULT_CONTROLS = {
+    understanding: 72,
+    proof: 64,
+    bridges: 58
+  };
+  const CONTROL_RANGES = {
+    understanding: { min: 25, max: 100 },
+    proof: { min: 20, max: 100 },
+    bridges: { min: 15, max: 100 }
+  };
+
+  if (IS_EMBEDDED) {
+    document.documentElement.classList.add("embed-mode");
+    document.body.classList.add("embed-mode");
+    document.documentElement.classList.add("embed-optimized");
+    document.body.classList.add("embed-optimized");
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  }
+
+  if (FORCED_LAYOUT_MODE !== "auto") {
+    document.documentElement.classList.add("layout-" + FORCED_LAYOUT_MODE);
+    document.body.classList.add("layout-" + FORCED_LAYOUT_MODE);
+  }
+
+  const NODE_COLORS = {
+    neutral: "#FFFFFF",
+    aware: "#1E96EC",
+    confident: "#8FD8FF",
+    adopted: "#FF7F22"
+  };
+
+  const SEGMENTS = [
+    {
+      key: "innovator",
+      share: 0.08,
+      center: { x: 0.26, y: 0.28 },
+      threshold: [0.26, 0.42],
+      influence: [1.15, 1.35],
+      shade: "rgba(30,151,237,0.16)"
+    },
+    {
+      key: "early",
+      share: 0.22,
+      center: { x: 0.73, y: 0.30 },
+      threshold: [0.42, 0.58],
+      influence: [0.96, 1.18],
+      shade: "rgba(255,255,255,0.07)"
+    },
+    {
+      key: "mainstream",
+      share: 0.50,
+      center: { x: 0.34, y: 0.73 },
+      threshold: [0.56, 0.72],
+      influence: [0.84, 1.02],
+      shade: "rgba(13,49,86,0.24)"
+    },
+    {
+      key: "risk_averse",
+      share: 0.20,
+      center: { x: 0.74, y: 0.73 },
+      threshold: [0.68, 0.86],
+      influence: [0.72, 0.90],
+      shade: "rgba(255,127,34,0.12)"
+    }
+  ];
+
+  const SEGMENT_LABELS = ["Innovators", "Early", "Mainstream", "Risk-averse"];
+
+  const COPY_TIMELINE = [
+    { t: 0.0, text: "Every product enters a market." },
+    { t: 0.8, text: "Dynamic content activates market understanding." },
+    { t: 1.5, text: "Innovators respond first. Awareness starts spreading." },
+    { t: 4.0, text: "Confidence moves across clusters." },
+    { t: 6.8, text: "Understanding drives adoption." }
+  ];
+
+  const SEGMENT_STAGE_STARTS = {
+    aware: [0.02, 0.10, 0.24, 0.44],
+    confident: [0.08, 0.20, 0.38, 0.60],
+    adopt: [0.12, 0.28, 0.50, 0.74]
+  };
+  const SEGMENT_STAGE_WIDTHS = {
+    aware: [0.18, 0.2, 0.24, 0.24],
+    confident: [0.18, 0.22, 0.24, 0.22],
+    adopt: [0.2, 0.22, 0.24, 0.18]
+  };
+  const MOBILE_LABEL_OFFSETS = [
+    { x: 0, y: -38 },
+    { x: -20, y: -26 },
+    { x: 0, y: -42 },
+    { x: 0, y: -46 }
+  ];
+  const DESKTOP_LABEL_OFFSETS = [
+    { x: 0, y: -102 },
+    { x: -124, y: -104 },
+    { x: 0, y: -112 },
+    { x: 0, y: -118 }
+  ];
+  const COLOR_CACHE = new Map();
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  function mulberry32(seed) {
+    let t = seed >>> 0;
+    return function rand() {
+      t += 0x6d2b79f5;
+      let r = Math.imul(t ^ (t >>> 15), t | 1);
+      r ^= r + Math.imul(r ^ (r >>> 7), r | 61);
+      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function smoothstep(t) {
+    const x = clamp(t, 0, 1);
+    return x * x * (3 - 2 * x);
+  }
+
+  function parseColor(color) {
+    const cached = COLOR_CACHE.get(color);
+    if (cached) return cached;
+
+    let parsed = { r: 255, g: 255, b: 255 };
+    if (color[0] === "#") {
+      const hex = color.length === 4
+        ? "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3]
+        : color;
+      const n = hex.slice(1);
+      parsed = {
+        r: parseInt(n.slice(0, 2), 16),
+        g: parseInt(n.slice(2, 4), 16),
+        b: parseInt(n.slice(4, 6), 16)
+      };
+    } else {
+      const match = color.match(/rgba?\(([^)]+)\)/i);
+      if (match) {
+        const parts = match[1].split(",").map((part) => Number.parseFloat(part));
+        parsed = {
+          r: Number.isFinite(parts[0]) ? parts[0] : 255,
+          g: Number.isFinite(parts[1]) ? parts[1] : 255,
+          b: Number.isFinite(parts[2]) ? parts[2] : 255
+        };
+      }
+    }
+
+    COLOR_CACHE.set(color, parsed);
+    return parsed;
+  }
+
+  function mixColor(a, b, t) {
+    const ca = parseColor(a);
+    const cb = parseColor(b);
+    const x = clamp(t, 0, 1);
+    const r = Math.round(lerp(ca.r, cb.r, x));
+    const g = Math.round(lerp(ca.g, cb.g, x));
+    const bb = Math.round(lerp(ca.b, cb.b, x));
+    return "rgb(" + r + "," + g + "," + bb + ")";
+  }
+
+  function normalizeControlValue(key, value) {
+    const range = CONTROL_RANGES[key];
+    if (!range) return clamp(value, 0, 1);
+    return clamp((value - range.min) / Math.max(1, range.max - range.min), 0, 1);
+  }
+
+  function pathRoundedRect(ctx, x, y, w, h, r) {
+    const radius = Math.max(0, Math.min(r, w * 0.5, h * 0.5));
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + w - radius, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+    ctx.lineTo(x + w, y + h - radius);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+    ctx.lineTo(x + radius, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+  }
+
+  function shuffle(array, rand) {
+    for (let i = array.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(rand() * (i + 1));
+      const tmp = array[i];
+      array[i] = array[j];
+      array[j] = tmp;
+    }
+  }
+
+  function createSegmentAssignment(N, seed) {
+    const counts = [];
+    let used = 0;
+    for (let i = 0; i < SEGMENTS.length; i += 1) {
+      let c = Math.round(SEGMENTS[i].share * N);
+      if (i === SEGMENTS.length - 1) {
+        c = N - used;
+      }
+      counts.push(c);
+      used += c;
+    }
+    const ids = [];
+    for (let i = 0; i < counts.length; i += 1) {
+      for (let j = 0; j < counts[i]; j += 1) ids.push(i);
+    }
+    const rand = mulberry32(seed ^ 0x9e3779b1);
+    shuffle(ids, rand);
+    return ids;
+  }
+
+  const STATIC_ANCHOR = {
+    baseExposure: 0.00025,
+    socialRate: 0.00018,
+    confBase: 0.00004,
+    confCoupled: 0,
+    confSocialFactor: 0.04,
+    proofGain: 0.12,
+    crossFactor: 0.52,
+    bridgeBoost: 0.7,
+    influencerBoost: 1,
+    driveGain: 0.4
+  };
+
+  const BASELINE_PHASE = {
+    key: "baseline",
+    ramp: 0,
+    interactiveOn: false,
+    baseExposure: 0.00025,
+    socialRate: 0.00018,
+    confBase: 0.00004,
+    confCoupled: 0,
+    confSocialFactor: 0.04,
+    proofGain: 0.12,
+    crossFactor: 0.52,
+    bridgeBoost: 0.7,
+    influencerBoost: 1,
+    driveGain: 0.4
+  };
+
+  const INTERACTIVE_PHASE = {
+    key: "interactive",
+    interactiveOn: true,
+    baseExposure: 0.0102,
+    socialRate: 0.0066,
+    confBase: 0,
+    confCoupled: 0.0086,
+    confSocialFactor: 0.38,
+    proofGain: 0.58,
+    crossFactor: 0.92,
+    bridgeBoost: 1.02,
+    influencerBoost: 1.04,
+    driveGain: 0.9
+  };
+
+  const LOCK_PHASE = {
+    key: "lock",
+    interactiveOn: true,
+    baseExposure: 0.0098,
+    socialRate: 0.0061,
+    confBase: 0,
+    confCoupled: 0.008,
+    confSocialFactor: 0.34,
+    proofGain: 0.54,
+    crossFactor: 0.9,
+    bridgeBoost: 0.98,
+    influencerBoost: 1.03,
+    driveGain: 0.86
+  };
+
+  function createScenario(controlState) {
+    const rawUnderstanding = clamp(
+      (controlState && controlState.understanding) || DEFAULT_CONTROLS.understanding,
+      CONTROL_RANGES.understanding.min,
+      CONTROL_RANGES.understanding.max
+    );
+    const rawProof = clamp(
+      (controlState && controlState.proof) || DEFAULT_CONTROLS.proof,
+      CONTROL_RANGES.proof.min,
+      CONTROL_RANGES.proof.max
+    );
+    const rawBridges = clamp(
+      (controlState && controlState.bridges) || DEFAULT_CONTROLS.bridges,
+      CONTROL_RANGES.bridges.min,
+      CONTROL_RANGES.bridges.max
+    );
+
+    const understanding = normalizeControlValue("understanding", rawUnderstanding);
+    const proof = normalizeControlValue("proof", rawProof);
+    const bridges = normalizeControlValue("bridges", rawBridges);
+
+    const average = (understanding + proof + bridges) / 3;
+    const synergy = Math.sqrt(Math.max(0, understanding * proof * bridges));
+    const awarenessReadiness = clamp(
+      0.55 * (understanding * 0.5 + proof * 0.25 + bridges * 0.25) + 0.45 * synergy,
+      0,
+      1
+    );
+    const confidenceReadiness = clamp(
+      0.55 * (understanding * 0.4 + proof * 0.4 + bridges * 0.2) + 0.45 * synergy,
+      0,
+      1
+    );
+    const adoptionReadiness = clamp(0.35 * average + 0.65 * synergy, 0, 1);
+    const bridgeReadiness = clamp(0.5 * bridges + 0.2 * proof + 0.3 * synergy, 0, 1);
+    const exposureScale = lerp(0.2, 1.06, understanding);
+    const proofScale = lerp(0.18, 1.08, proof);
+    const bridgeScale = lerp(0.3, 1.06, bridges);
+    const momentumScale = lerp(0.2, 1.06, adoptionReadiness);
+
+    return {
+      rawUnderstanding,
+      rawProof,
+      rawBridges,
+      understanding,
+      proof,
+      bridges,
+      average,
+      synergy,
+      progressMultiplier: lerp(0.62, 1.0, adoptionReadiness),
+      awareShift: lerp(-0.16, 0, awarenessReadiness),
+      confidentShift: lerp(-0.26, 0, confidenceReadiness),
+      adoptShift: lerp(-0.4, 0, adoptionReadiness),
+      awarenessCeiling: clamp(lerp(0.3, 1, awarenessReadiness), 0.3, 1),
+      confidenceCeiling: clamp(lerp(0.08, 0.95, confidenceReadiness), 0.08, 0.95),
+      adoptionCeiling: clamp(lerp(0.12, 1, adoptionReadiness), 0.12, 1),
+      interactive: {
+        ...INTERACTIVE_PHASE,
+        baseExposure: INTERACTIVE_PHASE.baseExposure * exposureScale,
+        socialRate: INTERACTIVE_PHASE.socialRate * lerp(0.18, 1.06, proof * 0.55 + bridges * 0.45),
+        confCoupled: INTERACTIVE_PHASE.confCoupled * lerp(0.2, 1.05, understanding),
+        confSocialFactor: INTERACTIVE_PHASE.confSocialFactor * lerp(0.18, 1.04, proof),
+        proofGain: INTERACTIVE_PHASE.proofGain * proofScale,
+        crossFactor: INTERACTIVE_PHASE.crossFactor * lerp(0.35, 1.0, bridgeReadiness),
+        bridgeBoost: INTERACTIVE_PHASE.bridgeBoost * bridgeScale,
+        influencerBoost: INTERACTIVE_PHASE.influencerBoost * lerp(0.92, 1.03, proof),
+        driveGain: INTERACTIVE_PHASE.driveGain * momentumScale
+      },
+      lock: {
+        ...LOCK_PHASE,
+        baseExposure: LOCK_PHASE.baseExposure * exposureScale,
+        socialRate: LOCK_PHASE.socialRate * lerp(0.18, 1.04, proof * 0.55 + bridges * 0.45),
+        confCoupled: LOCK_PHASE.confCoupled * lerp(0.2, 1.03, understanding),
+        confSocialFactor: LOCK_PHASE.confSocialFactor * lerp(0.18, 1.02, proof),
+        proofGain: LOCK_PHASE.proofGain * lerp(0.18, 1.06, proof),
+        crossFactor: LOCK_PHASE.crossFactor * lerp(0.35, 0.98, bridgeReadiness),
+        bridgeBoost: LOCK_PHASE.bridgeBoost * lerp(0.32, 1.02, bridges),
+        influencerBoost: LOCK_PHASE.influencerBoost * lerp(0.92, 1.02, proof),
+        driveGain: LOCK_PHASE.driveGain * lerp(0.22, 1.02, adoptionReadiness)
+      }
+    };
+  }
+
+  const DEFAULT_SCENARIO = createScenario(DEFAULT_CONTROLS);
+
+  function phaseController(t, scenario) {
+    const activeScenario = scenario || DEFAULT_SCENARIO;
+    if (t < DYNAMIC_ON_SECONDS) return BASELINE_PHASE;
+    if (t < LOCK_SECONDS) return activeScenario.interactive;
+    return activeScenario.lock;
+  }
+
+  function activationMode(run, mode) {
+    if (mode.key !== "interactive" && mode.key !== "lock") {
+      return mode;
+    }
+    const ramp = smoothstep((run.t - DYNAMIC_ON_SECONDS) / 1.15);
+    return {
+      key: mode.key,
+      ramp,
+      baseExposure: lerp(STATIC_ANCHOR.baseExposure, mode.baseExposure, ramp),
+      socialRate: lerp(STATIC_ANCHOR.socialRate, mode.socialRate, ramp),
+      confBase: lerp(STATIC_ANCHOR.confBase, mode.confBase, ramp),
+      confCoupled: lerp(STATIC_ANCHOR.confCoupled, mode.confCoupled, ramp),
+      confSocialFactor: lerp(STATIC_ANCHOR.confSocialFactor, mode.confSocialFactor, ramp),
+      proofGain: lerp(STATIC_ANCHOR.proofGain, mode.proofGain, ramp),
+      crossFactor: lerp(STATIC_ANCHOR.crossFactor, mode.crossFactor, ramp),
+      bridgeBoost: lerp(STATIC_ANCHOR.bridgeBoost, mode.bridgeBoost, ramp),
+      influencerBoost: lerp(STATIC_ANCHOR.influencerBoost, mode.influencerBoost, ramp),
+      driveGain: lerp(STATIC_ANCHOR.driveGain, mode.driveGain, ramp)
+    };
+  }
+
+  function buildNetwork(N, k, p, seed, assignment) {
+    const rand = mulberry32(seed ^ 0x85ebca6b);
+    const neighbors = Array.from({ length: N }, () => []);
+    const edges = [];
+    const edgeSet = new Set();
+    const keyOf = (a, b) => (a < b ? a + "|" + b : b + "|" + a);
+
+    function addEdge(a, b, bridge) {
+      if (a === b) return false;
+      const key = keyOf(a, b);
+      if (edgeSet.has(key)) return false;
+      const cross = assignment[a] !== assignment[b];
+      edgeSet.add(key);
+      neighbors[a].push({ id: b, cross, bridge });
+      neighbors[b].push({ id: a, cross, bridge });
+      edges.push({ a, b, cross, bridge });
+      return true;
+    }
+
+    const half = Math.floor(k / 2);
+    for (let i = 0; i < N; i += 1) {
+      for (let j = 1; j <= half; j += 1) {
+        let target = (i + j) % N;
+        if (rand() < p) {
+          let found = false;
+          for (let tries = 0; tries < 36; tries += 1) {
+            const candidate = Math.floor(rand() * N);
+            if (candidate !== i && !edgeSet.has(keyOf(i, candidate))) {
+              target = candidate;
+              found = true;
+              break;
+            }
+          }
+          if (!found && edgeSet.has(keyOf(i, target))) continue;
+        }
+        addEdge(i, target, false);
+      }
+    }
+
+    const clusters = [[], [], [], []];
+    for (let i = 0; i < assignment.length; i += 1) {
+      clusters[assignment[i]].push(i);
+    }
+    const pairs = [
+      [0, 1],
+      [0, 2],
+      [1, 2],
+      [1, 3],
+      [2, 3]
+    ];
+    const bridgesPerPair = N > 300 ? 4 : 3;
+    for (let i = 0; i < pairs.length; i += 1) {
+      const [aSeg, bSeg] = pairs[i];
+      const groupA = clusters[aSeg];
+      const groupB = clusters[bSeg];
+      if (!groupA.length || !groupB.length) continue;
+      for (let b = 0; b < bridgesPerPair; b += 1) {
+        const a = groupA[Math.floor(rand() * groupA.length)];
+        const c = groupB[Math.floor(rand() * groupB.length)];
+        addEdge(a, c, true);
+      }
+    }
+
+    return { neighbors, edges };
+  }
+
+  function initAgents(network, seed, assignment, loopIndex) {
+    const rand = mulberry32(seed ^ ((loopIndex + 1) * 2654435761));
+    const N = assignment.length;
+    const agents = [];
+
+    for (let i = 0; i < N; i += 1) {
+      const segId = assignment[i];
+      const seg = SEGMENTS[segId];
+      const spread = segId === 2 ? 0.24 : 0.2;
+      const jitterX = (rand() - 0.5) * spread;
+      const jitterY = (rand() - 0.5) * spread;
+      const x = clamp(seg.center.x + jitterX, 0.06, 0.94);
+      const y = clamp(seg.center.y + jitterY, 0.1, 0.9);
+
+      const theta = lerp(seg.threshold[0], seg.threshold[1], rand());
+      const influence = lerp(seg.influence[0], seg.influence[1], rand());
+      const A = 0.008 + rand() * 0.018;
+      const C = 0.008 + rand() * 0.018;
+
+      agents.push({
+        id: i,
+        segment: segId,
+        x,
+        y,
+        A,
+        C,
+        theta,
+        influence,
+        adopted: false,
+        outBoost: 1,
+        pressure: 0,
+        pulse: 0,
+        state: "neutral",
+        degree: network.neighbors[i].length,
+        centrality: 0
+      });
+    }
+
+    const degrees = agents.map((a) => a.degree);
+    const maxDegree = Math.max(1, ...degrees);
+    for (let i = 0; i < agents.length; i += 1) {
+      agents[i].centrality = agents[i].degree / maxDegree;
+    }
+
+    const byDegree = agents
+      .map((a) => ({ id: a.id, d: a.degree }))
+      .sort((a, b) => b.d - a.d);
+    const influencerCount = Math.max(1, Math.floor(agents.length * 0.08));
+    const influencers = new Set(byDegree.slice(0, influencerCount).map((x) => x.id));
+
+    const innovators = agents
+      .filter((a) => a.segment === 0)
+      .sort((a, b) => b.centrality - a.centrality)
+      .map((a) => a.id);
+    const earlyNodes = agents
+      .filter((a) => a.segment === 1)
+      .sort((a, b) => b.centrality - a.centrality)
+      .map((a) => a.id);
+    const mainstreamNodes = agents
+      .filter((a) => a.segment === 2)
+      .sort((a, b) => b.centrality - a.centrality)
+      .map((a) => a.id);
+    const bridgeNodesSet = new Set();
+    for (let i = 0; i < network.edges.length; i += 1) {
+      const edge = network.edges[i];
+      if (edge.bridge) {
+        bridgeNodesSet.add(edge.a);
+        bridgeNodesSet.add(edge.b);
+      }
+    }
+    const bridgeNodes = [...bridgeNodesSet].sort((a, b) => agents[b].centrality - agents[a].centrality);
+    const launchSupportIds = [...new Set([
+      ...earlyNodes.slice(0, 16),
+      ...mainstreamNodes.slice(0, 14),
+      ...bridgeNodes.slice(0, 6)
+    ])];
+
+    return {
+      agents,
+      influencers,
+      bridgeNodeIds: bridgeNodes,
+      launchCoreIds: innovators.slice(0, 5),
+      launchBridgeIds: bridgeNodes.slice(0, 8),
+      launchSupportIds
+    };
+  }
+
+  function createRun(config, seed, loopIndex, scenario) {
+    const assignment = createSegmentAssignment(config.N, seed + loopIndex * 3);
+    const network = buildNetwork(config.N, config.k, config.p, seed + loopIndex * 5, assignment);
+    const init = initAgents(network, seed + loopIndex * 7, assignment, loopIndex);
+
+    return {
+      rand: mulberry32(seed ^ ((loopIndex + 31) * 2246822519)),
+      t: 0,
+      acc: 0,
+      aiTriggered: false,
+      history: [],
+      staticCurve: [],
+      staticFrozen: false,
+      adoptAtSix: 0,
+      staticSlope: 0.0028,
+      firstHalfTime: null,
+      scenario: scenario || DEFAULT_SCENARIO,
+      metrics: {
+        awareness: 0,
+        adoption: 0,
+        velocity: 0,
+        lift: 1,
+        projectedT50: null,
+        bridgeCoverage: 0
+      },
+      assignment,
+      network,
+      agents: init.agents,
+      nextA: new Float32Array(config.N),
+      nextC: new Float32Array(config.N),
+      driveBuffer: new Float32Array(config.N),
+      proofBuffer: new Float32Array(config.N),
+      forcedAware: new Uint8Array(config.N),
+      forcedConfident: new Uint8Array(config.N),
+      forcedAdopt: new Uint8Array(config.N),
+      influencers: init.influencers,
+      bridgeNodeIds: init.bridgeNodeIds,
+      launchCoreIds: init.launchCoreIds,
+      launchBridgeIds: init.launchBridgeIds,
+      launchSupportIds: init.launchSupportIds,
+      launchCoreSet: new Set(init.launchCoreIds),
+      launchBridgeSet: new Set(init.launchBridgeIds),
+      launchSupportSet: new Set(init.launchSupportIds)
+    };
+  }
+
+  function stateFromAgent(agent) {
+    if (agent.adopted) return "adopted";
+    if (agent.C > 0.56) return "confident";
+    const awareThreshold = agent.state === "aware" || agent.state === "confident"
+      ? AWARE_EXIT_THRESHOLD
+      : AWARE_ENTER_THRESHOLD;
+    if (agent.A > awareThreshold) return "aware";
+    return "neutral";
+  }
+
+  function targetAwarePct(progress, scenario) {
+    const profile = scenario || DEFAULT_SCENARIO;
+    const shifted = clamp(progress * profile.progressMultiplier + profile.awareShift, 0, 1);
+    return clamp(profile.awarenessCeiling * smoothstep((shifted - 0.04) / 0.30), 0, profile.awarenessCeiling);
+  }
+
+  function targetConfidentPct(progress, scenario) {
+    const profile = scenario || DEFAULT_SCENARIO;
+    const shifted = clamp(progress * profile.progressMultiplier + profile.confidentShift, 0, 1);
+    return clamp(profile.confidenceCeiling * smoothstep((shifted - 0.2) / 0.36), 0, profile.confidenceCeiling);
+  }
+
+  function targetAdoptPct(progress, scenario) {
+    const profile = scenario || DEFAULT_SCENARIO;
+    const shifted = clamp(progress * profile.progressMultiplier + profile.adoptShift, 0, 1);
+    if (shifted <= 0.1) return 0;
+    if (shifted < 0.86) {
+      return clamp(profile.adoptionCeiling * smoothstep((shifted - 0.1) / 0.76), 0, profile.adoptionCeiling);
+    }
+    return clamp(
+      profile.adoptionCeiling * (0.97 + 0.03 * smoothstep((shifted - 0.86) / 0.14)),
+      0,
+      profile.adoptionCeiling
+    );
+  }
+
+  function launchBiasForAgent(run, agentId, t) {
+    const decay = 1 - smoothstep((t - DYNAMIC_ON_SECONDS) / 2.2);
+    if (decay <= 0) return 0;
+    if (run.launchCoreSet && run.launchCoreSet.has(agentId)) return 1.0 * decay;
+    if (run.launchBridgeSet && run.launchBridgeSet.has(agentId)) return 0.7 * decay;
+    if (run.launchSupportSet && run.launchSupportSet.has(agentId)) return 0.36 * decay;
+    return 0;
+  }
+
+  function segmentStageValue(segmentId, progress, kind) {
+    return smoothstep(
+      (progress - SEGMENT_STAGE_STARTS[kind][segmentId]) / SEGMENT_STAGE_WIDTHS[kind][segmentId]
+    );
+  }
+
+  function applyLaunchWave(run, dt) {
+    if (run.t < DYNAMIC_ON_SECONDS || run.t > DYNAMIC_ON_SECONDS + 1.9) return;
+
+    const coreIds = run.launchCoreIds || [];
+    const bridgeIds = run.launchBridgeIds || [];
+    const supportIds = run.launchSupportIds || [];
+    const coreRamp = smoothstep((run.t - DYNAMIC_ON_SECONDS) / 0.7);
+    const bridgeRamp = smoothstep((run.t - (DYNAMIC_ON_SECONDS + 0.08)) / 0.92);
+    const supportRamp = smoothstep((run.t - (DYNAMIC_ON_SECONDS + 0.22)) / 1.1);
+
+    for (let i = 0; i < coreIds.length; i += 1) {
+      const agent = run.agents[coreIds[i]];
+      if (!agent || agent.adopted) continue;
+      const focus = i < 2 ? 1 : 0.72;
+      agent.A = clamp(agent.A + dt * (0.34 + coreRamp * 0.34 * focus), 0, 1);
+      agent.C = clamp(agent.C + dt * (0.1 + coreRamp * 0.12 * focus), 0, 1);
+      agent.pressure = clamp(agent.pressure + dt * (0.14 + coreRamp * 0.22 * focus), 0, 1);
+      agent.pulse = Math.max(agent.pulse, 0.32 + coreRamp * 0.3);
+      agent.state = stateFromAgent(agent);
+    }
+
+    for (let i = 0; i < bridgeIds.length; i += 1) {
+      const agent = run.agents[bridgeIds[i]];
+      if (!agent || agent.adopted) continue;
+      agent.A = clamp(agent.A + dt * (0.22 + bridgeRamp * 0.18), 0, 1);
+      agent.C = clamp(agent.C + dt * (0.035 + bridgeRamp * 0.06), 0, 1);
+      agent.pressure = clamp(agent.pressure + dt * (0.04 + bridgeRamp * 0.075), 0, 1);
+      agent.pulse = Math.max(agent.pulse, 0.22 + bridgeRamp * 0.2);
+      agent.state = stateFromAgent(agent);
+    }
+
+    for (let i = 0; i < supportIds.length; i += 1) {
+      const agent = run.agents[supportIds[i]];
+      if (!agent || agent.adopted) continue;
+      agent.A = clamp(agent.A + dt * (0.085 + supportRamp * 0.09), 0, 1);
+      agent.C = clamp(agent.C + dt * (0.012 + supportRamp * 0.028), 0, 1);
+      agent.pulse = Math.max(agent.pulse, 0.12 + supportRamp * 0.12);
+      agent.state = stateFromAgent(agent);
+    }
+  }
+
+  function stepSim(run, dt, mode) {
+    const activeMode = activationMode(run, mode);
+    const scenario = run.scenario || DEFAULT_SCENARIO;
+    const agents = run.agents;
+    const neighbors = run.network.neighbors;
+    const rng = run.rand;
+    const nextA = run.nextA;
+    const nextC = run.nextC;
+    const driveBuffer = run.driveBuffer;
+    const proofBuffer = run.proofBuffer;
+    const forcedAware = run.forcedAware;
+    const forcedConfident = run.forcedConfident;
+    const forcedAdopt = run.forcedAdopt;
+    forcedAware.fill(0);
+    forcedConfident.fill(0);
+    forcedAdopt.fill(0);
+
+    applyLaunchWave(run, dt * lerp(0.88, 1.2, scenario.understanding));
+
+    if (!run.aiTriggered && run.t >= DYNAMIC_ON_SECONDS) {
+      run.aiTriggered = true;
+      for (let i = 0; i < agents.length; i += 1) {
+        const a = agents[i];
+        a.C = clamp(a.C + 0.028 * a.A, 0, 1);
+      }
+    }
+
+    for (let i = 0; i < agents.length; i += 1) {
+      const agent = agents[i];
+      if (agent.adopted) {
+        agent.A = clamp(agent.A + 0.004, 0, 1);
+        agent.C = clamp(agent.C + 0.005, 0, 1);
+        agent.pulse = Math.max(0, agent.pulse - dt * 1.2);
+        continue;
+      }
+
+      const links = neighbors[i];
+      let socialAccum = 0;
+      for (let j = 0; j < links.length; j += 1) {
+        const link = links[j];
+        const n = agents[link.id];
+        if (!n.adopted) continue;
+
+        let edgeWeight = 1;
+        if (link.cross) edgeWeight *= activeMode.crossFactor;
+        if (link.bridge) edgeWeight *= activeMode.bridgeBoost;
+
+        let influence = n.influence * n.outBoost;
+        if (activeMode.influencerBoost > 1 && run.influencers.has(link.id)) {
+          influence *= activeMode.influencerBoost;
+        }
+        socialAccum += edgeWeight * influence;
+      }
+
+      const degreeNorm = Math.max(1, links.length * 0.95);
+      const socialProof = socialAccum / degreeNorm;
+      proofBuffer[i] = socialProof;
+      const dA = (activeMode.baseExposure + socialProof * activeMode.socialRate)
+        * (0.15 + activeMode.ramp * 0.08);
+      const A1 = clamp(agent.A + dA, 0, 1);
+
+      const modeBoost = activeMode.confCoupled > 0 ? activeMode.confCoupled * A1 : activeMode.confBase;
+      const neighborConfidence = socialProof * activeMode.socialRate * activeMode.confSocialFactor;
+      const C1 = clamp(agent.C + modeBoost + neighborConfidence, 0, 1);
+      const drive = A1 * C1 * (1 + socialProof * activeMode.proofGain) * activeMode.driveGain;
+      const pressure = lerp(agent.pressure, drive, 0.12 + activeMode.ramp * 0.09);
+
+      nextA[i] = A1;
+      nextC[i] = C1;
+      driveBuffer[i] = pressure;
+    }
+
+    const progress = clamp((run.t + dt) / HERO_SECONDS, 0, 1);
+    const awareProgress = clamp(progress * scenario.progressMultiplier + scenario.awareShift, 0, 1);
+    const confidentProgress = clamp(progress * scenario.progressMultiplier + scenario.confidentShift, 0, 1);
+    const adoptProgress = clamp(progress * scenario.progressMultiplier + scenario.adoptShift, 0, 1);
+    const targetAwareCount = Math.round(targetAwarePct(progress, scenario) * agents.length);
+    const targetConfCount = Math.round(targetConfidentPct(progress, scenario) * agents.length);
+    const targetAdoptCount = Math.round(targetAdoptPct(progress, scenario) * agents.length);
+    const awareCandidates = [];
+    const confidentCandidates = [];
+    const adoptCandidates = [];
+    let adoptedNow = 0;
+
+    for (let i = 0; i < agents.length; i += 1) {
+      const agent = agents[i];
+      if (agent.adopted) {
+        adoptedNow += 1;
+        continue;
+      }
+      const launchBias = launchBiasForAgent(run, agent.id, run.t);
+      const socialProof = proofBuffer[i] || 0;
+      const awareGate = segmentStageValue(agent.segment, awareProgress, "aware");
+      const confidentGate = segmentStageValue(agent.segment, confidentProgress, "confident");
+      const adoptGate = segmentStageValue(agent.segment, adoptProgress, "adopt");
+      awareCandidates.push({
+        id: i,
+        score:
+          nextA[i] +
+          socialProof * 0.78 +
+          launchBias * 0.58 +
+          agent.centrality * 0.16 +
+          awareGate * 1.35 -
+          (1 - awareGate) * 0.55
+      });
+      confidentCandidates.push({
+        id: i,
+        score:
+          nextC[i] +
+          nextA[i] * 0.42 +
+          socialProof * 0.46 +
+          launchBias * 0.34 +
+          agent.centrality * 0.14 +
+          confidentGate * 1.7 -
+          (1 - confidentGate) * 0.8
+      });
+      adoptCandidates.push({
+        id: i,
+        score:
+          driveBuffer[i] +
+          nextC[i] * 0.62 +
+          nextA[i] * 0.26 +
+          socialProof * 0.52 +
+          launchBias * 0.44 +
+          adoptGate * 2.6 -
+          (1 - adoptGate) * 1.9
+      });
+    }
+
+    awareCandidates.sort((a, b) => b.score - a.score);
+    confidentCandidates.sort((a, b) => b.score - a.score);
+    adoptCandidates.sort((a, b) => b.score - a.score);
+
+    const neededAware = Math.max(0, targetAwareCount - adoptedNow);
+    for (let i = 0; i < Math.min(neededAware, awareCandidates.length); i += 1) {
+      forcedAware[awareCandidates[i].id] = 1;
+    }
+
+    for (let i = 0; i < Math.min(targetConfCount, confidentCandidates.length); i += 1) {
+      const id = confidentCandidates[i].id;
+      forcedConfident[id] = 1;
+      forcedAware[id] = 1;
+    }
+
+    const neededAdopt = Math.max(0, targetAdoptCount - adoptedNow);
+    for (let i = 0; i < Math.min(neededAdopt, adoptCandidates.length); i += 1) {
+      const id = adoptCandidates[i].id;
+      forcedAdopt[id] = 1;
+      forcedConfident[id] = 1;
+      forcedAware[id] = 1;
+    }
+
+    for (let i = 0; i < agents.length; i += 1) {
+      const agent = agents[i];
+      if (agent.adopted) {
+        agent.pressure = clamp(agent.pressure + 0.015, 0, 1);
+        agent.state = "adopted";
+        continue;
+      }
+
+      agent.A = nextA[i];
+      agent.C = nextC[i];
+      agent.pressure = driveBuffer[i];
+      if (forcedAware[i]) {
+        agent.A = Math.max(agent.A, 0.46 + progress * 0.12);
+        agent.C = Math.max(agent.C, 0.05 + progress * 0.08);
+        agent.pulse = Math.max(agent.pulse, 0.18);
+      }
+      if (forcedConfident[i]) {
+        agent.A = Math.max(agent.A, 0.58);
+        agent.C = Math.max(agent.C, 0.6 + progress * 0.14);
+        agent.pressure = Math.max(agent.pressure, agent.theta * 0.78);
+        agent.pulse = Math.max(agent.pulse, 0.24);
+      }
+      if (forcedAdopt[i]) {
+        agent.adopted = true;
+        agent.A = 1;
+        agent.C = Math.max(agent.C, 0.84);
+        agent.pressure = Math.max(agent.pressure, agent.theta + 0.12);
+        agent.outBoost = 1.05;
+        agent.pulse = 1;
+        agent.state = "adopted";
+        continue;
+      }
+      if (agent.pressure > agent.theta) {
+        const exceed = agent.pressure - agent.theta;
+        const rampFactor = activeMode.key === "interactive" || activeMode.key === "lock"
+          ? (0.38 + activeMode.ramp * 0.28)
+          : 0.18;
+        const adoptRate = clamp((0.08 + exceed * 0.86) * rampFactor, 0.025, 0.68);
+        const adoptChance = 1 - Math.exp(-adoptRate * dt * 1.34);
+        if (rng() < adoptChance) {
+          agent.adopted = true;
+          agent.outBoost = 1.05;
+          agent.pulse = 1;
+        }
+      }
+      agent.state = stateFromAgent(agent);
+      agent.pulse = Math.max(0, agent.pulse - dt * 1.8);
+    }
+
+    run.t += dt;
+  }
+
+  function updateMetrics(run) {
+    const N = run.agents.length;
+    let aware = 0;
+    let adopted = 0;
+    let confident = 0;
+
+    for (let i = 0; i < N; i += 1) {
+      const agent = run.agents[i];
+      if (agent.A > AWARE_ENTER_THRESHOLD) aware += 1;
+      if (agent.C > 0.56 || agent.adopted) confident += 1;
+      if (agent.adopted) adopted += 1;
+    }
+
+    const awarePct = aware / N;
+    const adoptPct = adopted / N;
+    const curvePct = adoptPct;
+    const confidentPct = confident / N;
+
+    run.history.push({ t: run.t, curve: curvePct });
+    while (run.history.length && run.t - run.history[0].t > HERO_SECONDS + 0.5) run.history.shift();
+
+    let historyRef = null;
+    for (let i = run.history.length - 1; i >= 0; i -= 1) {
+      if (run.t - run.history[i].t >= 1.2) {
+        historyRef = run.history[i];
+        break;
+      }
+    }
+    let slope = 0;
+    if (historyRef) {
+      slope = Math.max(0, (curvePct - historyRef.curve) / Math.max(run.t - historyRef.t, 0.2));
+    }
+
+    if (run.t < DYNAMIC_ON_SECONDS) {
+      run.staticSlope = lerp(run.staticSlope, Math.max(0.0025, slope), 0.08);
+    }
+
+    if (!run.staticFrozen && run.t >= DYNAMIC_ON_SECONDS) {
+      run.staticFrozen = true;
+      run.adoptAtSix = curvePct;
+      run.staticSlope = clamp(run.staticSlope, 0.0023, 0.0088);
+    }
+
+    if (run.firstHalfTime == null && adoptPct >= 0.5) {
+      run.firstHalfTime = run.t;
+    }
+
+    let bridgeAdopted = 0;
+    const bridgeNodeIds = run.bridgeNodeIds || [];
+    for (let i = 0; i < bridgeNodeIds.length; i += 1) {
+      if (run.agents[bridgeNodeIds[i]] && run.agents[bridgeNodeIds[i]].adopted) {
+        bridgeAdopted += 1;
+      }
+    }
+
+    const bridgeCoverage = bridgeNodeIds.length ? bridgeAdopted / bridgeNodeIds.length : adoptPct;
+    const baseline = staticCurveAt(run, run.t);
+    const lift = baseline > 0.001 ? adoptPct / baseline : 1;
+    const projectedT50 = adoptPct >= 0.5
+      ? run.firstHalfTime
+      : (slope > 0.0005 ? run.t + (0.5 - adoptPct) / slope : null);
+
+    if (run.t < DYNAMIC_ON_SECONDS) run.staticCurve.push({ t: run.t, curve: curvePct });
+    run.metrics.awareness = lerp(run.metrics.awareness, awarePct, 0.12);
+    run.metrics.adoption = lerp(run.metrics.adoption, adoptPct, 0.12);
+    run.metrics.confidence = lerp(run.metrics.confidence || 0, confidentPct, 0.12);
+    run.metrics.velocity = lerp(run.metrics.velocity || 0, slope, 0.18);
+    run.metrics.lift = lift;
+    run.metrics.projectedT50 = projectedT50;
+    run.metrics.bridgeCoverage = bridgeCoverage;
+  }
+
+  function formatPercent(value) {
+    return Math.round(clamp(value || 0, 0, 1) * 100) + "%";
+  }
+
+  function formatVelocity(value) {
+    return Math.max(0, value || 0).toFixed(1).replace(/\.0$/, ".0") + " pts/s";
+  }
+
+  function formatLift(value) {
+    const safe = Number.isFinite(value) && value > 0 ? value : 1;
+    return (safe < 2 ? safe.toFixed(2) : safe.toFixed(1)) + "x";
+  }
+
+  function formatTimeValue(value) {
+    if (!Number.isFinite(value) || value == null) return "--";
+    if (value < 10) return value.toFixed(1) + "s";
+    return Math.round(value) + "s";
+  }
+
+  function phaseLabelForMode(mode) {
+    if (!mode || mode.key === "baseline") return "Baseline Market";
+    if (mode.key === "interactive") return "Understanding Injection";
+    return "Momentum Lock";
+  }
+
+  function describeScenario(controlState) {
+    const understanding = controlState.understanding >= 78
+      ? "high understanding lift"
+      : controlState.understanding <= 45
+        ? "light understanding lift"
+        : "moderate understanding lift";
+    const proof = controlState.proof >= 72
+      ? "strong proof effects"
+      : controlState.proof <= 40
+        ? "low proof effects"
+        : "balanced proof effects";
+    const bridges = controlState.bridges >= 70
+      ? "wide bridge reach"
+      : controlState.bridges <= 35
+        ? "narrow bridge reach"
+        : "medium bridge reach";
+    return understanding + ", " + proof + ", and " + bridges + ". Adjusting a slider restarts the run.";
+  }
+
+  function buildSummaryText(metrics, run, scenario) {
+    const adoption = Math.round(clamp(metrics.adoption || 0, 0, 1) * 100);
+    const awareness = Math.round(clamp(metrics.awareness || 0, 0, 1) * 100);
+    const bridge = Math.round(clamp(metrics.bridgeCoverage || 0, 0, 1) * 100);
+    const lift = formatLift(metrics.lift || 1);
+
+    if (run.t < DYNAMIC_ON_SECONDS) {
+      return "Awareness is building slowly at " + awareness + "% while diffusion stays concentrated in the earliest segment.";
+    }
+    if (run.t < LOCK_SECONDS) {
+      return "Understanding has pushed adoption to " + adoption + "%, with " + bridge + "% of bridge nodes already carrying momentum across segments.";
+    }
+    return "Momentum is stabilizing at " + adoption + "% adoption, currently " + lift + " above the static baseline under this scenario.";
+  }
+
+  function storyCopy(t) {
+    let text = COPY_TIMELINE[0].text;
+    for (let i = 0; i < COPY_TIMELINE.length; i += 1) {
+      if (t >= COPY_TIMELINE[i].t) text = COPY_TIMELINE[i].text;
+    }
+    return text;
+  }
+
+  function staticCurveAt(run, t) {
+    if (!run.staticCurve.length) return 0;
+    if (t <= DYNAMIC_ON_SECONDS) {
+      let best = run.staticCurve[0].curve || 0;
+      for (let i = 0; i < run.staticCurve.length; i += 1) {
+        if (run.staticCurve[i].t <= t) best = run.staticCurve[i].curve || 0;
+        else break;
+      }
+      return best;
+    }
+    return clamp(run.adoptAtSix + run.staticSlope * (t - DYNAMIC_ON_SECONDS), 0, 1);
+  }
+
+  function setCanvasSize(canvas, ctx, w, h) {
+    const dpr = window.devicePixelRatio || 1;
+    const nw = Math.max(1, Math.round(w * dpr));
+    const nh = Math.max(1, Math.round(h * dpr));
+    const resized = canvas.width !== nw || canvas.height !== nh;
+    if (resized) {
+      canvas.width = nw;
+      canvas.height = nh;
+    }
+    if (resized || canvas._simfluenceDpr !== dpr) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      canvas._simfluenceDpr = dpr;
+    }
+  }
+
+  function renderBackground(ctx, w, h, t) {
+    ctx.clearRect(0, 0, w, h);
+    const top = ctx.createLinearGradient(0, 0, w, h);
+    top.addColorStop(0, "#0A2540");
+    top.addColorStop(1, "#0D3156");
+    ctx.fillStyle = top;
+    ctx.fillRect(0, 0, w, h);
+
+    const glowMix = smoothstep((t - (DYNAMIC_ON_SECONDS - 0.4)) / 1.1);
+    ctx.globalAlpha = 0.16 + glowMix * 0.28;
+    const rightGlow = ctx.createRadialGradient(w * 0.8, h * 0.28, 50, w * 0.8, h * 0.28, w * 0.7);
+    rightGlow.addColorStop(0, "rgba(30,151,237,0.50)");
+    rightGlow.addColorStop(1, "rgba(30,151,237,0)");
+    ctx.fillStyle = rightGlow;
+    ctx.fillRect(0, 0, w, h);
+
+    const orangeTop = ctx.createLinearGradient(0, 0, 0, h * 0.2);
+    orangeTop.addColorStop(0, "rgba(255,127,34,0.14)");
+    orangeTop.addColorStop(1, "rgba(255,127,34,0)");
+    ctx.fillStyle = orangeTop;
+    ctx.fillRect(0, 0, w, h * 0.2);
+    ctx.globalAlpha = 1;
+  }
+
+  function drawAgentAvatar(ctx, x, y, size, color, alpha, state, pulse, faceSeed) {
+    const bodyR = size;
+    const glowR = bodyR + 4.2 + pulse * 4.4;
+    const tones = ["#F7D7BD", "#EEC7A3", "#E1B58D", "#D39E75"];
+    const tone = tones[Math.abs(faceSeed) % tones.length];
+
+    ctx.save();
+
+    // Outer glow.
+    ctx.fillStyle = color;
+    ctx.globalAlpha = alpha * 0.32;
+    ctx.beginPath();
+    ctx.arc(x, y, glowR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Outer state ring.
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, bodyR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Face circle.
+    ctx.globalAlpha = alpha * 0.98;
+    ctx.fillStyle = tone;
+    ctx.beginPath();
+    ctx.arc(x, y, bodyR * 0.78, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes.
+    ctx.fillStyle = "#0A2540";
+    const eyeR = Math.max(0.85, bodyR * 0.095);
+    const eyeY = y - bodyR * 0.12;
+    ctx.beginPath();
+    ctx.arc(x - bodyR * 0.22, eyeY, eyeR, 0, Math.PI * 2);
+    ctx.arc(x + bodyR * 0.22, eyeY, eyeR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Nose.
+    ctx.strokeStyle = "#8B5B3A";
+    ctx.lineWidth = Math.max(1, bodyR * 0.11);
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(x, y - bodyR * 0.02);
+    ctx.lineTo(x - bodyR * 0.04, y + bodyR * 0.18);
+    ctx.stroke();
+
+    // Smile.
+    ctx.strokeStyle = "#8B5B3A";
+    ctx.lineWidth = Math.max(1.1, bodyR * 0.13);
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.arc(x, y + bodyR * 0.16, bodyR * 0.28, Math.PI * 0.18, Math.PI * 0.82);
+    ctx.stroke();
+
+    // Accent ring for adopted state.
+    if (state === "adopted") {
+      ctx.globalAlpha = alpha * (0.50 + pulse * 0.28);
+      ctx.strokeStyle = "#FF7F22";
+      ctx.lineWidth = Math.max(1.2, bodyR * 0.2);
+      ctx.beginPath();
+      ctx.arc(x, y, bodyR + 2.2 + pulse * 2.2, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function renderRun(ctx, run, alpha, dims, fadeMix) {
+    if (!run || alpha <= 0.001) return;
+
+    const { w, h } = dims;
+    const isMobile = FORCED_LAYOUT_MODE === "desktop"
+      ? false
+      : (FORCED_LAYOUT_MODE === "compact" || FORCED_LAYOUT_MODE === "phone"
+        ? true
+        : w <= (IS_EMBEDDED ? EMBED_COMPACT_BREAKPOINT : MOBILE_BREAKPOINT));
+    const stagePadX = isMobile ? Math.max(6, w * 0.012) : Math.max(10, w * 0.016);
+    const stagePadTop = isMobile ? Math.max(10, h * 0.022) : Math.max(12, h * 0.02);
+    const stagePadBottom = isMobile ? Math.max(10, h * 0.028) : Math.max(14, h * 0.026);
+    const stageW = Math.max(1, w - stagePadX * 2);
+    const stageH = Math.max(1, h - stagePadTop - stagePadBottom);
+    let srcMinX = Infinity;
+    let srcMaxX = -Infinity;
+    let srcMinY = Infinity;
+    let srcMaxY = -Infinity;
+
+    for (let i = 0; i < SEGMENTS.length; i += 1) {
+      const seg = SEGMENTS[i];
+      const spread = (i === 2 ? 0.245 : 0.205) * (isMobile ? 1.04 : 1);
+      srcMinX = Math.min(srcMinX, seg.center.x - spread);
+      srcMaxX = Math.max(srcMaxX, seg.center.x + spread);
+      srcMinY = Math.min(srcMinY, seg.center.y - spread);
+      srcMaxY = Math.max(srcMaxY, seg.center.y + spread);
+    }
+
+    for (let i = 0; i < run.agents.length; i += 1) {
+      const agent = run.agents[i];
+      const agentMargin = isMobile ? 0.018 : 0.015;
+      srcMinX = Math.min(srcMinX, agent.x - agentMargin);
+      srcMaxX = Math.max(srcMaxX, agent.x + agentMargin);
+      srcMinY = Math.min(srcMinY, agent.y - agentMargin);
+      srcMaxY = Math.max(srcMaxY, agent.y + agentMargin);
+    }
+
+    srcMinX = clamp(srcMinX - 0.012, 0, 1);
+    srcMaxX = clamp(srcMaxX + 0.012, 0, 1);
+    srcMinY = clamp(srcMinY - 0.018, 0, 1);
+    srcMaxY = clamp(srcMaxY + 0.018, 0, 1);
+
+    const srcW = Math.max(0.42, srcMaxX - srcMinX);
+    const srcH = Math.max(0.42, srcMaxY - srcMinY);
+    const zoneScale = Math.min(stageW / srcW, stageH / srcH);
+    const projectX = (v) => stagePadX + ((clamp(v, srcMinX, srcMaxX) - srcMinX) / srcW) * stageW;
+    const projectY = (v) => stagePadTop + ((clamp(v, srcMinY, srcMaxY) - srcMinY) / srcH) * stageH;
+    const segmentTotals = [0, 0, 0, 0];
+    const segmentAdopted = [0, 0, 0, 0];
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    for (let i = 0; i < SEGMENTS.length; i += 1) {
+      const seg = SEGMENTS[i];
+      const x = projectX(seg.center.x);
+      const y = projectY(seg.center.y);
+      const spread = (i === 2 ? 0.245 : 0.205) * (isMobile ? 1.04 : 1);
+      const radius = spread * zoneScale + (isMobile ? 10 : 14);
+      ctx.fillStyle = seg.shade;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const edges = run.network.edges;
+    for (let i = 0; i < edges.length; i += 1) {
+      const edge = edges[i];
+      const a = run.agents[edge.a];
+      const b = run.agents[edge.b];
+      const sparseGate = ((edge.a * 17 + edge.b * 31) & 3) === 0;
+      const hot = a.adopted || b.adopted;
+      const frontier = a.adopted !== b.adopted;
+      if (!hot && !edge.bridge && !sparseGate) continue;
+
+      const ax = projectX(a.x);
+      const ay = projectY(a.y);
+      const bx = projectX(b.x);
+      const by = projectY(b.y);
+      let lineColor = "#FFFFFF";
+      let edgeAlpha = 0.045;
+      let lineWidth = 0.8;
+      if (edge.bridge) {
+        lineColor = "#1E96EC";
+        edgeAlpha = 0.2;
+        lineWidth = 1.15;
+      }
+      if (hot) {
+        lineColor = frontier ? "#FF7F22" : "#1E96EC";
+        edgeAlpha = frontier ? 0.32 : 0.25;
+        lineWidth = frontier ? 1.3 : 1.15;
+      }
+      ctx.strokeStyle = lineColor;
+      ctx.globalAlpha = alpha * edgeAlpha;
+      ctx.lineWidth = lineWidth;
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = alpha;
+
+    for (let i = 0; i < run.agents.length; i += 1) {
+      const agent = run.agents[i];
+      segmentTotals[agent.segment] += 1;
+      if (agent.adopted) segmentAdopted[agent.segment] += 1;
+
+      const x = projectX(agent.x);
+      const y = projectY(agent.y);
+      const size = isMobile ? (6.2 + agent.centrality * 5.1) : (5.6 + agent.centrality * 4.6);
+      const awarenessBlend = smoothstep((agent.A - 0.08) / 0.28);
+      let baseColor = mixColor(NODE_COLORS.neutral, NODE_COLORS.aware, awarenessBlend);
+      if (agent.state === "confident") {
+        const confidenceBlend = smoothstep((agent.C - 0.42) / 0.22);
+        baseColor = mixColor(baseColor, NODE_COLORS.confident, confidenceBlend);
+      } else if (agent.state === "adopted") {
+        baseColor = NODE_COLORS.adopted;
+      }
+      const color = fadeMix > 0 ? mixColor(baseColor, NODE_COLORS.neutral, fadeMix) : baseColor;
+      const nodeAlpha = agent.state === "neutral" ? 0.64 : (agent.state === "aware" ? 0.9 : 1);
+      drawAgentAvatar(ctx, x, y, size, color, alpha * nodeAlpha, agent.state, agent.pulse, agent.id);
+    }
+
+    ctx.globalAlpha = alpha;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const labelOffsets = isMobile ? MOBILE_LABEL_OFFSETS : DESKTOP_LABEL_OFFSETS;
+    for (let i = 0; i < SEGMENTS.length; i += 1) {
+      const seg = SEGMENTS[i];
+      const centerX = projectX(seg.center.x);
+      const centerY = projectY(seg.center.y);
+      const adoptedPct = segmentTotals[i] ? Math.round((segmentAdopted[i] / segmentTotals[i]) * 100) : 0;
+      const title = SEGMENT_LABELS[i];
+      const sub = adoptedPct + "% adopted";
+
+      const labelScale = isMobile
+        ? clamp(Math.min(w, h) / 560, 0.68, 0.84)
+        : clamp(Math.min(w, h) / 780, 0.95, 1.18);
+      const titleSize = Math.round((isMobile ? 16 : 18) * labelScale);
+      const subSize = Math.round((isMobile ? 13 : 17) * labelScale);
+      const padXBox = Math.round((isMobile ? 8 : 13) * labelScale);
+      const boxH = Math.round((isMobile ? 36 : 54) * labelScale);
+
+      ctx.font = '800 ' + titleSize + 'px "Manrope","IBM Plex Sans",sans-serif';
+      const tw = ctx.measureText(title).width;
+      ctx.font = '700 ' + subSize + 'px "Manrope","IBM Plex Sans",sans-serif';
+      const sw = ctx.measureText(sub).width;
+      const boxW = Math.max(isMobile ? 98 : 158, Math.max(tw, sw) + padXBox * 2);
+      const bx = clamp(centerX + labelOffsets[i].x - boxW / 2, 6, w - boxW - 6);
+      const by = clamp(
+        centerY + labelOffsets[i].y,
+        6,
+        h - boxH - 6
+      );
+
+      ctx.fillStyle = isMobile ? "rgba(10,37,64,0.76)" : "rgba(10,37,64,0.82)";
+      ctx.strokeStyle = "rgba(255,255,255,0.34)";
+      ctx.lineWidth = 1;
+      pathRoundedRect(ctx, bx, by, boxW, boxH, isMobile ? 10 : 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = '800 ' + titleSize + 'px "Manrope","IBM Plex Sans",sans-serif';
+      ctx.fillText(title, bx + boxW / 2, by + Math.round((isMobile ? 11 : 16) * labelScale));
+      ctx.fillStyle = adoptedPct >= 35 ? "#FF7F22" : "rgba(255,255,255,0.9)";
+      ctx.font = '700 ' + subSize + 'px "Manrope","IBM Plex Sans",sans-serif';
+      ctx.fillText(sub, bx + boxW / 2, by + Math.round((isMobile ? 24 : 38) * labelScale));
+    }
+
+    if (run.aiTriggered) {
+      const pulseAge = run.t - DYNAMIC_ON_SECONDS;
+      if (pulseAge >= 0 && pulseAge < 1.5) {
+        const p = pulseAge / 1.5;
+        const radius = (0.12 + p * 0.72) * Math.min(w, h);
+        const strength = 0.28 * (1 - p);
+        const cx = w * 0.5;
+        const cy = h * 0.52;
+        ctx.globalAlpha = alpha * strength;
+        ctx.strokeStyle = "#1E96EC";
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = alpha * strength * 0.65;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius * 0.7, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    ctx.restore();
+  }
+
+  function renderChart(canvas, ctx, run) {
+    if (!run) return;
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    setCanvasSize(canvas, ctx, w, h);
+
+    ctx.clearRect(0, 0, w, h);
+    const chartPulse = 0.5 + 0.5 * Math.sin(run.t * 7.5);
+    const flarePulse = 0.5 + 0.5 * Math.sin(run.t * 12.5);
+    const bg = ctx.createLinearGradient(0, 0, 0, h);
+    bg.addColorStop(0, "rgba(255,255,255,0.11)");
+    bg.addColorStop(1, "rgba(255,255,255,0.03)");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+
+    const scanX = (run.t * 92) % (w + 180) - 140;
+    const scan = ctx.createLinearGradient(scanX, 0, scanX + 140, 0);
+    scan.addColorStop(0, "rgba(30,151,237,0)");
+    scan.addColorStop(0.45, "rgba(30,151,237,0.08)");
+    scan.addColorStop(0.55, "rgba(255,255,255,0.14)");
+    scan.addColorStop(1, "rgba(30,151,237,0)");
+    ctx.fillStyle = scan;
+    ctx.fillRect(scanX, 0, 140, h);
+
+    ctx.strokeStyle = "rgba(255,255,255,0.24)";
+    ctx.lineWidth = 1.1;
+    for (let i = 1; i <= 3; i += 1) {
+      const y = (h / 4) * i;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    const mapX = (t) => (t / HERO_SECONDS) * w;
+    const mapY = (v) => h - clamp(v, 0, 1) * (h - 10) - 5;
+    const chartCurveAt = (t, curve) => clamp(Math.pow(clamp(curve, 0, 1), 0.82) * 1.18, 0, 1);
+    const yTop = mapY(1);
+    const yBottom = mapY(0);
+
+    const drawLevelBadge = (text, x, y, edgeColor, glowColor) => {
+      const badgeW = 46;
+      const badgeH = 20;
+      const edgePad = 14;
+      const bx = x;
+      const by = clamp(y - badgeH * 0.5, edgePad, h - badgeH - edgePad);
+      ctx.save();
+      ctx.shadowBlur = 16 + chartPulse * 6;
+      ctx.shadowColor = glowColor;
+      ctx.fillStyle = "rgba(10,37,64,0.92)";
+      ctx.strokeStyle = edgeColor;
+      ctx.lineWidth = 1.2;
+      pathRoundedRect(ctx, bx, by, badgeW, badgeH, 10);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.fillStyle = edgeColor;
+      ctx.beginPath();
+      ctx.arc(bx + 9, by + badgeH * 0.5, 3.1 + flarePulse * 1.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = '800 10px "Manrope","IBM Plex Sans",sans-serif';
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, bx + 16, by + badgeH * 0.5 + 0.5);
+      ctx.restore();
+    };
+
+    ctx.save();
+    ctx.setLineDash([7, 7]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(255,127,34,0.34)";
+    ctx.beginPath();
+    ctx.moveTo(58, yTop);
+    ctx.lineTo(w - 8, yTop);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(30,151,237,0.28)";
+    ctx.beginPath();
+    ctx.moveTo(58, yBottom);
+    ctx.lineTo(w - 8, yBottom);
+    ctx.stroke();
+    ctx.restore();
+
+    drawLevelBadge("100%", 8, yTop + 24, "#FF7F22", "rgba(255,127,34,0.42)");
+    drawLevelBadge("0%", 8, yBottom - 24, "#1E96EC", "rgba(30,151,237,0.38)");
+
+    const xAI = mapX(DYNAMIC_ON_SECONDS);
+    const xLock = mapX(LOCK_SECONDS);
+    ctx.setLineDash([3, 4]);
+    ctx.strokeStyle = "rgba(30,151,237,0.72)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(xAI, 0);
+    ctx.lineTo(xAI, h);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(255,127,34,0.55)";
+    ctx.beginPath();
+    ctx.moveTo(xLock, 0);
+    ctx.lineTo(xLock, h);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = "rgba(255,255,255,0.82)";
+    ctx.lineWidth = 1.7;
+    ctx.beginPath();
+    for (let i = 0; i <= 75; i += 1) {
+      const t = (i / 75) * HERO_SECONDS;
+      const y = mapY(chartCurveAt(t, staticCurveAt(run, t)));
+      const x = mapX(t);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    if (run.history.length > 1) {
+      const first = run.history[0];
+      const last = run.history[run.history.length - 1];
+
+      const sweepX = mapX(last.t);
+      const sweepW = 118 + chartPulse * 34;
+      const sweep = ctx.createLinearGradient(sweepX - sweepW / 2, 0, sweepX + sweepW / 2, 0);
+      sweep.addColorStop(0, "rgba(255,127,34,0)");
+      sweep.addColorStop(0.35, "rgba(30,151,237,0.18)");
+      sweep.addColorStop(0.5, "rgba(255,127,34,0.52)");
+      sweep.addColorStop(0.65, "rgba(30,151,237,0.18)");
+      sweep.addColorStop(1, "rgba(255,127,34,0)");
+      ctx.fillStyle = sweep;
+      ctx.fillRect(sweepX - sweepW / 2, 0, sweepW, h);
+
+      const beam = ctx.createLinearGradient(0, 0, 0, h);
+      beam.addColorStop(0, "rgba(255,127,34,0)");
+      beam.addColorStop(0.35, "rgba(30,151,237,0.16)");
+      beam.addColorStop(0.5, "rgba(255,127,34,0.28)");
+      beam.addColorStop(0.7, "rgba(30,151,237,0.12)");
+      beam.addColorStop(1, "rgba(255,127,34,0)");
+      ctx.fillStyle = beam;
+      ctx.fillRect(Math.max(0, sweepX - 12), 0, 24, h);
+
+      const area = ctx.createLinearGradient(0, 0, 0, h);
+      area.addColorStop(0, "rgba(30,151,237,0.72)");
+      area.addColorStop(0.5, "rgba(30,151,237,0.24)");
+      area.addColorStop(1, "rgba(30,151,237,0)");
+      ctx.fillStyle = area;
+      ctx.beginPath();
+      ctx.moveTo(mapX(first.t), h - 2);
+      for (let i = 0; i < run.history.length; i += 1) {
+        const p = run.history[i];
+        ctx.lineTo(mapX(p.t), mapY(chartCurveAt(p.t, p.curve || 0)));
+      }
+      ctx.lineTo(mapX(last.t), h - 2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(mapX(first.t), h - 2);
+      for (let i = 0; i < run.history.length; i += 1) {
+        const p = run.history[i];
+        ctx.lineTo(mapX(p.t), mapY(chartCurveAt(p.t, p.curve || 0)));
+      }
+      ctx.lineTo(mapX(last.t), h - 2);
+      ctx.closePath();
+      ctx.clip();
+
+      const sheenX = (run.t * 132) % (w + 220) - 180;
+      const sheen = ctx.createLinearGradient(sheenX, 0, sheenX + 170, 0);
+      sheen.addColorStop(0, "rgba(255,255,255,0)");
+      sheen.addColorStop(0.35, "rgba(30,151,237,0.08)");
+      sheen.addColorStop(0.5, "rgba(255,255,255,0.18)");
+      sheen.addColorStop(0.65, "rgba(255,127,34,0.12)");
+      sheen.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = sheen;
+      ctx.fillRect(sheenX, 0, 170, h);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.06)";
+      ctx.lineWidth = 1;
+      const diagShift = (run.t * 34) % 18;
+      for (let sx = -h; sx < w + h; sx += 18) {
+        ctx.beginPath();
+        ctx.moveTo(sx + diagShift, h);
+        ctx.lineTo(sx + 110 + diagShift, 0);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      const hotArea = ctx.createLinearGradient(0, 0, 0, h);
+      hotArea.addColorStop(0, "rgba(255,127,34,0.22)");
+      hotArea.addColorStop(0.45, "rgba(255,127,34,0.10)");
+      hotArea.addColorStop(1, "rgba(255,127,34,0)");
+      ctx.fillStyle = hotArea;
+      ctx.beginPath();
+      ctx.moveTo(mapX(first.t), h - 2);
+      for (let i = 0; i < run.history.length; i += 1) {
+        const p = run.history[i];
+        ctx.lineTo(mapX(p.t), mapY(chartCurveAt(p.t, p.curve || 0)));
+      }
+      ctx.lineTo(mapX(last.t), h - 2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.save();
+      ctx.shadowBlur = 38 + chartPulse * 16;
+      ctx.shadowColor = "#1E96EC";
+      ctx.strokeStyle = "rgba(30,151,237,0.62)";
+      ctx.lineWidth = 14 + chartPulse * 3.5;
+      ctx.beginPath();
+      for (let i = 0; i < run.history.length; i += 1) {
+        const p = run.history[i];
+        const x = mapX(p.t);
+        const y = mapY(chartCurveAt(p.t, p.curve || 0));
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.shadowBlur = 20 + flarePulse * 8;
+      ctx.shadowColor = "#FF7F22";
+      ctx.strokeStyle = "rgba(255,127,34,0.34)";
+      ctx.lineWidth = 7 + flarePulse * 2;
+      ctx.beginPath();
+      for (let i = 0; i < run.history.length; i += 1) {
+        const p = run.history[i];
+        const x = mapX(p.t);
+        const y = mapY(chartCurveAt(p.t, p.curve || 0));
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.strokeStyle = "#1E96EC";
+      ctx.lineWidth = 5.6;
+      ctx.beginPath();
+      for (let i = 0; i < run.history.length; i += 1) {
+        const p = run.history[i];
+        const x = mapX(p.t);
+        const y = mapY(chartCurveAt(p.t, p.curve || 0));
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.save();
+      ctx.setLineDash([10, 9]);
+      ctx.lineDashOffset = -run.t * 74;
+      ctx.strokeStyle = "rgba(255,255,255,0.86)";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      for (let i = 0; i < run.history.length; i += 1) {
+        const p = run.history[i];
+        const x = mapX(p.t);
+        const y = mapY(chartCurveAt(p.t, p.curve || 0));
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      const burstStart = Math.max(0, run.history.length - 22);
+      ctx.save();
+      ctx.shadowBlur = 16 + flarePulse * 8;
+      ctx.shadowColor = "#FF7F22";
+      ctx.strokeStyle = "rgba(255,127,34,0.92)";
+      ctx.lineWidth = 4.2;
+      ctx.beginPath();
+      for (let i = burstStart; i < run.history.length; i += 1) {
+        const p = run.history[i];
+        const x = mapX(p.t);
+        const y = mapY(chartCurveAt(p.t, p.curve || 0));
+        if (i === burstStart) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      const lx = mapX(last.t);
+      const ly = mapY(chartCurveAt(last.t, last.curve || 0));
+      const pulse = 0.5 + 0.5 * Math.sin(run.t * 12);
+
+      const signalIdx = [
+        Math.max(1, Math.floor((run.history.length - 1) * 0.26)),
+        Math.max(1, Math.floor((run.history.length - 1) * 0.54)),
+        Math.max(1, Math.floor((run.history.length - 1) * 0.8))
+      ];
+      for (let i = 0; i < signalIdx.length; i += 1) {
+        const idx = Math.min(run.history.length - 1, signalIdx[i]);
+        const p = run.history[idx];
+        const px = mapX(p.t);
+        const py = mapY(chartCurveAt(p.t, p.curve || 0));
+        const nodePulse = 0.5 + 0.5 * Math.sin(run.t * 6 + i * 1.7);
+        const nodeColor = i === signalIdx.length - 1 ? "#FF7F22" : "#1E96EC";
+        ctx.save();
+        ctx.shadowBlur = 12 + nodePulse * 6;
+        ctx.shadowColor = nodeColor;
+        ctx.strokeStyle = nodeColor;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.arc(px, py, 5 + nodePulse * 3, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      ctx.save();
+      ctx.setLineDash([6, 7]);
+      ctx.lineDashOffset = -run.t * 32;
+      ctx.strokeStyle = "rgba(30,151,237,0.34)";
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.moveTo(lx, 0);
+      ctx.lineTo(lx, h);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(255,127,34,0.26)";
+      ctx.beginPath();
+      ctx.moveTo(58, ly);
+      ctx.lineTo(w - 8, ly);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = "rgba(255,127,34," + (0.42 + pulse * 0.34).toFixed(3) + ")";
+      ctx.beginPath();
+      ctx.arc(lx, ly, 18 + pulse * 9, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(30,151,237," + (0.34 + flarePulse * 0.24).toFixed(3) + ")";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.arc(lx, ly, 24 + flarePulse * 9, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = "rgba(255,127,34," + (0.22 + pulse * 0.22).toFixed(3) + ")";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(lx, ly, 31 + pulse * 12, 0, Math.PI * 2);
+      ctx.stroke();
+
+      for (let s = 0; s < 12; s += 1) {
+        const ang = run.t * 8.5 + s * (Math.PI * 2 / 12);
+        const r = 12 + pulse * 12 + (s % 3) * 3;
+        const sx = lx + Math.cos(ang) * r;
+        const sy = ly + Math.sin(ang) * r;
+        ctx.fillStyle = s % 2 === 0
+          ? "rgba(255,127,34," + (0.52 - s * 0.025).toFixed(3) + ")"
+          : "rgba(30,151,237," + (0.36 - s * 0.02).toFixed(3) + ")";
+        ctx.beginPath();
+        ctx.arc(sx, sy, 1.8 + (s % 4) * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.beginPath();
+      ctx.arc(lx, ly, 5.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function initHero(containerEl, options) {
+    const config = Object.assign(
+      {
+        seed: BASE_SEED
+      },
+      options || {}
+    );
+
+    const canvas = containerEl.querySelector("#simCanvas");
+    const chartCanvas = containerEl.querySelector("#microChart");
+    const ctx = canvas.getContext("2d", { alpha: true });
+    const chartCtx = chartCanvas.getContext("2d", { alpha: true });
+
+    const ui = {
+      leftStack: containerEl.querySelector(".sf-left-stack"),
+      sideTop: containerEl.querySelector(".sf-side--top"),
+      howtoPanel: containerEl.querySelector("#howtoPanel"),
+      controlsPanel: containerEl.querySelector("#controlsPanel"),
+      outputsPanel: containerEl.querySelector("#outputsPanel"),
+      liveBadge: containerEl.querySelector("#liveBadge"),
+      simStatus: containerEl.querySelector("#simStatus"),
+      phaseLabel: containerEl.querySelector("#phaseLabel"),
+      phaseText: containerEl.querySelector("#phaseText"),
+      miniAware: containerEl.querySelector("#miniAware"),
+      miniAdopt: containerEl.querySelector("#miniAdopt"),
+      miniT50: containerEl.querySelector("#miniT50"),
+      awareV: containerEl.querySelector("#awareV"),
+      adoptV: containerEl.querySelector("#adoptV"),
+      velocityV: containerEl.querySelector("#velocityV"),
+      liftV: containerEl.querySelector("#liftV"),
+      t50V: containerEl.querySelector("#t50V"),
+      bridgeV: containerEl.querySelector("#bridgeV"),
+      understanding: containerEl.querySelector("#understanding"),
+      understandingV: containerEl.querySelector("#understandingV"),
+      proof: containerEl.querySelector("#proof"),
+      proofV: containerEl.querySelector("#proofV"),
+      bridges: containerEl.querySelector("#bridges"),
+      bridgesV: containerEl.querySelector("#bridgesV"),
+      pauseBtn: containerEl.querySelector("#pauseBtn"),
+      resetBtn: containerEl.querySelector("#resetBtn"),
+      speedSelect: containerEl.querySelector("#speedSelect"),
+      timeProgress: containerEl.querySelector("#timeProgress")
+    };
+
+    if (SAFE_EMBED_MODE) {
+      containerEl.classList.add("safe-embed");
+    }
+
+    let dims = { w: 0, h: 0 };
+    let rafId = 0;
+    let lastTs = 0;
+    let resizeObserver = null;
+    let embedMutationObserver = null;
+    let intersectionObserver = null;
+    let lastReportedHeight = 0;
+    let heightPostRaf = 0;
+    let embedHeightForceDispatch = false;
+    let embedHeightForceDispatchesRemaining = 0;
+    let useIntrinsicHeight = true;
+    let isDocumentVisible = !document.hidden;
+    let isInView = true;
+    let controlCommitTimer = 0;
+    const handleEmbedHeightLoad = () => scheduleEmbedHeightReport(true);
+    const handleEmbedHeightPageShow = () => scheduleEmbedHeightReport(true);
+    const handleEmbedReadyStateChange = () => scheduleEmbedHeightReport(true);
+
+    const state = {
+      running: true,
+      speed: Number(ui.speedSelect.value) || 1,
+      seed: config.seed,
+      controls: {
+        understanding: Number(ui.understanding.value) || DEFAULT_CONTROLS.understanding,
+        proof: Number(ui.proof.value) || DEFAULT_CONTROLS.proof,
+        bridges: Number(ui.bridges.value) || DEFAULT_CONTROLS.bridges
+      }
+    };
+
+    let runConfig = getRunConfig();
+    let scenario = createScenario(state.controls);
+    let activeRun = createRun(runConfig, state.seed, 0, scenario);
+    updateMetrics(activeRun);
+
+    const display = {
+      awareness: activeRun.metrics.awareness,
+      adoption: activeRun.metrics.adoption
+    };
+
+    function isPhoneViewport() {
+      if (FORCED_LAYOUT_MODE === "phone") return true;
+      if (FORCED_LAYOUT_MODE === "desktop" || FORCED_LAYOUT_MODE === "compact") return false;
+      return window.matchMedia("(max-width:" + PHONE_BREAKPOINT + "px)").matches;
+    }
+
+    function isCompactViewport() {
+      if (FORCED_LAYOUT_MODE === "desktop") return false;
+      if (FORCED_LAYOUT_MODE === "compact" || FORCED_LAYOUT_MODE === "phone") return true;
+      const threshold = IS_EMBEDDED ? EMBED_COMPACT_BREAKPOINT : MOBILE_BREAKPOINT;
+      return window.matchMedia("(max-width:" + threshold + "px)").matches;
+    }
+
+    function getRunConfig() {
+      const mobile = isCompactViewport();
+      return mobile ? { N: 240, k: 6, p: 0.06 } : { N: 420, k: 8, p: 0.08 };
+    }
+
+    function updateSizingMode() {
+      const fixedSize = FORCE_FIXED_SIZE;
+      containerEl.classList.toggle("fixed-size", fixedSize);
+      useIntrinsicHeight = !fixedSize;
+    }
+
+    function syncPanelOrder() {
+      if (!ui.leftStack || !ui.sideTop || !ui.howtoPanel || !ui.controlsPanel || !ui.outputsPanel) {
+        return;
+      }
+      if (isPhoneViewport()) {
+        if (ui.howtoPanel.parentElement !== ui.sideTop) {
+          ui.sideTop.appendChild(ui.howtoPanel);
+        }
+        if (ui.outputsPanel.parentElement !== ui.leftStack) {
+          ui.leftStack.appendChild(ui.outputsPanel);
+        }
+      } else {
+        if (ui.howtoPanel.parentElement !== ui.leftStack) {
+          ui.leftStack.appendChild(ui.howtoPanel);
+        }
+        if (ui.outputsPanel.parentElement !== ui.sideTop) {
+          ui.sideTop.appendChild(ui.outputsPanel);
+        }
+      }
+    }
+
+    function getElementOuterHeight(element) {
+      if (!element) return 0;
+      const styles = getComputedStyle(element);
+      return Math.ceil(
+        element.getBoundingClientRect().height +
+        (parseFloat(styles.marginTop) || 0) +
+        (parseFloat(styles.marginBottom) || 0)
+      );
+    }
+
+    function measureEmbedHeight() {
+      const body = document.body;
+      const html = document.documentElement;
+      const rootHeight = getElementOuterHeight(containerEl);
+      const docHeight = Math.ceil(Math.max(
+        rootHeight,
+        html ? html.scrollHeight : 0,
+        html ? html.offsetHeight : 0,
+        body ? body.scrollHeight : 0,
+        body ? body.offsetHeight : 0,
+        Math.ceil(body ? body.getBoundingClientRect().height : 0)
+      ));
+      return Math.max(MIN_WIDGET_HEIGHT, Math.ceil(docHeight));
+    }
+
+    function resize() {
+      dims.w = Math.max(1, canvas.clientWidth || containerEl.clientWidth);
+      dims.h = Math.max(1, canvas.clientHeight || containerEl.clientHeight);
+      setCanvasSize(canvas, ctx, dims.w, dims.h);
+      setCanvasSize(chartCanvas, chartCtx, chartCanvas.clientWidth, chartCanvas.clientHeight);
+      scheduleEmbedHeightReport(true);
+    }
+
+    function reportEmbedHeight(force) {
+      if (!useIntrinsicHeight) return;
+      const h = measureEmbedHeight();
+      const shouldForceDispatch = !!force || embedHeightForceDispatch || embedHeightForceDispatchesRemaining > 0;
+      embedHeightForceDispatch = false;
+      if (!shouldForceDispatch && Math.abs(h - lastReportedHeight) < 1) return;
+      lastReportedHeight = h;
+      if (embedHeightForceDispatchesRemaining > 0) {
+        embedHeightForceDispatchesRemaining -= 1;
+      }
+
+      if (!SAFE_EMBED_MODE) {
+        try {
+          const frame = window.frameElement;
+          if (frame) {
+            frame.style.height = h + "px";
+            frame.setAttribute("height", String(h));
+          }
+        } catch (err) {
+          void err;
+        }
+      }
+
+      if (IS_EMBEDDED) {
+        document.documentElement.style.minHeight = h + "px";
+        document.body.style.minHeight = h + "px";
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage(
+          {
+            type: "simfluence-widget:resize",
+            widget: "market-adoption-curve",
+            height: h,
+            mode: SAFE_EMBED_MODE ? "safe" : "default"
+          },
+          "*"
+        );
+      }
+    }
+
+    function scheduleEmbedHeightReport(force) {
+      if (!useIntrinsicHeight) return;
+      if (force) {
+        embedHeightForceDispatch = true;
+        embedHeightForceDispatchesRemaining = Math.max(embedHeightForceDispatchesRemaining, 8);
+      }
+      if (heightPostRaf) return;
+      heightPostRaf = requestAnimationFrame(() => {
+        heightPostRaf = 0;
+        reportEmbedHeight(force);
+      });
+    }
+
+    function canRender() {
+      return isDocumentVisible && isInView;
+    }
+
+    function shouldAnimate() {
+      return canRender() && state.running;
+    }
+
+    function stopLoop() {
+      if (!rafId) return;
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+      lastTs = 0;
+    }
+
+    function startLoop() {
+      if (rafId || !shouldAnimate()) return;
+      lastTs = 0;
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function syncPlayback() {
+      if (shouldAnimate()) startLoop();
+      else stopLoop();
+    }
+
+    function syncControlText() {
+      ui.understandingV.textContent = state.controls.understanding + "%";
+      ui.proofV.textContent = state.controls.proof + "%";
+      ui.bridgesV.textContent = state.controls.bridges + "%";
+    }
+
+    function resetRun(options) {
+      const resetOptions = Object.assign(
+        {
+          autoplay: true,
+          reshuffle: false
+        },
+        options || {}
+      );
+
+      if (resetOptions.reshuffle) {
+        state.seed = (state.seed + 1013904223) >>> 0;
+        if (!state.seed) state.seed = BASE_SEED + 17;
+      }
+
+      scenario = createScenario(state.controls);
+      activeRun = createRun(runConfig, state.seed, 0, scenario);
+      updateMetrics(activeRun);
+      display.awareness = activeRun.metrics.awareness;
+      display.adoption = activeRun.metrics.adoption;
+      state.running = !!resetOptions.autoplay;
+      lastTs = 0;
+      updateUI();
+      renderFrame();
+      syncPlayback();
+    }
+
+    function simulateStep(dt) {
+      if (!state.running) return;
+      activeRun.acc += dt;
+      while (activeRun.acc >= SIM_DT && activeRun.t < HERO_SECONDS) {
+        const mode = phaseController(activeRun.t, scenario);
+        stepSim(activeRun, SIM_DT, mode);
+        updateMetrics(activeRun);
+        activeRun.acc -= SIM_DT;
+      }
+      if (activeRun.t >= HERO_SECONDS) {
+        activeRun.t = HERO_SECONDS;
+        state.running = false;
+      }
+    }
+
+    function updateUI() {
+      const metrics = activeRun.metrics;
+      const completed = activeRun.t >= HERO_SECONDS - 0.0001;
+      const paused = !state.running && !completed;
+      const phase = phaseController(activeRun.t, scenario);
+
+      display.awareness = lerp(display.awareness, metrics.awareness, 0.28);
+      display.adoption = lerp(display.adoption, metrics.adoption, 0.28);
+
+      ui.phaseLabel.textContent = phaseLabelForMode(phase);
+      ui.phaseText.textContent = storyCopy(activeRun.t);
+      ui.timeProgress.style.width = (clamp(activeRun.t / HERO_SECONDS, 0, 1) * 100).toFixed(1) + "%";
+      ui.simStatus.textContent = completed ? "Complete" : (paused ? "Paused" : "Running");
+      ui.liveBadge.classList.toggle("is-paused", paused || completed);
+
+      ui.awareV.textContent = formatPercent(display.awareness);
+      ui.adoptV.textContent = formatPercent(display.adoption);
+      ui.velocityV.textContent = formatVelocity((metrics.velocity || 0) * 100);
+      ui.liftV.textContent = formatLift(metrics.lift || 1);
+      ui.t50V.textContent = formatTimeValue(metrics.projectedT50);
+      ui.bridgeV.textContent = formatPercent(metrics.bridgeCoverage);
+
+      ui.miniAware.textContent = formatPercent(display.awareness);
+      ui.miniAdopt.textContent = formatPercent(display.adoption);
+      ui.miniT50.textContent = formatTimeValue(metrics.projectedT50);
+
+      ui.pauseBtn.textContent = paused ? "Resume" : "Pause";
+      ui.pauseBtn.disabled = completed;
+
+      renderChart(chartCanvas, chartCtx, activeRun);
+      scheduleEmbedHeightReport();
+    }
+
+    function renderFrame() {
+      renderBackground(ctx, dims.w, dims.h, activeRun.t);
+      renderRun(ctx, activeRun, 1, dims, 0);
+    }
+
+    function frame(ts) {
+      if (!lastTs) lastTs = ts;
+      const dt = Math.min(0.05, (ts - lastTs) / 1000);
+      lastTs = ts;
+
+      simulateStep(dt * SIM_SPEED * state.speed);
+      updateUI();
+      renderFrame();
+      if (shouldAnimate()) {
+        rafId = requestAnimationFrame(frame);
+      } else {
+        rafId = 0;
+      }
+    }
+
+    function scheduleControlCommit() {
+      if (controlCommitTimer) {
+        clearTimeout(controlCommitTimer);
+      }
+      controlCommitTimer = window.setTimeout(() => {
+        controlCommitTimer = 0;
+        resetRun({ autoplay: true });
+      }, 140);
+    }
+
+    function handleResize() {
+      updateSizingMode();
+      syncPanelOrder();
+      const nextCfg = getRunConfig();
+      const changed = nextCfg.N !== runConfig.N || nextCfg.k !== runConfig.k || nextCfg.p !== runConfig.p;
+      runConfig = nextCfg;
+      resize();
+      if (changed) {
+        resetRun({ autoplay: state.running && activeRun.t < HERO_SECONDS });
+      } else {
+        updateUI();
+        renderFrame();
+      }
+    }
+
+    function handleVisibilityChange() {
+      isDocumentVisible = !document.hidden;
+      syncPlayback();
+    }
+
+    function handleIntersection(entries) {
+      isInView = !entries.length || entries[0].isIntersecting || entries[0].intersectionRatio > 0;
+      syncPlayback();
+    }
+
+    function handleMessage(event) {
+      const data = event.data;
+      if (!data || typeof data !== "object") return;
+      if (
+        data.type === "simfluence:request-height" ||
+        data.type === "widget:request-height" ||
+        data.type === "widget:request-resize" ||
+        data.type === "simfluence-widget:request-height" ||
+        data.type === "simfluence-widget:request-resize" ||
+        data.type === "market-adoption:request-height"
+      ) {
+        scheduleEmbedHeightReport(true);
+      }
+    }
+
+    window.addEventListener("resize", handleResize, { passive: true });
+    if (IS_EMBEDDED) {
+      embedHeightForceDispatchesRemaining = 8;
+    }
+    window.addEventListener("load", handleEmbedHeightLoad, { once: true });
+    window.addEventListener("pageshow", handleEmbedHeightPageShow);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("readystatechange", handleEmbedReadyStateChange);
+    window.setTimeout(() => scheduleEmbedHeightReport(true), 60);
+    window.setTimeout(() => scheduleEmbedHeightReport(true), 240);
+    window.setTimeout(() => scheduleEmbedHeightReport(true), 900);
+    window.setTimeout(() => scheduleEmbedHeightReport(true), 1600);
+    window.setTimeout(() => scheduleEmbedHeightReport(true), 2400);
+    window.setTimeout(() => scheduleEmbedHeightReport(true), 3600);
+    window.addEventListener("message", handleMessage);
+
+    if (IS_EMBEDDED && document.fonts && typeof document.fonts.ready?.then === "function") {
+      document.fonts.ready.then(() => scheduleEmbedHeightReport(true)).catch(() => {});
+    }
+
+    if ("ResizeObserver" in window) {
+      resizeObserver = new ResizeObserver(handleResize);
+      resizeObserver.observe(containerEl);
+      const shell = containerEl.closest(".sf-shell");
+      if (shell && shell !== containerEl) {
+        resizeObserver.observe(shell);
+      }
+    }
+    if (IS_EMBEDDED && "MutationObserver" in window) {
+      embedMutationObserver = new MutationObserver(() => scheduleEmbedHeightReport(true));
+      embedMutationObserver.observe(containerEl, {
+        childList: true,
+        subtree: true,
+        attributes: true
+      });
+    }
+    if ("IntersectionObserver" in window) {
+      intersectionObserver = new IntersectionObserver(handleIntersection, { threshold: 0.01 });
+      intersectionObserver.observe(containerEl);
+    }
+
+    ui.speedSelect.addEventListener("change", () => {
+      state.speed = Number(ui.speedSelect.value) || 1;
+      lastTs = 0;
+      syncPlayback();
+    });
+
+    ui.pauseBtn.addEventListener("click", () => {
+      if (activeRun.t >= HERO_SECONDS) return;
+      state.running = !state.running;
+      lastTs = 0;
+      updateUI();
+      renderFrame();
+      syncPlayback();
+    });
+
+    ui.resetBtn.addEventListener("click", () => {
+      resetRun({ autoplay: true });
+    });
+
+    const bindSlider = (key, element) => {
+      element.addEventListener("input", () => {
+        state.controls[key] = Number(element.value);
+        syncControlText();
+        scheduleControlCommit();
+      });
+    };
+
+    bindSlider("understanding", ui.understanding);
+    bindSlider("proof", ui.proof);
+    bindSlider("bridges", ui.bridges);
+
+    updateSizingMode();
+    syncPanelOrder();
+    syncControlText();
+    resize();
+    updateUI();
+    renderFrame();
+    syncPlayback();
+
+    return {
+      destroy() {
+        stopLoop();
+        if (controlCommitTimer) clearTimeout(controlCommitTimer);
+        window.removeEventListener("resize", handleResize);
+        window.removeEventListener("load", handleEmbedHeightLoad);
+        window.removeEventListener("pageshow", handleEmbedHeightPageShow);
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
+        document.removeEventListener("readystatechange", handleEmbedReadyStateChange);
+        window.removeEventListener("message", handleMessage);
+        if (resizeObserver) resizeObserver.disconnect();
+        if (embedMutationObserver) embedMutationObserver.disconnect();
+        if (intersectionObserver) intersectionObserver.disconnect();
+      }
+    };
+  }
+
+  window.initHero = initHero;
+
+  const heroEl = document.getElementById("simfluenceHero");
+  if (heroEl) initHero(heroEl, {});
+})();
+</script>
+</body>
+</html>
+

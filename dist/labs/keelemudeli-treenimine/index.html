@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How an LLM Learns | Training Tokens in Motion</title>
+  <meta
+    name="description"
+    content="A two-view visual explainer showing how an LLM is trained on text examples and how a trained LLM uses prompt context to generate an answer."
+  >
+  <meta name="theme-color" content="#eef6ff">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page-shell" id="pageShell">
+    <section class="explainer-widget" id="widget" aria-labelledby="pageTitle" data-mode="train">
+      <header class="widget-header">
+        <div class="title-cluster">
+          <p class="sample-badge">20s visual explainer sample</p>
+          <h1 id="pageTitle">How an LLM Learns During Training</h1>
+          <p class="subtitle"><span aria-hidden="true"></span><strong id="subtitleText">Training Tokens in Motion</strong><span aria-hidden="true"></span></p>
+        </div>
+        <div class="header-tools">
+          <div class="mode-switch" aria-label="Choose explainer view">
+            <button class="mode-button is-active" type="button" data-mode="train" aria-pressed="true">Train LLM</button>
+            <button class="mode-button" type="button" data-mode="use" aria-pressed="false">Use trained LLM</button>
+          </div>
+
+          <div class="training-status" aria-live="polite">
+            <span class="status-card">
+              <span class="status-label">
+                <span id="metricOneLabel">Epoch</span>
+                <span class="info-wrap">
+                  <span class="info-icon" tabindex="0" aria-describedby="epochTip">i</span>
+                  <span class="status-tooltip" id="epochTip" role="tooltip">One pass over many text examples. More epochs give the model more chances to improve.</span>
+                </span>
+              </span>
+              <strong id="epochLabel">01</strong>
+            </span>
+            <span class="status-card">
+              <span class="status-label">
+                <span id="metricTwoLabel">Loss</span>
+                <span class="info-wrap">
+                  <span class="info-icon" tabindex="0" aria-describedby="lossTip">i</span>
+                  <span class="status-tooltip" id="lossTip" role="tooltip">How wrong the predicted next token is compared with the target. Lower loss means less error.</span>
+                </span>
+              </span>
+              <strong id="lossLabel">0.82</strong>
+            </span>
+            <span class="status-card">
+              <span class="status-label">
+                <span id="metricThreeLabel">Target prob</span>
+                <span class="info-wrap">
+                  <span class="info-icon" tabindex="0" aria-describedby="accuracyTip">i</span>
+                  <span class="status-tooltip" id="accuracyTip" role="tooltip">The probability assigned to the known target token. During training this should rise.</span>
+                </span>
+              </span>
+              <strong id="accuracyLabel">34%</strong>
+            </span>
+          </div>
+
+          <section class="control-row" aria-label="Simulation controls">
+            <div class="button-group">
+              <button class="control-button control-button--start" id="startButton" type="button">
+                <span aria-hidden="true"></span>Start
+              </button>
+              <button class="control-button" id="pauseButton" type="button" aria-pressed="false">
+                <span aria-hidden="true"></span>Pause
+              </button>
+              <button class="control-button control-button--reset" id="resetButton" type="button">
+                <span aria-hidden="true"></span>Reset
+              </button>
+            </div>
+
+            <div class="progress-control">
+              <div class="progress-label">
+                <span id="progressLabelText">Training progress</span>
+                <strong id="progressPercent">0%</strong>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar">
+                <span id="progressFill"></span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </header>
+
+      <section class="visual-grid" aria-label="Chatbot language model explainer layout">
+        <section class="network-zone zone" aria-labelledby="networkTitle">
+          <div class="network-topline">
+            <div class="zone-heading">
+              <p id="zoneEyebrow">Text examples tune model weights</p>
+              <h2 id="networkTitle">LLM Training Loop</h2>
+            </div>
+            <div class="network-chip" id="weightChip">Prediction pass</div>
+          </div>
+
+          <div class="layer-labels" aria-hidden="true">
+            <span id="layerInputLabel">Training tokens</span>
+            <span id="layerHiddenLabel">Transformer layers</span>
+            <span id="layerOutputLabel">Target token</span>
+          </div>
+
+          <div class="network-stage">
+            <canvas
+              id="macroNetworkCanvas"
+              class="macro-network-canvas"
+              aria-hidden="true"
+            ></canvas>
+            <svg
+              id="networkSvg"
+              viewBox="0 0 1600 585"
+              role="img"
+              aria-label="Transformer training loop with text examples, model-weight updates, loss signals, and target-token probabilities"
+            ></svg>
+            <div class="chat-context chat-context--prompt" aria-hidden="true">
+              <span id="promptCardRole">Training example</span>
+              <strong id="promptCardText">A neural network learns by [MASK]</strong>
+              <i id="promptCardHint">Target token: adjusting</i>
+            </div>
+            <div class="chat-context chat-context--reply" aria-hidden="true">
+              <span id="replyCardRole">Teacher signal</span>
+              <strong id="replyCardText">Target: adjusting weights</strong>
+              <i id="replyCardHint">Loss pushes probability toward target</i>
+            </div>
+            <div class="phase-rail" aria-hidden="true">
+              <span class="phase-step is-active" data-phase="forward"><i></i><span>Predict</span></span>
+              <span class="phase-step" data-phase="backprop"><i></i><span>Backprop</span></span>
+              <span class="phase-step" data-phase="update"><i></i><span>Update</span></span>
+            </div>
+            <div class="flow-label flow-label--forward">Prediction forward</div>
+            <div class="flow-label flow-label--backward">Backpropagation</div>
+            <div class="flow-label flow-label--adjust">Weights update</div>
+          </div>
+
+          <p class="network-caption" id="networkCaption">From wrong guesses to stronger next-token predictions</p>
+        </section>
+      </section>
+
+      <section class="process-strip" aria-label="Training an LLM on text examples">
+        <div class="process-step"><i aria-hidden="true"></i><span>Example</span></div>
+        <b aria-hidden="true"></b>
+        <div class="process-step"><i aria-hidden="true"></i><span>Predict</span></div>
+        <b aria-hidden="true"></b>
+        <div class="process-step process-step--error"><i aria-hidden="true"></i><span>Measure loss</span></div>
+        <b aria-hidden="true"></b>
+        <div class="process-step process-step--adjust"><i aria-hidden="true"></i><span>Backprop</span></div>
+        <b aria-hidden="true"></b>
+        <div class="process-step process-step--improve"><i aria-hidden="true"></i><span>Update weights</span></div>
+      </section>
+
+      <section class="legend-card" aria-labelledby="legendTitle">
+        <div class="legend-heading">
+          <h3 id="legendTitle">Legend</h3>
+          <span id="legendSubtitle">LLM training terms and signals</span>
+        </div>
+        <dl class="legend-grid">
+          <div class="legend-item" data-legend-index="0">
+            <span class="legend-mark legend-mark--neuron" aria-hidden="true"></span>
+            <div>
+              <dt>Token activation</dt>
+              <dd>A circle showing how a training token is represented inside the model.</dd>
+            </div>
+          </div>
+          <div class="legend-item" data-legend-index="1">
+            <span class="legend-mark legend-mark--weight" aria-hidden="true"></span>
+            <div>
+              <dt>Model weight</dt>
+              <dd>A learned connection strength that changes slowly during training.</dd>
+            </div>
+          </div>
+          <div class="legend-item" data-legend-index="2">
+            <span class="legend-mark legend-mark--forward" aria-hidden="true"></span>
+            <div>
+              <dt>Prediction pass</dt>
+              <dd>The model guesses the next token from the training text.</dd>
+            </div>
+          </div>
+          <div class="legend-item" data-legend-index="3">
+            <span class="legend-mark legend-mark--error" aria-hidden="true"></span>
+            <div>
+              <dt>Backpropagation</dt>
+              <dd>Loss gradients flow backward through layers to calculate weight changes.</dd>
+            </div>
+          </div>
+          <div class="legend-item" data-legend-index="4">
+            <span class="legend-mark legend-mark--update" aria-hidden="true"></span>
+            <div>
+              <dt>Weight update</dt>
+              <dd>Backprop nudges weights so useful paths strengthen and weak paths fade.</dd>
+            </div>
+          </div>
+          <div class="legend-item" data-legend-index="5">
+            <span class="legend-mark legend-mark--metric" aria-hidden="true"></span>
+            <div>
+              <dt>Epoch, loss, target prob</dt>
+              <dd>Epoch counts passes; loss should fall; target-token probability should rise.</dd>
+            </div>
+          </div>
+        </dl>
+      </section>
+
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

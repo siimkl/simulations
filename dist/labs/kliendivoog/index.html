@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Funnel Simulation | Conversion Leak Simulator</title>
+  <meta
+    name="description"
+    content="Interactive customer funnel simulation showing how traffic moves through click, signup, demo, purchase, and repeat stages on a layered canvas."
+  />
+  <link rel="stylesheet" href="styles.css?v=20260316ad" />
+</head>
+<body>
+  <div class="shell">
+    <main class="widget" id="widgetRoot">
+      <header class="panel hero">
+        <div class="hero-top">
+          <div class="hero-copy">
+            <p class="eyebrow">Customer Funnel Simulation | Conversion Flow Canvas</p>
+            <h1>Customer Flow Engine: where funnel leaks compound</h1>
+            <p class="hero-text">
+              Every dot is a prospect. Impressions drift through the ad cloud, collide with a click gate,
+              churn in signup, queue for demos, and either turn into buyers or fall into visible leak zones.
+              Small rate changes upstream produce outsized effects downstream.
+            </p>
+          </div>
+          <div class="hero-actions">
+            <div class="runtime-chip">
+              <span>Current preset</span>
+              <strong id="presetLabel">Medium Traffic</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-card">
+          <div class="progress-meta">
+            <div class="progress-item">
+              <span>Run Window</span>
+              <strong id="clockLabel">00:00 / 01:30</strong>
+            </div>
+            <div class="progress-item progress-item-wide">
+              <span>Live Read</span>
+              <strong id="heroNarrative">Most traffic is leaking at the click gate.</strong>
+            </div>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </header>
+
+      <section class="main-grid">
+        <div class="stage-stack">
+          <section class="stage-panel" aria-label="Customer journey canvas">
+            <div class="canvas-shell" id="canvasShell">
+              <canvas id="bgCanvas" aria-hidden="true"></canvas>
+              <canvas
+                id="fxCanvas"
+                role="img"
+                aria-label="Customer funnel simulation showing prospects moving through click, signup, demo, purchase, and repeat stages"
+              ></canvas>
+              <div class="legend-row" aria-label="Journey legend">
+                <span class="legend-item legend-stage legend-ad"><i class="legend-dot adcloud"></i> Ad Cloud</span>
+                <span class="legend-item legend-stage legend-click"><i class="legend-dot clickgate"></i> Click Gate</span>
+                <span class="legend-item legend-stage legend-signup"><i class="legend-dot signuppool"></i> Signup Pool</span>
+                <span class="legend-item legend-stage legend-demo"><i class="legend-dot demobridge"></i> Demo Bridge</span>
+                <span class="legend-item legend-stage legend-purchase"><i class="legend-dot purchaseengine"></i> Purchase Engine</span>
+                <span class="legend-item legend-stage legend-loyalty"><i class="legend-dot loyaltyloop"></i> Loyalty Loop</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel metrics-panel" aria-labelledby="metricsTitle">
+            <div class="section-head compact">
+              <div class="section-copy-block">
+                <p class="section-kicker">Live Counters</p>
+                <h2 id="metricsTitle">What the funnel is producing right now</h2>
+                <p class="section-copy">
+                  Counts update from actual simulated outcomes, not target assumptions.
+                </p>
+              </div>
+            </div>
+
+            <div class="metrics-layout">
+              <div class="metric-grid">
+                <article class="metric-card">
+                  <span>Impressions</span>
+                  <strong id="metricImpressions">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Clicks</span>
+                  <strong id="metricClicks">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Signups</span>
+                  <strong id="metricSignups">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Demo bookings</span>
+                  <strong id="metricDemos">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Purchases</span>
+                  <strong id="metricPurchases">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Repeat purchases</span>
+                  <strong id="metricRepeats">0</strong>
+                </article>
+                <article class="metric-card highlight">
+                  <span>Revenue</span>
+                  <strong id="metricRevenue">$0</strong>
+                </article>
+              </div>
+
+              <div class="rate-table" role="table" aria-label="Actual stage conversion rates">
+                <div class="rate-row header" role="row">
+                  <span role="columnheader">Stage</span>
+                  <span role="columnheader">Actual</span>
+                  <span role="columnheader">Target</span>
+                </div>
+                <div class="rate-row" role="row">
+                  <span>CTR</span>
+                  <strong id="actualCtr">0.0%</strong>
+                  <small id="targetCtr">8.0%</small>
+                </div>
+                <div class="rate-row" role="row">
+                  <span>Signup</span>
+                  <strong id="actualSignup">0.0%</strong>
+                  <small id="targetSignup">15.0%</small>
+                </div>
+                <div class="rate-row" role="row">
+                  <span>Demo book</span>
+                  <strong id="actualDemo">0.0%</strong>
+                  <small id="targetDemo">40.0%</small>
+                </div>
+                <div class="rate-row" role="row">
+                  <span>Close</span>
+                  <strong id="actualClose">0.0%</strong>
+                  <small id="targetClose">25.0%</small>
+                </div>
+                <div class="rate-row" role="row">
+                  <span>Repeat</span>
+                  <strong id="actualRepeat">0.0%</strong>
+                  <small id="targetRepeat">10.0%</small>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="side-stack">
+          <section class="panel controls-panel" aria-labelledby="controlsTitle">
+            <div class="section-head compact">
+              <div class="section-copy-block">
+                <p class="section-kicker">Controls</p>
+                <h2 id="controlsTitle">What shapes this run</h2>
+                <p class="section-copy">
+                  Traffic, stage rates, throughput, and revenue values all feed the live funnel.
+                </p>
+              </div>
+            </div>
+
+            <div class="control-block">
+              <div class="control-select-grid">
+                <label class="select-row" for="presetSelect">
+                  <select id="presetSelect" aria-label="Traffic preset">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </label>
+                <label class="select-row" for="speedSelect">
+                  <select id="speedSelect" aria-label="Simulation speed">
+                    <option value="0.5">Speed 0.5x</option>
+                    <option value="1">Speed 1x</option>
+                    <option value="2" selected>Speed 2x</option>
+                    <option value="4">Speed 4x</option>
+                    <option value="10">Speed 10x</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="action-row">
+                <button class="primary-button" id="runButtonSecondary" type="button" aria-pressed="true">Pause</button>
+                <button class="secondary-button" id="stepButton" type="button">Step</button>
+              </div>
+            </div>
+
+            <div class="slider-stack">
+              <label class="slider-row compact" for="impressionsInput">
+                <span class="slider-header">
+                  <span class="slider-label">
+                    Impressions / second
+                    <button
+                      class="info-dot"
+                      type="button"
+                      tabindex="-1"
+                      aria-hidden="true"
+                      data-tip="Higher traffic fills the top of the funnel faster and stresses downstream capacity."
+                    >i</button>
+                  </span>
+                  <strong class="slider-value" id="impressionsValue">50</strong>
+                </span>
+                <input id="impressionsInput" data-setting="impressionsPerSecond" type="range" min="1" max="60" step="1" value="50" />
+              </label>
+
+              <label class="slider-row" for="clickInput">
+                <span class="slider-header">
+                  <span class="slider-label">
+                    Click-through rate
+                    <button
+                      class="info-dot"
+                      type="button"
+                      tabindex="-1"
+                      aria-hidden="true"
+                      data-tip="This is the first major filter. Small CTR gains usually compound hardest."
+                    >i</button>
+                  </span>
+                  <strong class="slider-value" id="clickValue">8.0%</strong>
+                </span>
+                <input id="clickInput" data-setting="clickRate" type="range" min="1" max="20" step="0.1" value="8" />
+              </label>
+
+              <label class="slider-row" for="signupInput">
+                <span class="slider-header">
+                  <span class="slider-label">Signup rate</span>
+                  <strong class="slider-value" id="signupValue">15.0%</strong>
+                </span>
+                <input id="signupInput" data-setting="signupRate" type="range" min="1" max="30" step="0.1" value="15" />
+              </label>
+
+              <label class="slider-row" for="demoInput">
+                <span class="slider-header">
+                  <span class="slider-label">Demo booking rate</span>
+                  <strong class="slider-value" id="demoValue">40.0%</strong>
+                </span>
+                <input id="demoInput" data-setting="demoRate" type="range" min="5" max="80" step="0.5" value="40" />
+              </label>
+
+              <label class="slider-row" for="bridgeInput">
+                <span class="slider-header">
+                  <span class="slider-label">
+                    Demo throughput / second
+                    <button
+                      class="info-dot"
+                      type="button"
+                      tabindex="-1"
+                      aria-hidden="true"
+                      data-tip="This caps how many booked demos can cross the bridge per simulated second."
+                    >i</button>
+                  </span>
+                  <strong class="slider-value" id="bridgeValue">4</strong>
+                </span>
+                <input id="bridgeInput" data-setting="bridgeCapacity" type="range" min="1" max="10" step="1" value="4" />
+              </label>
+
+              <label class="slider-row" for="closeInput">
+                <span class="slider-header">
+                  <span class="slider-label">Sales close rate</span>
+                  <strong class="slider-value" id="closeValue">25.0%</strong>
+                </span>
+                <input id="closeInput" data-setting="closeRate" type="range" min="5" max="60" step="0.5" value="25" />
+              </label>
+
+              <label class="slider-row" for="repeatInput">
+                <span class="slider-header">
+                  <span class="slider-label">Repeat purchase rate</span>
+                  <strong class="slider-value" id="repeatValue">10.0%</strong>
+                </span>
+                <input id="repeatInput" data-setting="repeatRate" type="range" min="1" max="100" step="0.5" value="10" />
+              </label>
+
+              <div class="value-input-grid" aria-label="Revenue inputs">
+                <label class="value-field" for="purchaseValueInput">
+                  <span class="value-field-label">First purchase value</span>
+                  <span class="value-input-shell">
+                    <span class="value-prefix">$</span>
+                    <input id="purchaseValueInput" type="number" min="0" step="50" value="1200" inputmode="numeric" />
+                  </span>
+                </label>
+                <label class="value-field" for="repeatValueInput">
+                  <span class="value-field-label">Repeat purchase value</span>
+                  <span class="value-input-shell">
+                    <span class="value-prefix">$</span>
+                    <input id="repeatValueInput" type="number" min="0" step="25" value="540" inputmode="numeric" />
+                  </span>
+                </label>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="bottom-grid">
+        <section class="panel intelligence-panel" aria-labelledby="intelligenceTitle">
+          <div class="section-head compact">
+            <div class="section-copy-block">
+              <p class="section-kicker">Interpretation</p>
+              <h2 id="intelligenceTitle">What the run is telling you</h2>
+              <p class="section-copy">
+                These cards turn the particle motion into business language.
+              </p>
+            </div>
+          </div>
+
+          <div class="intel-grid">
+            <article class="intel-card">
+              <span>Current bottleneck</span>
+              <strong id="bottleneckTitle">Click Gate</strong>
+              <p id="bottleneckCopy">The first leak is currently eliminating most future revenue.</p>
+            </article>
+            <article class="intel-card">
+              <span>Repeat buyers / impression</span>
+              <strong id="multiplierValue">0.00%</strong>
+              <p id="multiplierCopy">This is the full-funnel downstream yield.</p>
+            </article>
+            <article class="intel-card">
+              <span>Demo bridge pressure</span>
+              <strong id="queueValue">0 waiting</strong>
+              <p id="queueCopy">Capacity is currently ahead of demand.</p>
+            </article>
+            <article class="intel-card">
+              <span>Revenue / 1000 impressions</span>
+              <strong id="efficiencyValue">$0</strong>
+              <p id="efficiencyCopy">This shows how effectively traffic is being monetized.</p>
+            </article>
+            <article class="intel-card">
+              <span>Demo sessions / booked</span>
+              <strong id="demoHeldValue">0.0%</strong>
+              <p id="demoHeldCopy">Booked demos are still making it through to actual sessions.</p>
+            </article>
+            <article class="intel-card">
+              <span>Repeat revenue share</span>
+              <strong id="repeatRevenueValue">0.0%</strong>
+              <p id="repeatRevenueCopy">Repeat buyers are not contributing revenue yet.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel leak-panel" aria-labelledby="leakTitle">
+          <div class="section-head compact">
+            <div class="section-copy-block">
+              <p class="section-kicker">Leak Stack</p>
+              <h2 id="leakTitle">Where prospects are falling out</h2>
+              <p class="section-copy">
+                Visible drop-off zones on the canvas roll up into these leak counters.
+              </p>
+            </div>
+          </div>
+
+          <div class="leak-list">
+            <div class="leak-row">
+              <div class="leak-copy">
+                <span>Click gate misses</span>
+                <strong id="leakLabel0">0 lost</strong>
+              </div>
+              <div class="leak-track"><div class="leak-fill leak-click" id="leakFill0"></div></div>
+            </div>
+            <div class="leak-row">
+              <div class="leak-copy">
+                <span>Signup pool exits</span>
+                <strong id="leakLabel1">0 lost</strong>
+              </div>
+              <div class="leak-track"><div class="leak-fill leak-signup" id="leakFill1"></div></div>
+            </div>
+            <div class="leak-row">
+              <div class="leak-copy">
+                <span>Demo queue drop-offs</span>
+                <strong id="leakLabel2">0 lost</strong>
+              </div>
+              <div class="leak-track"><div class="leak-fill leak-demo" id="leakFill2"></div></div>
+            </div>
+            <div class="leak-row">
+              <div class="leak-copy">
+                <span>Purchase engine dissolves</span>
+                <strong id="leakLabel3">0 lost</strong>
+              </div>
+              <div class="leak-track"><div class="leak-fill leak-purchase" id="leakFill3"></div></div>
+            </div>
+            <div class="leak-row">
+              <div class="leak-copy">
+                <span>Loyalty loop churn</span>
+                <strong id="leakLabel4">0 lost</strong>
+              </div>
+              <div class="leak-track"><div class="leak-fill leak-repeat" id="leakFill4"></div></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <div class="summary-backdrop" id="summaryBackdrop" hidden>
+        <section class="summary-card" role="dialog" aria-modal="false" aria-labelledby="summaryTitle">
+          <button class="summary-close" id="summaryCloseButton" type="button" aria-label="Close run summary">X</button>
+          <p class="summary-kicker">End of Run</p>
+          <h2 id="summaryTitle">Small leaks compounded into a very thin repeat-buyer stream.</h2>
+          <p class="summary-lead" id="summaryLead">
+            Out of 0 impressions, only 0 prospects reached purchase. The downstream multiplier stayed fragile because the
+            largest leak formed earlier in the journey.
+          </p>
+
+          <div class="summary-grid">
+            <article class="summary-stat">
+              <span>Peak queue</span>
+              <strong id="summaryPeakQueue">0</strong>
+            </article>
+            <article class="summary-stat">
+              <span>Purchases / impression</span>
+              <strong id="summaryPurchaseYield">0.00%</strong>
+            </article>
+            <article class="summary-stat">
+              <span>Repeat / purchase</span>
+              <strong id="summaryRepeatYield">0.00%</strong>
+            </article>
+            <article class="summary-stat highlight">
+              <span>Total revenue</span>
+              <strong id="summaryRevenue">$0</strong>
+            </article>
+          </div>
+
+          <p class="summary-foot" id="summaryFoot">
+            Replay to see a fresh run with the current settings.
+          </p>
+
+          <div class="summary-actions">
+            <button class="primary-button" id="summaryReplayButton" type="button">Replay Run</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="sr-only" id="ariaLive" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <script src="script.js?v=20260316ae"></script>
+</body>
+</html>

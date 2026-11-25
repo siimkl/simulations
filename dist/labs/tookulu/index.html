@@ -1,0 +1,268 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Automated Workflow Time Cost Simulator</title>
+  <meta
+    name="description"
+    content="Automated workflow time cost simulator comparing manual workflow vs automated workflow for 500-day hours saved, follow-up work reduction, labor cost savings, queue backlog reduction, and FTE capacity recovered."
+  />
+  <meta
+    name="keywords"
+    content="automated workflow time cost simulator, automation ROI calculator, manual workflow vs automated workflow, hours saved, labor cost saved, queue backlog, FTE capacity recovered"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="widget-shell">
+    <section class="panel controls-panel" aria-labelledby="simTitle">
+      <p class="badge">Interactive Simulation</p>
+      <h1 id="simTitle">Automated Workflow Time Cost Simulator</h1>
+      <p id="simSubtitle" class="subtitle">Compare manual workflow vs automated workflow for 500-day hours saved, follow-up work, labor cost impact, and queue backlog.</p>
+
+      <div class="mode-banner compare" id="modeBanner" aria-live="polite">
+        <h2 id="modeTitle">Compare Manual Workflow vs Automated Workflow</h2>
+        <p id="modeText">Run the same team workload side by side to measure automated workflow time savings, follow-up work reduction, labor cost savings, and queue backlog reduction.</p>
+      </div>
+
+      <p class="outcome" id="outcomeText" aria-live="polite">Automated Workflow currently saves 0 hours and $0 in labor cost across this 500-day scenario.</p>
+
+      <form id="controlForm" class="controls" aria-label="Simulation controls">
+        <div class="control hasTip">
+          <label for="teamSize">
+            <span class="labelWithInfo">Team size<button class="infoBtn" data-tip="tipTeamSize" aria-controls="tipTeamSize" aria-expanded="false" aria-label="Team size info" type="button">i</button></span>
+            <output id="teamSizeValue" for="teamSize">25</output>
+          </label>
+          <input id="teamSize" name="teamSize" type="range" min="5" max="100" value="25" step="1" />
+          <div class="tip" id="tipTeamSize">Number of people handling the same recurring workflow. A larger team increases both manual workflow cost and the upside from automated workflow.</div>
+        </div>
+
+        <div class="control hasTip">
+          <label for="tasksPerDay">
+            <span class="labelWithInfo">Tasks per day<button class="infoBtn" data-tip="tipTasksPerDay" aria-controls="tipTasksPerDay" aria-expanded="false" aria-label="Tasks per day info" type="button">i</button></span>
+            <output id="tasksPerDayValue" for="tasksPerDay">12</output>
+          </label>
+          <input id="tasksPerDay" name="tasksPerDay" type="range" min="2" max="40" value="12" step="1" />
+          <div class="tip" id="tipTasksPerDay">How many workflow tasks each person completes per day. Higher volume raises total time cost and makes automated workflow ROI easier to see.</div>
+        </div>
+
+        <div class="control hasTip">
+          <label for="minutesPerTask">
+            <span class="labelWithInfo">Minutes per task<button class="infoBtn" data-tip="tipMinutesPerTask" aria-controls="tipMinutesPerTask" aria-expanded="false" aria-label="Minutes per task info" type="button">i</button></span>
+            <output id="minutesPerTaskValue" for="minutesPerTask">4</output>
+          </label>
+          <input id="minutesPerTask" name="minutesPerTask" type="range" min="1" max="15" value="4" step="1" />
+          <div class="tip" id="tipMinutesPerTask">Average manual workflow handling time for one task. Automated Workflow reduces this base time cost directly.</div>
+        </div>
+
+        <div class="control hasTip">
+          <label for="errorRate">
+            <span class="labelWithInfo">Follow-up work rate<button class="infoBtn" data-tip="tipFollowUpRate" aria-controls="tipFollowUpRate" aria-expanded="false" aria-label="Follow-up work rate info" type="button">i</button></span>
+            <output id="errorRateValue" for="errorRate">8%</output>
+          </label>
+          <input id="errorRate" name="errorRate" type="range" min="0" max="25" value="8" step="1" />
+          <div class="tip" id="tipFollowUpRate">Share of tasks that create extra follow-up work, corrections, or manual checks. Automated Workflow lowers this hidden time cost.</div>
+        </div>
+
+        <div class="control hasTip">
+          <label for="hourlyCost">
+            <span class="labelWithInfo">Working hour cost<button class="infoBtn" data-tip="tipHourlyCost" aria-controls="tipHourlyCost" aria-expanded="false" aria-label="Working hour cost info" type="button">i</button></span>
+          </label>
+          <div class="currency-input">
+            <span aria-hidden="true">$</span>
+            <input id="hourlyCost" name="hourlyCost" type="number" min="1" max="1000" value="45" step="1" inputmode="numeric" />
+          </div>
+          <div class="tip" id="tipHourlyCost">Blended employer cost for one working hour. The simulator uses it to convert saved time into labor cost impact across the full 500-day run.</div>
+        </div>
+
+      </form>
+
+      <section class="brand-strip" aria-label="Simfluence">
+        <img class="brand-strip-logo" src="../../media/simfluence.webp" alt="Simfluence logo" />
+        <div class="brand-strip-copy">
+          <p>Make goals and behaviour patterns seen in 20 seconds with interactive simulations. Get your ideas powered visually and answers seen clearly.</p>
+          <a class="brand-strip-link" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">Visit simfluence.io</a>
+        </div>
+      </section>
+    </section>
+
+    <section class="panel sim-panel" aria-label="Simulation output">
+      <section class="savings-top-card" aria-live="polite">
+        <p class="savings-title">Automated Workflow savings vs manual workflow</p>
+        <div class="delta-grid">
+          <article class="metric-card metric-hours hasTip">
+            <h3><span class="labelWithInfo">500-day hours saved<button class="infoBtn" data-tip="tipHoursSaved" aria-controls="tipHoursSaved" aria-expanded="false" aria-label="500-day hours saved info" type="button">i</button></span></h3>
+            <p id="deltaHoursSaved">0</p>
+            <div class="tip" id="tipHoursSaved">500-day hours saved compares manual workflow time cost with automated workflow time cost using the same team workload.</div>
+          </article>
+          <article class="metric-card metric-followup hasTip">
+            <h3><span class="labelWithInfo">Follow-up work saved<button class="infoBtn" data-tip="tipFollowUpSaved" aria-controls="tipFollowUpSaved" aria-expanded="false" aria-label="Follow-up work saved info" type="button">i</button></span></h3>
+            <p id="deltaReworkSaved">0</p>
+            <div class="tip" id="tipFollowUpSaved">Follow-up work saved measures how much extra handling, correction work, and manual rechecking Automated Workflow removes.</div>
+          </article>
+          <article class="metric-card metric-cost hasTip">
+            <h3><span class="labelWithInfo">500-day labor cost saved<button class="infoBtn" data-tip="tipCostSaved" aria-controls="tipCostSaved" aria-expanded="false" aria-label="500-day labor cost saved info" type="button">i</button></span></h3>
+            <p id="deltaCostSaved">$0</p>
+            <div class="tip" id="tipCostSaved">500-day labor cost saved converts time saved into dollar impact using the working hour cost you enter.</div>
+          </article>
+          <article class="metric-card metric-fte hasTip">
+            <h3><span class="labelWithInfo">FTE capacity recovered<button class="infoBtn" data-tip="tipFteRecovered" aria-controls="tipFteRecovered" aria-expanded="false" aria-label="FTE capacity recovered info" type="button">i</button></span></h3>
+            <p id="deltaFteSaved">0.00</p>
+            <div class="tip" id="tipFteRecovered">FTE capacity recovered converts Automated Workflow time savings into full-time capacity your team can redirect to higher-value work across the 500-day window.</div>
+          </article>
+        </div>
+      </section>
+
+      <div class="sim-top">
+        <div>
+          <p class="product-line">System: <strong id="brandName">Automated Workflow Suite</strong></p>
+          <p class="view-mode">Compare view</p>
+          <p class="day-counter" id="dayCounter">Day 0 / 500</p>
+        </div>
+        <div class="sim-actions">
+          <button id="pauseButton" type="button" aria-pressed="false">Pause</button>
+          <button id="resetButton" type="button">Reset scenario</button>
+        </div>
+      </div>
+
+      <div class="time-progress" aria-label="Simulation progress">
+        <div class="time-progress-track">
+          <div class="time-progress-fill" id="timeProgressFill"></div>
+        </div>
+        <span class="visually-hidden" id="progressLabel" aria-live="polite">0%</span>
+      </div>
+
+      <div class="view-block compare-view">
+        <div class="compare-grid">
+          <article class="compare-card manual" id="manualCard">
+            <header>
+              <h3>Manual workflow</h3>
+              <p id="manualStability">Stable (0.0x)</p>
+            </header>
+            <div class="canvas-wrap small">
+              <canvas id="manualCanvas" role="img" aria-label="Manual process flow"></canvas>
+            </div>
+            <div class="backlog-block compact">
+              <div class="backlog-head">
+                <span>Queue backlog</span>
+                <strong id="manualBacklogMinutes">0 min</strong>
+              </div>
+              <div class="backlog-track">
+                <div class="backlog-fill" id="manualBacklogFill"></div>
+              </div>
+            </div>
+            <div class="mini-metrics">
+              <p><span>Hours</span><strong id="manualHours">0</strong></p>
+              <p><span>Follow-up work</span><strong id="manualCorrectionHours">0</strong></p>
+              <p><span>Labor cost</span><strong id="manualLaborCost">$0</strong></p>
+              <p><span>FTE capacity</span><strong id="manualFteEquivalent">0.00</strong></p>
+            </div>
+          </article>
+
+          <article class="compare-card automated" id="autoCard">
+            <header>
+              <h3>Automated Workflow</h3>
+              <p id="autoStability">Stable (0.0x)</p>
+            </header>
+            <div class="canvas-wrap small">
+              <canvas id="autoCanvas" role="img" aria-label="Automated process flow"></canvas>
+            </div>
+            <div class="backlog-block compact">
+              <div class="backlog-head">
+                <span>Queue backlog</span>
+                <strong id="autoBacklogMinutes">0 min</strong>
+              </div>
+              <div class="backlog-track">
+                <div class="backlog-fill" id="autoBacklogFill"></div>
+              </div>
+            </div>
+            <div class="mini-metrics">
+              <p><span>Hours</span><strong id="autoHours">0</strong></p>
+              <p><span>Follow-up work</span><strong id="autoCorrectionHours">0</strong></p>
+              <p><span>Labor cost</span><strong id="autoLaborCost">$0</strong></p>
+              <p><span>FTE capacity</span><strong id="autoFteEquivalent">0.00</strong></p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="legend" aria-hidden="true">
+        <span><i class="swatch normal"></i>Normal tasks</span>
+        <span><i class="swatch correction"></i>Follow-up work</span>
+        <span><i class="swatch complete"></i>Completed</span>
+      </div>
+    </section>
+  </main>
+
+  <div class="stats-modal" id="statsModal" hidden>
+    <div class="stats-dialog" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
+      <button class="stats-close" id="statsClose" type="button" aria-label="Close simulation stats">X</button>
+      <h2 id="statsTitle">Automated Workflow ROI Snapshot</h2>
+      <p class="stats-subtitle">500-day automated workflow time cost simulation</p>
+      <div class="stats-compare" aria-label="Manual versus automated workflow comparison">
+        <section class="stats-compare-column manual" aria-labelledby="statsManualTitle">
+          <header class="stats-compare-head">
+            <p id="statsManualTitle">Manual workflow</p>
+            <span>Current team load</span>
+          </header>
+          <div class="stats-compare-metrics">
+            <article class="stats-compare-card">
+              <h3>Hours</h3>
+              <p id="popupManualHours">0</p>
+            </article>
+            <article class="stats-compare-card">
+              <h3>Follow-up work</h3>
+              <p id="popupManualFollowUp">0</p>
+            </article>
+            <article class="stats-compare-card">
+              <h3>Labor cost</h3>
+              <p id="popupManualCost">$0</p>
+            </article>
+            <article class="stats-compare-card">
+              <h3>FTE capacity</h3>
+              <p id="popupManualFte">0.00</p>
+            </article>
+          </div>
+        </section>
+        <section class="stats-compare-column automated" aria-labelledby="statsAutoTitle">
+          <header class="stats-compare-head">
+            <p id="statsAutoTitle">Automated Workflow</p>
+            <span>Same workload, leaner handling</span>
+          </header>
+          <div class="stats-compare-metrics">
+            <article class="stats-compare-card">
+              <h3>Hours</h3>
+              <p id="popupAutoHours">0</p>
+            </article>
+            <article class="stats-compare-card">
+              <h3>Follow-up work</h3>
+              <p id="popupAutoFollowUp">0</p>
+            </article>
+            <article class="stats-compare-card">
+              <h3>Labor cost</h3>
+              <p id="popupAutoCost">$0</p>
+            </article>
+            <article class="stats-compare-card">
+              <h3>FTE capacity</h3>
+              <p id="popupAutoFte">0.00</p>
+            </article>
+          </div>
+        </section>
+      </div>
+      <div class="stats-summary-strip">
+        <article class="stats-summary-card highlight hours">
+          <h3>500-day hours saved</h3>
+          <p id="popupHoursSaved">0</p>
+        </article>
+        <article class="stats-summary-card highlight cost">
+          <h3>500-day labor cost saved</h3>
+          <p id="popupCostSaved">$0</p>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

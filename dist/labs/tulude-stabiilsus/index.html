@@ -1,0 +1,1437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Revenue Stabilization Simulation</title>
+<style>
+  :root{
+    --bg:#E8F4FF;
+    --bg2:#CFE4F7;
+    --card:rgba(255,255,255,.68);
+    --stroke:rgba(93,132,172,.28);
+    --text:rgba(24,51,79,.96);
+    --muted:rgba(55,88,118,.82);
+    --primary:#2C7BE5;
+    --accent:#4BC8FF;
+    --ok:#2FA772;
+    --risk:#F08A4B;
+    --prospect:#F08A4B;
+    --drop:#F08A4B;
+    --rep:#2C7BE5;
+    --shadow:0 18px 48px rgba(72,102,136,.18);
+    --r:18px;
+    --r2:22px;
+    --font: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{
+    height:100%;
+    background:transparent;
+  }
+  html.embedMode,
+  body.embedMode{
+    height:auto;
+    min-height:0;
+  }
+  body{
+    margin:0;
+    font-family:var(--font);
+    color:var(--text);
+    background:transparent;
+    min-width:0;
+    overflow-x:hidden;
+  }
+  body.embedMode{
+    background:transparent;
+    min-height:0;
+    overflow:hidden;
+  }
+  .app{
+    position:relative;
+    isolation:isolate;
+    width:min(1120px,96vw);
+    margin:18px auto;
+    border:1px solid var(--stroke);
+    border-radius:var(--r2);
+    overflow:hidden;
+    background-clip:padding-box;
+    background:
+      radial-gradient(900px 520px at 20% 5%, rgba(44,123,229,.18), transparent 60%),
+      radial-gradient(800px 600px at 82% 42%, rgba(75,200,255,.18), transparent 62%),
+      linear-gradient(160deg, var(--bg), var(--bg2));
+    box-shadow:var(--shadow);
+  }
+  body.embedMode .app{
+    width:100%;
+    max-width:none;
+    margin:0;
+    box-shadow:none;
+  }
+  .top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 10px 12px;
+    flex-wrap:wrap;
+  }
+  .title{font-size:clamp(20px,2.8vw,28px);font-weight:800;letter-spacing:.2px;line-height:1.05}
+  .titleRow{display:flex;align-items:center;gap:8px}
+  .sub{font-size:clamp(13px,1.9vw,15px);color:rgba(24,51,79,.82);margin-top:6px;line-height:1.25;max-width:900px}
+  .fgIcon{
+    width:44px;
+    height:44px;
+    display:inline-block;
+    vertical-align:middle;
+  }
+  .btn .fgIcon{width:28px;height:28px}
+  .btnFlow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    justify-content:center;
+  }
+  .pill{
+    padding:8px 12px;
+    border:1px solid var(--stroke);
+    border-radius:999px;
+    background:rgba(255,255,255,.58);
+    font-size:12px;
+    white-space:nowrap;
+  }
+  #stepBadge{
+    padding:8px 12px;
+    font-size:clamp(12px,1.45vw,16px);
+    font-weight:800;
+    line-height:1;
+  }
+  .topRight{display:flex;align-items:center;gap:8px}
+  .grid{
+    display:grid;
+    grid-template-columns:.72fr 1.78fr;
+    gap:12px;
+    padding:0 10px 12px;
+  }
+  .card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r2);overflow:hidden;background-clip:padding-box}
+  .side{display:flex;flex-direction:column;gap:12px}
+  .panel{padding:12px}
+  .panelHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .panelTitle{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .group{
+    border:1px solid rgba(93,132,172,.18);
+    border-radius:14px;
+    padding:10px;
+    margin-top:10px;
+    background:rgba(255,255,255,.34);
+  }
+  .group:first-child{margin-top:0}
+  .groupHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .groupTitle{font-weight:800;font-size:13px}
+  .groupSub{color:var(--muted);font-size:12px}
+  .rowCtrl{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    gap:10px;
+    align-items:center;
+    padding:8px 0;
+    border-top:1px solid rgba(255,255,255,.08);
+  }
+  .rowCtrl:first-of-type{border-top:0;padding-top:0}
+  .labelWrap{display:flex;align-items:center;gap:8px;min-width:0}
+  .lbl{font-size:12.5px;font-weight:700}
+  .hint{font-size:12px;color:rgba(55,88,118,.88)}
+  .valPill{
+    font-size:12px;
+    min-width:54px;
+    text-align:center;
+    padding:6px 8px;
+    border:1px solid var(--stroke);
+    border-radius:999px;
+    background:rgba(255,255,255,.74);
+  }
+  .ctrlStack{grid-column:1/-1}
+  .moneyWrap{
+    position:relative;
+    width:120px;
+  }
+  .moneyWrap input{
+    width:100%;
+    padding-right:28px;
+  }
+  .moneyWrap .suffix{
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    color:rgba(55,88,118,.92);
+    font-size:12px;
+    font-weight:800;
+    pointer-events:none;
+  }
+  input[type="range"]{width:100%;accent-color:var(--primary)}
+  input[type="number"],select,.btn{
+    border:1px solid var(--stroke);
+    border-radius:12px;
+    background:rgba(255,255,255,.72);
+    color:var(--text);
+    padding:10px 11px;
+    font-weight:700;
+    font-size:12.5px;
+  }
+  select option{background:#f2f8ff;color:#17324a}
+  .btn{cursor:pointer}
+  .btn:hover{background:rgba(255,255,255,.92)}
+  .btn.isOn{background:rgba(75,200,255,.16);border-color:rgba(75,200,255,.38)}
+  .btnRow{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:stretch;
+  }
+  .btnRow > *{
+    flex:1 1 140px;
+    min-width:0;
+  }
+  .btnRow .btn,
+  .btnRow select{
+    height:42px;
+    padding:9px 10px;
+  }
+  .btnRow #playBtn,
+  .btnRow #resetBtn{
+    flex:0.78 1 0;
+    font-size:12px;
+  }
+  .btnRow #playBtn{
+    background:var(--primary);
+    border-color:rgba(75,200,255,.46);
+    color:#ffffff;
+    font-weight:900;
+    box-shadow:0 0 0 1px rgba(255,255,255,.22) inset, 0 8px 20px rgba(44,123,229,.22);
+  }
+  .btnRow #playBtn:hover{
+    filter:brightness(1.06);
+    box-shadow:0 0 0 1px rgba(255,255,255,.3) inset, 0 10px 24px rgba(44,123,229,.28);
+  }
+  .btnRow #speedSel{
+    flex:1.44 1 0;
+    min-width:0;
+    font-size:13px;
+    padding-right:12px;
+  }
+  .metricRow{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    column-gap:10px;
+    row-gap:6px;
+    padding:8px 0;
+    border-top:1px solid rgba(255,255,255,.08);
+  }
+  .metricRow:first-child{border-top:0;padding-top:0}
+  .metricMeta{display:grid;grid-template-columns:minmax(0,1fr);row-gap:4px;min-width:0}
+  .metricName{font-size:12.5px;font-weight:800;display:inline-flex;align-items:center;gap:6px}
+  .metricSub{
+    font-size:11.5px;color:var(--muted);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .metricVal{font-family:ui-monospace,Consolas,monospace;font-size:16px;font-weight:900}
+  .infoBtn{
+    width:18px;height:18px;
+    border-radius:999px;
+    border:1px solid rgba(93,132,172,.42);
+    background:rgba(226,238,250,.96);
+    color:rgba(28,56,88,.96);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:900;
+    cursor:pointer;
+    flex:0 0 auto;
+    padding:0;
+  }
+  .infoBtn:hover{
+    background:rgba(210,228,246,.98);
+    border-color:rgba(44,123,229,.48);
+  }
+  .tip{
+    display:none;
+    margin-top:8px;
+    padding:8px 10px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(248,252,255,.92);
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.35;
+  }
+  .hasTipOpen .tip{display:block}
+  .canvasWrap{position:relative;height:100%}
+  .simInner{position:relative;height:100%;display:flex;flex-direction:column}
+  .simHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border-bottom:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.32);
+  }
+  .simHead .h{font-size:13px;font-weight:800}
+  .simHead .muted{font-size:12px;color:rgba(55,88,118,.88);margin-top:2px}
+  .canvasHost{position:relative;flex:1;min-height:0}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  @media (max-width:980px){
+    .grid{
+      grid-template-columns:1fr;
+      gap:12px;
+      padding:0 10px 12px;
+    }
+    .canvasWrap{min-height:0}
+    .simInner{min-height:clamp(320px,60vw,500px)}
+    .canvasHost{min-height:clamp(260px,48vw,420px)}
+  }
+  @media (max-width:760px){
+    .app{
+      width:100%;
+      margin:0;
+      border-radius:0;
+      border-left:0;
+      border-right:0;
+    }
+    .top{
+      padding:10px;
+      gap:10px;
+    }
+    .top > div:first-child{
+      width:100%;
+    }
+    .topRight{
+      width:100%;
+      justify-content:flex-start;
+    }
+    .fgIcon{
+      width:34px;
+      height:34px;
+    }
+    .grid{gap:10px;padding:0 8px 10px}
+    .panel{
+      padding:8px;
+    }
+    .panelHead{
+      margin-bottom:8px;
+    }
+    .group{
+      padding:8px;
+      margin-top:8px;
+    }
+    .groupTitle{
+      font-size:12.5px;
+    }
+    .groupSub{
+      font-size:11.5px;
+    }
+    .rowCtrl{
+      grid-template-columns:minmax(88px,auto) 1fr auto;
+      gap:8px;
+      padding:7px 0;
+    }
+    .labelWrap{
+      white-space:nowrap;
+      gap:6px;
+    }
+    .lbl{
+      font-size:12px;
+    }
+    .rowCtrl .valPill{
+      min-width:46px;
+      padding:5px 6px;
+    }
+    .moneyWrap{
+      width:100%;
+      max-width:140px;
+    }
+    .simHead{
+      flex-wrap:wrap;
+      padding:9px 10px;
+    }
+    .simHead > div:first-child{
+      width:100%;
+    }
+    .simHead .pill{
+      margin-left:0;
+    }
+    .simInner{
+      min-height:clamp(300px,72vw,460px);
+    }
+    .canvasHost{
+      min-height:clamp(240px,58vw,360px);
+    }
+    .btnRow > *{
+      flex:1 1 calc(50% - 4px);
+    }
+    .btnRow .btn,
+    .btnRow select{
+      height:38px;
+      padding:7px 8px;
+    }
+    .btnRow #speedSel{
+      flex:1 1 100%;
+    }
+  }
+  @media (max-width:460px){
+    .titleRow{
+      align-items:flex-start;
+    }
+    .sub{
+      max-width:none;
+    }
+    .panelTitle{
+      letter-spacing:.08em;
+    }
+    .simInner{
+      min-height:320px;
+    }
+    .canvasHost{
+      min-height:250px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div>
+      <div class="title titleRow">
+        <svg class="fgIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#4BC8FF" d="M12 2l8 3v6c0 5.2-3.4 9.7-8 11-4.6-1.3-8-5.8-8-11V5l8-3z"/>
+          <path fill="#1C3658" d="M12.5 6L9 12h2.6l-.9 5L15 10h-2.4l1.2-4z"/>
+        </svg>
+        <span>Revenue Stabilization Simulation</span>
+      </div>
+      <div class="sub">See how manual sales workflows break under marketing spikes, then stabilize lead flow to protect revenue.</div>
+    </div>
+    <div class="topRight">
+      <div class="pill" id="stepBadge">Step 0 / 300</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="side">
+      <div class="card">
+        <div class="panel">
+          <div class="panelHead">
+            <div class="panelTitle">Controls</div>
+            <div class="pill" style="padding:6px 10px;">
+              <span style="opacity:.9;">Mode:</span>
+              <strong id="modeReadout">Baseline</strong>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="groupHead">
+              <div>
+                <div class="groupTitle">Dynamics</div>
+                <div class="groupSub">Tune load, delay and capacity.</div>
+              </div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowInflow">
+              <div class="labelWrap">
+                <div class="lbl">Lead Inflow</div>
+                <button class="infoBtn" data-tip="tipInflow" aria-label="Lead Inflow info">i</button>
+              </div>
+              <input id="inflow" type="range" min="0" max="100" value="55" />
+              <div class="valPill" id="vInflow">55</div>
+              <div class="ctrlStack tip" id="tipInflow">How much load enters the system (leads, visitors, demand, messages).</div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowDelay">
+              <div class="labelWrap">
+                <div class="lbl">Response Delay</div>
+                <button class="infoBtn" data-tip="tipDelay" aria-label="Response Delay info">i</button>
+              </div>
+              <input id="friction" type="range" min="0" max="100" value="35" />
+              <div class="valPill" id="vDelay">35</div>
+              <div class="ctrlStack tip" id="tipDelay">How much drag/leak the system has (delay, noise, confusion, complexity).</div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowCapacity">
+              <div class="labelWrap">
+                <div class="lbl">Sales Throughput</div>
+                <button class="infoBtn" data-tip="tipCapacity" aria-label="Sales Throughput info">i</button>
+              </div>
+              <input id="capacity" type="range" min="1" max="100" value="48" />
+              <div class="valPill" id="vCap">48</div>
+              <div class="ctrlStack tip" id="tipCapacity">How much structure/throughput you have (automation, staffing, filtering, coordination).</div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowClv">
+              <div class="labelWrap">
+                <div class="lbl">CLV</div>
+                <button class="infoBtn" data-tip="tipClv" aria-label="CLV info">i</button>
+              </div>
+              <div class="moneyWrap">
+                <input id="clv" type="number" min="100" step="100" value="8000" />
+                <span class="suffix">$</span>
+              </div>
+              <div></div>
+              <div class="ctrlStack tip" id="tipClv">Client Lifetime Value ($).</div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowSolution">
+              <div class="labelWrap">
+                <div class="lbl">Activate</div>
+                <button class="infoBtn" data-tip="tipSolution" aria-label="Stabilizer info">i</button>
+              </div>
+              <button class="btn btnFlow" id="solutionBtn">
+                <svg class="fgIcon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="#4BC8FF" d="M12 2l8 3v6c0 5.2-3.4 9.7-8 11-4.6-1.3-8-5.8-8-11V5l8-3z"/>
+                  <path fill="#1C3658" d="M12.5 6L9 12h2.6l-.9 5L15 10h-2.4l1.2-4z"/>
+                </svg>
+                <span id="solutionBtnLabel">Stabilizer OFF</span>
+              </button>
+              <div></div>
+              <div class="ctrlStack tip" id="tipSolution">Turns on structure: reduces friction and increases capacity.</div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="btnRow">
+              <button class="btn" id="playBtn">Pause</button>
+              <button class="btn" id="resetBtn">Reset</button>
+              <select id="speedSel" aria-label="Speed">
+                <option value="0.5">0.5 Slow</option>
+                <option value="1" selected>1.0 Normal</option>
+                <option value="1.5">1.5 Fast</option>
+                <option value="2">2.0 Fast</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card canvasWrap">
+      <div class="simInner">
+        <div class="simHead">
+          <div>
+            <div class="h" id="simTitle">Flow under stress</div>
+            <div class="muted" id="simSub">Move sliders. Toggle solution to stabilize.</div>
+          </div>
+          <div class="pill" style="padding:6px 10px;">
+            <span style="opacity:.9;">Story:</span>
+            <strong id="storyReadout">Leak -> Collapse -> Stabilize</strong>
+          </div>
+        </div>
+        <div class="canvasHost" id="canvasHost">
+          <canvas id="simCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const isEmbedded = window.parent !== window;
+  if(isEmbedded){
+    document.documentElement.classList.add("embedMode");
+    document.body.classList.add("embedMode");
+  }
+
+  // Report the document height to parent pages so embedded iframes can auto-size.
+  let lastEmbedHeight = 0;
+  let embedHeightRaf = 0;
+  function postEmbedHeight(){
+    if(!isEmbedded) return;
+    const body = document.body;
+    const html = document.documentElement;
+    const docHeight = Math.ceil(Math.max(
+      html ? html.scrollHeight : 0,
+      html ? html.offsetHeight : 0,
+      body ? body.scrollHeight : 0,
+      body ? body.offsetHeight : 0
+    ));
+    const app = document.querySelector(".app");
+    let appHeight = 0;
+    if(app){
+      const cs = getComputedStyle(app);
+      const mt = parseFloat(cs.marginTop) || 0;
+      const mb = parseFloat(cs.marginBottom) || 0;
+      appHeight = Math.ceil(app.getBoundingClientRect().height + mt + mb);
+    }
+    const h = appHeight > 0 ? appHeight : docHeight;
+    if(!Number.isFinite(h) || h <= 0) return;
+    if(Math.abs(h - lastEmbedHeight) < 2) return;
+    lastEmbedHeight = h;
+    window.parent.postMessage({ type: "flowguard:height", height: h }, "*");
+  }
+  function queueEmbedHeightPost(){
+    if(embedHeightRaf) return;
+    embedHeightRaf = requestAnimationFrame(()=>{
+      embedHeightRaf = 0;
+      postEmbedHeight();
+    });
+  }
+  addEventListener("message", (e)=>{
+    const d = e.data;
+    if(!d || d.type !== "flowguard:request-height") return;
+    queueEmbedHeightPost();
+  });
+
+  // Tooltips: click-to-open, one at a time (Prospect-loss-engine style).
+  document.addEventListener("click", (e)=>{
+    const b = e.target.closest(".infoBtn");
+    const open = Array.from(document.querySelectorAll(".hasTipOpen"));
+    if(!b){
+      open.forEach(el=>el.classList.remove("hasTipOpen"));
+      queueEmbedHeightPost();
+      return;
+    }
+    const row = b.closest(".rowCtrl") || b.closest(".metricRow");
+    if(!row) return;
+    open.forEach(el=>{ if(el!==row) el.classList.remove("hasTipOpen"); });
+    row.classList.toggle("hasTipOpen");
+    queueEmbedHeightPost();
+  });
+
+  const ui = {
+    inflow: document.getElementById("inflow"),
+    friction: document.getElementById("friction"),
+    capacity: document.getElementById("capacity"),
+    clv: document.getElementById("clv"),
+    solutionBtn: document.getElementById("solutionBtn"),
+    solutionBtnLabel: document.getElementById("solutionBtnLabel"),
+    modeReadout: document.getElementById("modeReadout"),
+    playBtn: document.getElementById("playBtn"),
+    resetBtn: document.getElementById("resetBtn"),
+    speedSel: document.getElementById("speedSel"),
+    vInflow: document.getElementById("vInflow"),
+    vDelay: document.getElementById("vDelay"),
+    vCap: document.getElementById("vCap"),
+    stepBadge: document.getElementById("stepBadge")
+  };
+
+  const canvas = document.getElementById("simCanvas");
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  let W=1, H=1, DPR=1;
+  function resize(){
+    DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const r = canvas.getBoundingClientRect();
+    W = Math.max(1, Math.floor(r.width));
+    H = Math.max(1, Math.floor(r.height));
+    canvas.width = Math.floor(W * DPR);
+    canvas.height = Math.floor(H * DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  addEventListener("resize", ()=>{
+    resize();
+    queueEmbedHeightPost();
+  }, { passive: true });
+  addEventListener("orientationchange", queueEmbedHeightPost, { passive: true });
+  resize();
+  queueEmbedHeightPost();
+
+  if("ResizeObserver" in window){
+    const ro = new ResizeObserver(()=>queueEmbedHeightPost());
+    ro.observe(document.documentElement);
+    ro.observe(document.body);
+  }
+  addEventListener("load", queueEmbedHeightPost);
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(queueEmbedHeightPost).catch(()=>{});
+  }
+  [120, 380, 900, 1600].forEach(ms=>setTimeout(queueEmbedHeightPost, ms));
+
+  const MAX_STEPS = 300;
+  let running = true;
+  let step = 0;
+  let speed = 1;
+  let autoPlay = true;
+  const DEMO_LOOP_MS = 15000;
+  let demoLoopMode = true;
+  let demoLoopElapsedMs = 0;
+
+  let V = +ui.inflow.value;
+  let F = +ui.friction.value;
+  let C = +ui.capacity.value;
+  let CLV = +ui.clv.value || 8000;
+  let solutionOn = true;
+
+  let closedDeals = 0;
+  let lostDeals = 0;
+  let emaEff = 0;
+  let emaLoss = 0;
+  let hudEffText = "0%";
+  let hudLossText = "$0";
+
+  const prospects = [];
+  const closedDots = [];
+  const lostDots = [];
+  const links = [];
+
+  function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function fmtPct(x){ return (x*100).toFixed(0)+"%"; }
+  function money(v){
+    const n = Math.abs(Math.round(v)).toLocaleString("en-US").replace(/,/g, " ");
+    return `- ${n} $`;
+  }
+  function isAISlot(slot, repCount, aiCount){
+    if(aiCount <= 0) return false;
+    if(slot % 2 === 1){
+      const aiIdx = (slot - 1) / 2;
+      return aiIdx < aiCount;
+    }
+    const repIdx = slot / 2;
+    return repIdx >= repCount;
+  }
+
+  function stressCategory(stress){
+    const s = clamp(stress, 0, 1);
+    if(s < 0.16) return { label: "Stable", color: "#4BC8FF" };
+    if(s < 0.32) return { label: "Normal Load", color: "#4BC8FF" };
+    if(s < 0.50) return { label: "Busy", color: "#7FE8FF" };
+    if(s < 0.68) return { label: "Under Strain", color: "#FFD166" };
+    if(s < 0.84) return { label: "Overloaded", color: "#FF6A3D" };
+    return { label: "Critical", color: "#FF6A3D" };
+  }
+
+  function updateControlReadouts(){
+    ui.vInflow.textContent = String(V);
+    ui.vDelay.textContent = String(F);
+    ui.vCap.textContent = String(C);
+    ui.solutionBtnLabel.textContent = solutionOn ? "Stabilizer ON" : "Stabilizer OFF";
+    ui.modeReadout.textContent = solutionOn ? "Stabilized" : "Baseline";
+    ui.solutionBtn.classList.toggle("isOn", solutionOn);
+    ui.playBtn.textContent = running ? "Pause" : "Play";
+  }
+
+  function resetSimulation(){
+    running = false;
+    step = 0;
+    closedDeals = 0;
+    lostDeals = 0;
+    emaEff = 0;
+    emaLoss = 0;
+    prospects.length = 0;
+    closedDots.length = 0;
+    lostDots.length = 0;
+    links.length = 0;
+    updateControlReadouts();
+    updateMetrics(0,0);
+  }
+
+  function startSimulation(){
+    if(step >= MAX_STEPS) resetSimulation();
+    running = true;
+    updateControlReadouts();
+  }
+
+  function pauseSimulation(){
+    running = false;
+    updateControlReadouts();
+  }
+
+  function stopDemoLoop(){
+    if(!demoLoopMode) return;
+    demoLoopMode = false;
+    demoLoopElapsedMs = 0;
+  }
+
+  function restartDemoLoop(){
+    demoLoopElapsedMs = 0;
+    resetSimulation();
+    solutionOn = true;
+    startSimulation();
+  }
+
+  function stressAndCapacity(){
+    const delayNorm = clamp((F / 100) * 0.72, 0, 0.72);
+    const capNorm = clamp(C/100, 0.05, 1.0);
+    const inflowNorm = clamp(V/100, 0, 1.4);
+    const aiBoost = solutionOn ? 1.22 : 1.0;
+    const S = (inflowNorm * (1 + delayNorm*1.1)) / (capNorm * aiBoost);
+    const stress = clamp((S - 0.65)/1.0, 0, 1.25);
+    return { stress, delayNorm, capNorm };
+  }
+
+  function spawnProspects(stress){
+    const base = lerp(0.24, 2.05, clamp(V/100, 0, 1));
+    const raw = solutionOn ? base * 0.88 : base;
+    const n = Math.floor(raw + Math.random());
+    for(let i=0;i<n;i++){
+      prospects.push({
+        p: 0,
+        y: 0.14 + Math.random()*0.72,
+        state: "active",
+        served: false,
+        lastLane: 0.5,
+        lastType: "rep",
+        dropT: 0,
+        dropStartY: 0.14,
+        dropP: 0,
+        wait: 0,
+        assist: 0,
+        fade: 1
+      });
+    }
+    if(stress > 0.95){
+      prospects.push({
+        p:0,
+        y:0.18+Math.random()*0.64,
+        state:"active",
+        served:false,
+        lastLane:0.5,
+        lastType:"rep",
+        dropT:0,
+        dropStartY:0.18,
+        dropP:0,
+        wait:0,
+        assist:0,
+        fade:1
+      });
+    }
+  }
+
+  function updateSimulationStep(){
+    const { stress, delayNorm, capNorm } = stressAndCapacity();
+
+    spawnProspects(stress);
+
+    const procStart = 0.33;
+    const procEnd = 0.66;
+    const procEndHit = procEnd - 0.015; // visible wall before process end
+
+    const repCount = Math.max(1, Math.round(lerp(1, 4, capNorm))); // normal processors max 4
+    const aiCount = solutionOn ? Math.max(1, Math.round(repCount * 0.5)) : 0; // additional
+    const processors = repCount + aiCount;
+
+    const activeInProc = prospects.filter(a => a.state === "active" && !a.served && a.p >= procStart && a.p < procEnd);
+    const slots = Math.max(2, Math.round(lerp(3, 20, capNorm * (solutionOn ? 1.18 : 1.0))));
+    const overload = Math.max(0, (activeInProc.length - slots) / Math.max(1, slots));
+
+    // Per-processor activation: low delay => more interactions, high delay => fewer.
+    const delayPressure = clamp(delayNorm / 0.72, 0, 1);
+    const delayEffect = Math.pow(1 - delayPressure, 2.2);
+    const overloadPressure = clamp(overload / 1.2, 0, 1);
+    let interactionChance = lerp(0.05, 0.74, delayEffect);
+    interactionChance += (solutionOn ? 0.22 : -0.16) + (0.16 * overloadPressure);
+    interactionChance = clamp(interactionChance, 0.02, 1.00);
+    if(activeInProc.length >= processors && overloadPressure > 0.70 && delayEffect > 0.35){
+      interactionChance = Math.max(interactionChance, 0.90);
+    }
+    // Interaction is not guaranteed conversion. Baseline should leak value under stress.
+    const serveBase =
+      0.18 +
+      0.34 * capNorm +
+      0.22 * delayEffect -
+      0.22 * overloadPressure -
+      0.18 * clamp(stress, 0, 1);
+    const serveChance = clamp(serveBase + (solutionOn ? 0.34 : 0), 0.06, 0.95);
+
+    activeInProc.sort((a,b) => b.wait - a.wait);
+    let clientCursor = 0;
+    const slotOffset = step % Math.max(1, processors);
+    for(let k=0;k<processors;k++){
+      if(clientCursor >= activeInProc.length) break;
+      if(Math.random() > interactionChance) continue;
+      const procSlot = (k + slotOffset) % Math.max(1, processors);
+      const t = activeInProc[clientCursor++];
+      const lane = (procSlot + 1) / (Math.max(1, processors) + 1);
+      const isAI = isAISlot(procSlot, repCount, aiCount);
+      const boost = isAI ? 0.018 : 0.0095;
+      t.assist = clamp(t.assist + (isAI ? 0.36 : 0.18), 0, 1);
+      t.lastLane = lane;
+      t.lastType = isAI ? "ai" : "rep";
+      t.p = clamp(t.p + boost, procStart, procEnd + 0.04);
+      // Only a share of touches converts; others remain in flow and risk wall loss.
+      const converted = Math.random() < clamp(serveChance * (isAI ? 1.10 : 1.0), 0.06, 0.98);
+      if(converted){
+        t.served = true;
+        closedDeals += 1;
+        closedDots.push({
+          p: clamp(0.70 + Math.random()*0.26, 0.70, 0.97),
+          y: clamp(0.08 + Math.random()*0.84, 0.08, 0.92)
+        });
+        t.state = "served";
+      }
+      links.push({
+        kind: "hit",
+        procSlot,
+        procTotal: processors,
+        procIsAI: isAI,
+        p: t.p, // hit position at impact moment
+        y: t.y,
+        type: isAI ? "ai" : "rep",
+        life: 1
+      });
+    }
+
+    const baseSpeed = 0.010;
+    const procSpeed = lerp(0.006, 0.026, capNorm);
+    const delaySlow = 1 - delayNorm * 0.42;
+    const overloadSlow = 1/(1 + overload*1.2);
+
+    for(let i=prospects.length-1;i>=0;i--){
+      const a = prospects[i];
+      if(a.state === "served"){
+        prospects.splice(i,1);
+        continue;
+      }
+      if(a.state === "lost"){
+        if(a.dropT < 1){
+          a.dropT = Math.min(1, a.dropT + 0.16);
+          const ease = 1 - Math.pow(1 - a.dropT, 2);
+          a.y = lerp(a.dropStartY, 0.99, ease);
+          a.p = lerp(a.p, a.dropP, 0.18);
+          a.fade = 1;
+        } else {
+          a.fade -= 0.05;
+        }
+        if(a.fade <= 0){ prospects.splice(i,1); }
+        continue;
+      }
+
+      const inProc = a.p >= procStart && a.p < procEnd;
+      if(inProc) a.wait += 1; else a.wait = Math.max(0, a.wait - 1);
+
+      const procBoost = inProc ? (1 + a.assist*0.25) : 1;
+      const move = inProc
+        ? Math.max(0.004, procSpeed * delaySlow * overloadSlow * procBoost)
+        : baseSpeed;
+
+      a.p += move;
+      a.assist = Math.max(0, a.assist - 0.05);
+
+      // Hard wall: unserved clients hit before process end, then drop down red.
+      if(!a.served && a.p >= procEndHit){
+        a.state = "lost";
+        lostDeals += 1;
+        a.dropT = 0;
+        a.dropStartY = a.y;
+        a.dropP = clamp(procEndHit - 0.02 + (Math.random()-0.5)*0.04, procStart + 0.04, procEndHit - 0.004);
+        a.p = clamp(procEndHit - 0.004, procStart + 0.02, procEndHit - 0.002);
+        continue;
+      }
+
+      if(a.p >= procEnd){
+        prospects.splice(i,1);
+      }
+    }
+
+    for(let i=links.length-1;i>=0;i--){
+      const l = links[i];
+      l.life -= l.type === "ai" ? 0.36 : 0.30;
+      if(l.life <= 0){
+        links.splice(i,1);
+      }
+    }
+
+    const denom = Math.max(1, closedDeals + lostDeals);
+    const eff = closedDeals / denom;
+    const potLoss = lostDeals * CLV;
+
+    emaEff = emaEff ? (emaEff*0.84 + eff*0.16) : eff;
+    emaLoss = emaLoss ? (emaLoss*0.84 + potLoss*0.16) : potLoss;
+
+    updateMetrics(emaEff, emaLoss);
+    draw({ stress, repCount, aiCount, overload });
+
+    step++;
+    if(step >= MAX_STEPS){
+      if(demoLoopMode){
+        restartDemoLoop();
+      } else {
+        step = MAX_STEPS;
+        pauseSimulation();
+      }
+    }
+  }
+
+  function updateMetrics(eff, loss){
+    hudEffText = fmtPct(eff);
+    hudLossText = money(loss);
+    ui.stepBadge.textContent = `Step ${step} / ${MAX_STEPS}`;
+  }
+
+  function roundRect(x,y,w,h,r){
+    const rr = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr,y);
+    ctx.arcTo(x+w,y,x+w,y+h,rr);
+    ctx.arcTo(x+w,y+h,x,y+h,rr);
+    ctx.arcTo(x,y+h,x,y,rr);
+    ctx.arcTo(x,y,x+w,y,rr);
+    ctx.closePath();
+  }
+
+  function drawPerson(x,y,s,color){
+    // Modern human glyph: defined silhouette with readable posture at small sizes.
+    const headR = s * 0.22;
+    const headY = y - s * 0.62;
+    const neckY = y - s * 0.34;
+    const shoulderY = y - s * 0.22;
+    const torsoY = y - s * 0.14;
+    const hipY = y + s * 0.28;
+    const footY = y + s * 0.78;
+
+    // darker halo keeps agents readable against the lighter canvas
+    ctx.fillStyle = "rgba(22,44,70,.12)";
+    ctx.beginPath();
+    ctx.arc(x, y - s * 0.02, s * 0.72, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = color;
+
+    // head
+    ctx.beginPath();
+    ctx.arc(x, headY, headR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(21,38,61,.28)";
+    ctx.lineWidth = Math.max(1, s * 0.08);
+    ctx.stroke();
+
+    // neck + torso core
+    roundRect(x - s * 0.07, neckY, s * 0.14, s * 0.10, s * 0.06);
+    ctx.fill();
+    roundRect(x - s * 0.20, torsoY, s * 0.40, s * 0.44, s * 0.14);
+    ctx.fill();
+    ctx.lineWidth = Math.max(1, s * 0.08);
+    roundRect(x - s * 0.20, torsoY, s * 0.40, s * 0.44, s * 0.14);
+    ctx.stroke();
+
+    // arms
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(1.6, s * 0.13);
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(x - s * 0.16, shoulderY);
+    ctx.lineTo(x - s * 0.34, y + s * 0.12);
+    ctx.moveTo(x + s * 0.16, shoulderY);
+    ctx.lineTo(x + s * 0.34, y + s * 0.12);
+    ctx.stroke();
+
+    // legs
+    ctx.lineWidth = Math.max(1.7, s * 0.14);
+    ctx.beginPath();
+    ctx.moveTo(x - s * 0.10, hipY);
+    ctx.lineTo(x - s * 0.18, footY);
+    ctx.moveTo(x + s * 0.10, hipY);
+    ctx.lineTo(x + s * 0.18, footY);
+    ctx.stroke();
+  }
+
+  function drawProcessor(x,y,s,isAI){
+    ctx.fillStyle = isAI ? "rgba(36,154,214,.18)" : "rgba(39,92,148,.18)";
+    ctx.beginPath();
+    ctx.arc(x,y,s*1.18,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = isAI ? "rgba(74,151,196,.96)" : "rgba(79,111,147,.98)";
+    roundRect(x-s*0.68,y-s*0.68,s*1.36,s*1.36,s*0.3);
+    ctx.fill();
+    ctx.strokeStyle = isAI ? "rgba(20,117,168,.98)" : "rgba(30,73,117,.96)";
+    ctx.lineWidth = 1.7;
+    roundRect(x-s*0.68,y-s*0.68,s*1.36,s*1.36,s*0.3);
+    ctx.stroke();
+
+    if(isAI){
+      ctx.strokeStyle = "rgba(238,249,255,.96)";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(x-s*0.22,y-s*0.1);
+      ctx.lineTo(x-s*0.02,y-s*0.22);
+      ctx.lineTo(x+s*0.05,y-s*0.04);
+      ctx.lineTo(x+s*0.22,y-s*0.2);
+      ctx.lineTo(x+s*0.04,y+s*0.2);
+      ctx.lineTo(x-s*0.04,y+s*0.02);
+      ctx.lineTo(x-s*0.18,y+s*0.18);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(208,240,255,.88)";
+      ctx.beginPath();
+      ctx.moveTo(x-s*0.28,y-s*0.26);
+      ctx.lineTo(x,y-s*0.4);
+      ctx.lineTo(x+s*0.28,y-s*0.26);
+      ctx.lineTo(x+s*0.18,y+s*0.22);
+      ctx.lineTo(x,y+s*0.36);
+      ctx.lineTo(x-s*0.18,y+s*0.22);
+      ctx.closePath();
+      ctx.stroke();
+    } else {
+      ctx.strokeStyle = "rgba(235,244,255,.96)";
+      ctx.lineWidth = 1.85;
+      ctx.beginPath();
+      ctx.moveTo(x-s*0.28, y);
+      ctx.lineTo(x+s*0.28, y);
+      ctx.moveTo(x, y-s*0.28);
+      ctx.lineTo(x, y+s*0.28);
+      ctx.stroke();
+    }
+  }
+
+  function draw(scene){
+    ctx.clearRect(0,0,W,H);
+
+    const warm = "rgba(255,106,61," + clamp(scene.stress*0.18 + (solutionOn?0:0.06), 0.04, 0.26) + ")";
+    const cool = "rgba(75,200,255," + clamp((solutionOn?0.12:0.04) + (1-scene.stress)*0.08, 0.03, 0.18) + ")";
+    ctx.fillStyle = warm;
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = cool;
+    ctx.fillRect(0,0,W,H);
+
+    const pad = 12;
+    const x0 = pad, x3 = W-pad;
+    const y0 = pad, y3 = H-pad;
+    const x1 = lerp(x0,x3,0.31), x2 = lerp(x0,x3,0.66);
+
+    // Subtle watermarking for brand protection without harming readability.
+    function drawWatermarks(){
+      const small = W < 620;
+      const tiny = W < 430;
+      const mark = "Simfluence.io";
+      const fs = tiny ? 22 : (small ? 26 : 30);
+
+      // Entry section watermark (moved from processing area).
+      ctx.save();
+      ctx.globalAlpha = small ? 0.22 : 0.20;
+      ctx.fillStyle = "rgba(242,249,255,.98)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = `800 ${fs}px Inter,Segoe UI,Arial,sans-serif`;
+      ctx.translate((x0 + (x1 - 6)) * 0.5, y0 + (y3 - y0) * 0.56);
+      ctx.rotate(-0.22);
+      ctx.fillText(mark, 0, 0);
+      ctx.restore();
+
+      // Closed deals section watermark.
+      ctx.save();
+      ctx.globalAlpha = small ? 0.22 : 0.20;
+      ctx.fillStyle = "rgba(242,249,255,.98)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = `800 ${fs}px Inter,Segoe UI,Arial,sans-serif`;
+      ctx.translate(((x2 + 6) + x3) * 0.5, y0 + (y3 - y0) * 0.56);
+      ctx.rotate(0.22);
+      ctx.fillText(mark, 0, 0);
+      ctx.restore();
+    }
+    drawWatermarks();
+
+    const procTint = solutionOn
+      ? "rgba(44,123,229,.22)"
+      : "rgba(255,106,61," + clamp(scene.stress*0.22,0.05,0.22) + ")";
+
+    function stage(a,b,label){
+      ctx.fillStyle = "rgba(255,255,255,.04)";
+      roundRect(a,y0,b-a,y3-y0,16);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.13)";
+      ctx.lineWidth = 1;
+      roundRect(a,y0,b-a,y3-y0,16);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(28,56,88,.92)";
+      const stageW = b - a;
+      const compact = W < 640 || stageW < 140;
+      const fontPx = compact ? 10 : 12;
+      const lineHeight = compact ? 11 : 13;
+      const maxTextW = Math.max(28, stageW - 18);
+      const words = compact ? label.split(" ") : [label];
+      const lines = (compact && words.length > 1)
+        ? [words[0], words.slice(1).join(" ")]
+        : [label];
+      ctx.font = `800 ${fontPx}px Inter,Segoe UI,Arial,sans-serif`;
+      let ty = y0 + (compact ? 13 : 16);
+      for(const raw of lines){
+        let text = raw;
+        while(text.length > 3 && ctx.measureText(text).width > maxTextW){
+          text = text.slice(0, -1);
+        }
+        if(text !== raw && text.length > 3){
+          text = `${text.slice(0, -1)}...`;
+        }
+        ctx.fillText(text, a + 9, ty);
+        ty += lineHeight;
+      }
+    }
+
+    stage(x0, x1-6, "PROSPECT ENTRY");
+    stage(x1+6, x2-6, "LEAD PROCESSING");
+    stage(x2+6, x3, "CLOSED DEALS");
+
+    // Marketing spike pressure in ENTRY: stronger pulse with higher inflow.
+    const inflowPulse = clamp(V / 100, 0, 1);
+    if(inflowPulse > 0.08){
+      const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.004);
+      const entryA = 0.04 + inflowPulse * 0.11 * pulse;
+      const entryGlow = ctx.createLinearGradient(x0, y0, x1, y3);
+      entryGlow.addColorStop(0, `rgba(255,106,61,${entryA})`);
+      entryGlow.addColorStop(1, "rgba(255,106,61,0)");
+      ctx.fillStyle = entryGlow;
+      ctx.fillRect(x0, y0, (x1 - x0) - 6, y3 - y0);
+    }
+
+    const procX = x1+6, procW=(x2-x1)-12, procH=(y3-y0);
+    const procY = y0;
+    // Keep processing tint perfectly aligned with the rounded stage card.
+    ctx.fillStyle = procTint;
+    roundRect(procX, procY, procW, procH, 16);
+    ctx.fill();
+
+    // Narrative overlays:
+    // - Manual mode under stress: chaotic diagonal risk stripes in processing.
+    // - FlowGuard ON: structured cyan guide lanes and outcome protection glow.
+    if(!solutionOn){
+      const collapse = clamp(scene.stress, 0, 1.2);
+      if(collapse > 0.42){
+        ctx.save();
+        ctx.beginPath();
+        roundRect(procX, procY, procW, procH, 12);
+        ctx.clip();
+        ctx.strokeStyle = `rgba(255,106,61,${0.10 + 0.20 * collapse})`;
+        ctx.lineWidth = 1;
+        const spacing = 16;
+        for(let sx = procX - procH; sx < procX + procW + procH; sx += spacing){
+          ctx.beginPath();
+          ctx.moveTo(sx, procY + procH);
+          ctx.lineTo(sx + procH, procY);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    } else {
+      const laneCount = Math.max(3, scene.repCount + scene.aiCount);
+      for(let i=1;i<=laneCount;i++){
+        const yLane = procY + (procH * i)/(laneCount + 1);
+        ctx.strokeStyle = "rgba(75,200,255,.18)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(procX + 6, yLane);
+        ctx.lineTo(procX + procW - 6, yLane);
+        ctx.stroke();
+      }
+      // Revenue protection glow in CLOSED DEALS area when FlowGuard is active.
+      const outX = x2 + 6;
+      const outW = x3 - (x2 + 6);
+      const protect = ctx.createRadialGradient(outX + outW*0.55, y0 + (y3-y0)*0.5, 10, outX + outW*0.55, y0 + (y3-y0)*0.5, outW*0.95);
+      protect.addColorStop(0, "rgba(0,200,83,.12)");
+      protect.addColorStop(1, "rgba(0,200,83,0)");
+      ctx.fillStyle = protect;
+      ctx.fillRect(outX, y0, outW, y3-y0);
+    }
+
+    const totalP = scene.repCount + scene.aiCount;
+    const t = performance.now()*0.001;
+    function processorPose(slot, totalCount, isAI, timeNow){
+      const lane = (slot + 1) / (Math.max(1, totalCount) + 1);
+      const bx = procX + procW*(isAI?0.62:0.42) + Math.sin(timeNow*(isAI?3.4:2.2)+slot)*3;
+      const by = procY + procH*lane + Math.cos(timeNow*(isAI?4.1:2.6)+slot*0.7)*3;
+      return { bx, by, isAI };
+    }
+
+    for(let i=0;i<totalP;i++){
+      const slotIsAI = isAISlot(i, scene.repCount, scene.aiCount);
+      const pose = processorPose(i, totalP, slotIsAI, t);
+      const bx = pose.bx;
+      const by = pose.by;
+      drawProcessor(bx, by, slotIsAI?17.2:7.6, slotIsAI);
+    }
+
+    for(const l of links){
+      const slot = l.procSlot ?? 0;
+      const totalAtHit = l.procTotal ?? totalP;
+      const isAI = !!l.procIsAI;
+      const pose = processorPose(slot, totalAtHit, isAI, t);
+      const bx = pose.bx;
+      const by = pose.by;
+      const tx = lerp(x0+6, x3-6, clamp(l.p,0,1));
+      const ty = lerp(y0+12, y3-12, l.y);
+      const a = clamp(l.life, 0.28, 1) * (isAI ? 0.98 : 0.88);
+      ctx.strokeStyle = isAI ? `rgba(36,154,214,${a})` : `rgba(79,103,128,${a})`;
+      ctx.lineWidth = isAI ? 2.8 : 2;
+      ctx.beginPath();
+      ctx.moveTo(bx,by);
+      ctx.quadraticCurveTo((bx+tx)*0.5, ((by+ty)*0.5)-4, tx, ty);
+      ctx.stroke();
+    }
+
+    for(const p of prospects){
+      const x = lerp(x0+6, x3-6, clamp(p.p,0,1));
+      const y = lerp(y0+12, y3-12, p.y);
+      if(p.state === "lost"){
+        ctx.globalAlpha = clamp(p.fade,0,1);
+        drawPerson(x,y,7.8,"#D96836");
+        ctx.globalAlpha = 1;
+      } else {
+        drawPerson(x,y,7.8,"#D96836");
+      }
+    }
+
+    for(const d of closedDots){
+      const x = lerp(x0+6, x3-6, d.p);
+      const y = lerp(y0+12, y3-12, d.y);
+      drawPerson(x,y,6.9,"#2A8F63");
+    }
+    // UNCLOSED area removed by design; lost prospects remain accounted in metrics only.
+
+    const hudCompact = W < 700 || H < 390;
+    const hudTiny = W < 480 || H < 310;
+    const hudW = hudCompact
+      ? Math.min(208, Math.max(148, W * 0.4))
+      : Math.min(260, Math.max(200, W * 0.265));
+    const hudH = hudTiny ? 58 : (hudCompact ? 78 : 98);
+    const hudX = hudCompact ? (x0 + 2) : (x3 - hudW - 2);
+    const hudY = y3 - hudH - 4;
+    ctx.fillStyle = "rgba(244,249,255,.84)";
+    roundRect(hudX,hudY,hudW,hudH,12);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(93,132,172,.22)";
+    roundRect(hudX,hudY,hudW,hudH,12);
+    ctx.stroke();
+    const stateInfo = stressCategory(scene.stress);
+    let barX = hudX + 10;
+    let barY = hudY + hudH - 16;
+    let barW = hudW - 20;
+    let barH = hudTiny ? 7 : 8;
+
+    if(hudTiny){
+      ctx.fillStyle = "rgba(24,51,79,.88)";
+      ctx.font = "700 10px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("State", hudX + 8, hudY + 14);
+      ctx.fillStyle = stateInfo.color;
+      ctx.font = "900 11px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText(stateInfo.label, hudX + 46, hudY + 14);
+      ctx.fillStyle = "rgba(55,88,118,.8)";
+      ctx.font = "700 10px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("Eff", hudX + 8, hudY + 30);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "rgba(24,51,79,.92)";
+      ctx.fillText(hudEffText, hudX + hudW - 8, hudY + 30);
+      ctx.textAlign = "left";
+      barY = hudY + 40;
+      barH = 7;
+    } else if(hudCompact){
+      ctx.fillStyle = "rgba(24,51,79,.88)";
+      ctx.font = "700 10px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("System:", hudX + 8, hudY + 14);
+      ctx.fillStyle = stateInfo.color;
+      ctx.font = "900 12px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText(stateInfo.label, hudX + 52, hudY + 14);
+      ctx.fillStyle = "rgba(55,88,118,.8)";
+      ctx.font = "700 10px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("Efficiency", hudX + 8, hudY + 33);
+      ctx.fillText("Potential Loss", hudX + 8, hudY + 49);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "rgba(24,51,79,.92)";
+      ctx.fillText(hudEffText, hudX + hudW - 8, hudY + 33);
+      ctx.fillText(hudLossText, hudX + hudW - 8, hudY + 49);
+      ctx.textAlign = "left";
+      barY = hudY + 60;
+    } else {
+      ctx.fillStyle = "rgba(24,51,79,.88)";
+      ctx.font = "700 11px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("System state:", hudX+10, hudY+16);
+      ctx.fillStyle = stateInfo.color;
+      ctx.font = "900 13px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText(stateInfo.label, hudX+84, hudY+16);
+      ctx.fillStyle = "rgba(55,88,118,.8)";
+      ctx.font = "700 11px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("Efficiency", hudX + 10, hudY + 40);
+      ctx.fillText("Potential Loss", hudX + 10, hudY + 58);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "rgba(24,51,79,.92)";
+      ctx.fillText(hudEffText, hudX + hudW - 10, hudY + 40);
+      ctx.fillText(hudLossText, hudX + hudW - 10, hudY + 58);
+      ctx.textAlign = "left";
+      barY = hudY + 74;
+      barH = 10;
+    }
+    ctx.fillStyle = "rgba(93,132,172,.18)";
+    roundRect(barX,barY,barW,barH,999); ctx.fill();
+    ctx.fillStyle = stateInfo.color;
+    roundRect(barX,barY,Math.max(2,barW*clamp(scene.stress,0,1)),barH,999); ctx.fill();
+  }
+
+  let last = performance.now();
+  let acc = 0;
+  function frame(now){
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.05, (now-last)/1000);
+    last = now;
+
+    if(running){
+      const sps = 9 * speed;
+      acc += dt * sps;
+      if(demoLoopMode){
+        demoLoopElapsedMs += dt * 1000;
+        if(demoLoopElapsedMs >= DEMO_LOOP_MS){
+          acc = 0;
+          restartDemoLoop();
+          return;
+        }
+      }
+      while(acc >= 1){
+        updateSimulationStep();
+        acc -= 1;
+        if(!running) break;
+      }
+    } else {
+      acc = 0;
+      const capIdle = clamp(C/100, 0.05, 1.0);
+      const repIdle = Math.max(1, Math.round(lerp(1, 4, capIdle)));
+      const aiIdle = solutionOn ? Math.max(1, Math.round(repIdle * 0.5)) : 0;
+      draw({ ...stressAndCapacity(), repCount: repIdle, aiCount: aiIdle, overload: 0 });
+    }
+  }
+
+  ui.inflow.addEventListener("input", ()=>{
+    stopDemoLoop();
+    V = +ui.inflow.value;
+    updateControlReadouts();
+  });
+  ui.friction.addEventListener("input", ()=>{
+    stopDemoLoop();
+    F = +ui.friction.value;
+    updateControlReadouts();
+  });
+  ui.capacity.addEventListener("input", ()=>{
+    stopDemoLoop();
+    C = +ui.capacity.value;
+    updateControlReadouts();
+  });
+  ui.clv.addEventListener("input", ()=>{
+    stopDemoLoop();
+    CLV = Math.max(100, +ui.clv.value || 100);
+    ui.clv.value = String(CLV);
+  });
+  ui.solutionBtn.addEventListener("click", ()=>{
+    stopDemoLoop();
+    solutionOn = !solutionOn;
+    updateControlReadouts();
+  });
+  ui.playBtn.addEventListener("click", ()=>{
+    stopDemoLoop();
+    if(running) pauseSimulation(); else startSimulation();
+  });
+  ui.resetBtn.addEventListener("click", ()=>{
+    stopDemoLoop();
+    resetSimulation();
+  });
+  ui.speedSel.addEventListener("change", ()=>{
+    stopDemoLoop();
+    speed = +ui.speedSel.value;
+  });
+
+  updateControlReadouts();
+  updateMetrics(0,0);
+  if(autoPlay) startSimulation();
+  queueEmbedHeightPost();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

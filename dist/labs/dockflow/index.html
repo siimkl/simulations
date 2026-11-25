@@ -1,0 +1,2057 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DockFlow Systems Ltd - Yard & Dock Stability Simulation</title>
+<style>
+  :root{
+    color-scheme:light;
+    --bg:#f6f1e7;
+    --bg2:#e6edf1;
+    --card:rgba(255,255,255,.78);
+    --stroke:rgba(82,105,121,.16);
+    --text:#193244;
+    --muted:#63798b;
+    --primary:#35566f;
+    --accent:#c78a32;
+    --ok:#3e8c63;
+    --risk:#b65b42;
+    --prospect:#c78a32;
+    --drop:#b65b42;
+    --rep:#4d86ab;
+    --shadow:0 20px 54px rgba(63,84,98,.14);
+    --r:18px;
+    --r2:22px;
+    --font: Montserrat, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  html.embedMode,
+  body.embedMode{
+    height:auto;
+    min-height:0;
+  }
+  body{
+    margin:0;
+    font-family:var(--font);
+    color:var(--text);
+    background:#fff;
+    min-width:0;
+    overflow-x:hidden;
+  }
+  body.embedMode{
+    background:transparent;
+  }
+  .app{
+    width:min(1120px,96vw);
+    margin:18px auto;
+    border:1px solid var(--stroke);
+    border-radius:var(--r2);
+    overflow:hidden;
+    background:
+      radial-gradient(900px 520px at 20% 5%, rgba(199,138,50,.18), transparent 60%),
+      radial-gradient(800px 600px at 82% 42%, rgba(77,134,171,.15), transparent 62%),
+      linear-gradient(160deg, var(--bg), var(--bg2));
+    box-shadow:var(--shadow);
+  }
+  body.embedMode .app{
+    width:min(1120px,100%);
+    margin:0 auto;
+  }
+  .top{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    gap:12px;
+    padding:10px 10px 12px;
+  }
+  .top > div:first-child{min-width:0}
+  .title{font-size:clamp(20px,2.8vw,28px);font-weight:800;letter-spacing:.2px;line-height:1.05}
+  .titleRow{display:flex;align-items:center;gap:8px}
+  .sub{font-size:clamp(13px,1.9vw,15px);color:var(--muted);margin-top:6px;line-height:1.25;max-width:900px}
+  .fgIcon{
+    width:44px;
+    height:44px;
+    display:inline-block;
+    vertical-align:middle;
+  }
+  .btn .fgIcon{width:28px;height:28px}
+  .btnFlow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    justify-content:center;
+  }
+  .btnFlow .fgIcon{
+    width:30px;
+    height:30px;
+  }
+  .pill{
+    padding:8px 12px;
+    border:1px solid var(--stroke);
+    border-radius:999px;
+    background:rgba(255,255,255,.70);
+    font-size:12px;
+    white-space:nowrap;
+    box-shadow:0 6px 18px rgba(93,118,133,.08);
+  }
+  #stepBadge{
+    padding:8px 12px;
+    font-size:clamp(12px,1.45vw,16px);
+    font-weight:800;
+    line-height:1;
+  }
+  .topRight{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    justify-self:end;
+    align-self:center;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:.72fr 1.78fr;
+    gap:12px;
+    padding:0 10px 12px;
+  }
+  .card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r2);overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.76)}
+  .side{display:flex;flex-direction:column;gap:12px}
+  .panel{padding:12px}
+  .panelHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .panelTitle{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .group{
+    border:1px solid rgba(82,105,121,.12);
+    border-radius:14px;
+    padding:10px;
+    margin-top:10px;
+    background:rgba(255,255,255,.56);
+  }
+  .group:first-child{margin-top:0}
+  .groupHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .groupTitle{font-weight:800;font-size:13px}
+  .groupSub{color:var(--muted);font-size:12px}
+  .rowCtrl{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    gap:10px;
+    align-items:center;
+    padding:8px 0;
+    border-top:1px solid rgba(82,105,121,.10);
+  }
+  .rowCtrl:first-of-type{border-top:0;padding-top:0}
+  .labelWrap{display:flex;align-items:center;gap:8px;min-width:0}
+  .lbl{font-size:12.5px;font-weight:700}
+  .hint{font-size:12px;color:var(--muted)}
+  .valPill{
+    font-size:12px;
+    min-width:54px;
+    text-align:center;
+    padding:6px 8px;
+    border:1px solid var(--stroke);
+    border-radius:999px;
+    background:rgba(242,246,248,.92);
+  }
+  .ctrlStack{grid-column:1/-1}
+  .moneyWrap{
+    position:relative;
+    width:120px;
+  }
+  .moneyWrap input{
+    width:100%;
+    padding-right:28px;
+  }
+  .moneyWrap .suffix{
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--muted);
+    font-size:12px;
+    font-weight:800;
+    pointer-events:none;
+  }
+  input[type="range"]{
+    -webkit-appearance:none;
+    appearance:none;
+    width:100%;
+    height:7px;
+    border-radius:999px;
+    border:1px solid rgba(109,130,144,.24);
+    background:linear-gradient(90deg, rgba(221,230,235,.98), rgba(204,217,225,.98));
+    outline:none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:16px;
+    height:16px;
+    border-radius:999px;
+    background:#fffdfa;
+    border:2px solid var(--accent);
+    box-shadow:0 0 0 2px rgba(83,106,121,.16);
+    cursor:pointer;
+  }
+  input[type="range"]::-moz-range-track{
+    height:7px;
+    border-radius:999px;
+    border:1px solid rgba(109,130,144,.24);
+    background:linear-gradient(90deg, rgba(221,230,235,.98), rgba(204,217,225,.98));
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:16px;
+    height:16px;
+    border-radius:999px;
+    background:#fffdfa;
+    border:2px solid var(--accent);
+    box-shadow:0 0 0 2px rgba(83,106,121,.16);
+    cursor:pointer;
+  }
+  input[type="number"],select,.btn{
+    border:1px solid var(--stroke);
+    border-radius:12px;
+    background:rgba(255,255,255,.76);
+    color:var(--text);
+    padding:10px 11px;
+    font-weight:700;
+    font-size:12.5px;
+  }
+  select option{background:#f7f5ef;color:#193244}
+  .btn{cursor:pointer}
+  .btn:hover{background:rgba(255,255,255,.92)}
+  .btn.isOn{background:rgba(77,134,171,.16);border-color:rgba(77,134,171,.42)}
+  #solutionBtn{
+    justify-self:start;
+    align-self:center;
+    padding:8px 10px;
+    min-height:36px;
+    font-size:13px;
+    line-height:1;
+    gap:7px;
+  }
+  #solutionBtn.isOn{
+    background:linear-gradient(135deg, rgba(199,138,50,.26), rgba(168,118,48,.18));
+    border-color:rgba(199,138,50,.62);
+    box-shadow:0 0 0 1px rgba(199,138,50,.24) inset, 0 8px 20px rgba(90,106,117,.12);
+    color:var(--text);
+  }
+  #solutionBtn.isOn:hover{
+    filter:brightness(1.04);
+  }
+  .btnRow{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:stretch;
+  }
+  .btnRow > *{
+    flex:1 1 140px;
+    min-width:0;
+  }
+  .btnRow .btn,
+  .btnRow select{
+    height:42px;
+    padding:9px 10px;
+  }
+  .btnRow #playBtn,
+  .btnRow #resetBtn{
+    flex:0.78 1 0;
+    font-size:12px;
+  }
+  .btnRow #playBtn{
+    background:var(--primary);
+    border-color:rgba(77,134,171,.52);
+    color:#fffdf8;
+    font-weight:900;
+    box-shadow:0 0 0 1px rgba(77,134,171,.20) inset, 0 8px 20px rgba(69,91,106,.22);
+  }
+  .btnRow #playBtn:hover{
+    filter:brightness(1.06);
+    box-shadow:0 0 0 1px rgba(77,134,171,.30) inset, 0 10px 24px rgba(69,91,106,.24);
+  }
+  .btnRow #speedSel{
+    flex:1.44 1 0;
+    min-width:0;
+    font-size:13px;
+    padding-right:12px;
+  }
+  .metricRow{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    column-gap:10px;
+    row-gap:6px;
+    padding:8px 0;
+    border-top:1px solid rgba(82,105,121,.10);
+  }
+  .metricRow:first-child{border-top:0;padding-top:0}
+  .metricMeta{display:grid;grid-template-columns:minmax(0,1fr);row-gap:4px;min-width:0}
+  .metricName{font-size:12.5px;font-weight:800;display:inline-flex;align-items:center;gap:6px}
+  .metricSub{
+    font-size:11.5px;color:var(--muted);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .metricVal{font-family:ui-monospace,Consolas,monospace;font-size:16px;font-weight:900}
+  .infoBtn{
+    width:18px;height:18px;
+    border-radius:999px;
+    border:1px solid rgba(82,105,121,.16);
+    background:rgba(255,255,255,.74);
+    color:var(--text);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    cursor:pointer;
+    flex:0 0 auto;
+    padding:0;
+  }
+  .tip{
+    display:none;
+    margin-top:8px;
+    padding:8px 10px;
+    border-radius:10px;
+    border:1px solid rgba(82,105,121,.14);
+    background:rgba(248,250,251,.96);
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.35;
+  }
+  .hasTipOpen .tip{display:block}
+  .canvasWrap{position:relative;height:100%}
+  .simInner{position:relative;height:100%;display:flex;flex-direction:column}
+  .simHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border-bottom:1px solid rgba(82,105,121,.10);
+    background:rgba(255,255,255,.38);
+  }
+  .simHead .h{font-size:13px;font-weight:800}
+  .simHead .muted{font-size:12px;color:var(--muted);margin-top:2px}
+  .canvasHost{position:relative;flex:1;min-height:0}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  @media (max-width:980px){
+    .grid{
+      grid-template-columns:1fr;
+      gap:12px;
+      padding:0 10px 12px;
+    }
+    .canvasWrap{min-height:0}
+    .simInner{min-height:clamp(320px,60vw,500px)}
+    .canvasHost{min-height:clamp(260px,48vw,420px)}
+  }
+  @media (max-width:760px){
+    .app{
+      width:100%;
+      margin:0;
+      border-radius:0;
+      border-left:0;
+      border-right:0;
+    }
+    .top{
+      padding:10px;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:8px;
+    }
+    .top > div:first-child{width:auto}
+    .topRight{width:auto;justify-content:flex-end}
+    .fgIcon{
+      width:34px;
+      height:34px;
+    }
+    .grid{gap:10px;padding:0 8px 10px}
+    .panel{
+      padding:8px;
+    }
+    .panelHead{
+      margin-bottom:8px;
+    }
+    .group{
+      padding:8px;
+      margin-top:8px;
+    }
+    .groupTitle{
+      font-size:12.5px;
+    }
+    .groupSub{
+      font-size:11.5px;
+    }
+    .rowCtrl{
+      grid-template-columns:minmax(88px,auto) 1fr auto;
+      gap:8px;
+      padding:7px 0;
+    }
+    .labelWrap{
+      white-space:nowrap;
+      gap:6px;
+    }
+    .lbl{
+      font-size:12px;
+    }
+    .rowCtrl .valPill{
+      min-width:46px;
+      padding:5px 6px;
+    }
+    .moneyWrap{
+      width:100%;
+      max-width:140px;
+    }
+    .simHead{
+      flex-wrap:wrap;
+      padding:9px 10px;
+    }
+    .simHead > div:first-child{
+      width:100%;
+    }
+    .simHead .pill{
+      margin-left:0;
+    }
+    .simInner{
+      min-height:clamp(300px,72vw,460px);
+    }
+    .canvasHost{
+      min-height:clamp(240px,58vw,360px);
+    }
+    .btnRow > *{
+      flex:1 1 calc(50% - 4px);
+    }
+    .btnRow .btn,
+    .btnRow select{
+      height:38px;
+      padding:7px 8px;
+    }
+    .btnRow #speedSel{
+      flex:1 1 100%;
+    }
+  }
+  @media (max-width:460px){
+    .titleRow{
+      align-items:flex-start;
+    }
+    .sub{
+      max-width:none;
+    }
+    .panelTitle{
+      letter-spacing:.08em;
+    }
+    .simInner{
+      min-height:320px;
+    }
+    .canvasHost{
+      min-height:250px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div>
+      <div class="title titleRow">
+        <svg class="fgIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="6" width="18" height="14" rx="2.5" fill="#C78A32"/>
+          <rect x="6.8" y="9.2" width="10.4" height="7.6" rx="1.2" fill="#35566F"/>
+          <path d="M12 10v6M9.5 13h5" stroke="#FFF8EE" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <span>DockFlow Systems Ltd</span>
+      </div>
+      <div class="sub">How distribution yards collapse under peak truck arrivals, and how DockFlow stabilizes throughput to protect performance.</div>
+    </div>
+    <div class="topRight">
+      <div class="pill" id="stepBadge">Step 0 / 300</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="side">
+      <div class="card">
+        <div class="panel">
+          <div class="panelHead">
+            <div class="panelTitle">Controls</div>
+            <div class="pill" style="padding:6px 10px;">
+              <span style="opacity:.9;">Mode:</span>
+              <strong id="modeReadout">Manual Dispatch</strong>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="groupHead">
+              <div>
+                <div class="groupTitle">Dynamics</div>
+                <div class="groupSub">Tune load, delay and capacity.</div>
+              </div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowInflow">
+              <div class="labelWrap">
+                <div class="lbl">Truck Arrivals</div>
+                <button class="infoBtn" data-tip="tipInflow" aria-label="Truck Arrivals info">i</button>
+              </div>
+              <input id="inflow" type="range" min="0" max="100" value="55" />
+              <div class="valPill" id="vInflow">55</div>
+              <div class="ctrlStack tip" id="tipInflow">Inbound yard pressure (peak season, promo surges, supply chain disruptions).</div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowDelay">
+              <div class="labelWrap">
+                <div class="lbl">Process Friction</div>
+                <button class="infoBtn" data-tip="tipDelay" aria-label="Manual Check-In and slotting info">i</button>
+              </div>
+              <input id="friction" type="range" min="0" max="100" value="40" />
+              <div class="valPill" id="vDelay">40</div>
+              <div class="ctrlStack tip" id="tipDelay">Paper logs, poor slotting, communication gaps, and queue mismanagement.</div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowCapacity">
+              <div class="labelWrap">
+                <div class="lbl">Dock &amp; Crew Capacity</div>
+                <button class="infoBtn" data-tip="tipCapacity" aria-label="Dock doors and crews info">i</button>
+              </div>
+              <input id="capacity" type="range" min="1" max="100" value="48" />
+              <div class="valPill" id="vCap">48</div>
+              <div class="ctrlStack tip" id="tipCapacity">Available dock doors, forklift crews, and unload coordination capacity.</div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowClv">
+              <div class="labelWrap">
+                <div class="lbl">Delay Penalty</div>
+                <button class="infoBtn" data-tip="tipClv" aria-label="Penalty per overdue truck info">i</button>
+              </div>
+              <div class="moneyWrap">
+                <input id="clv" type="number" min="100" step="100" value="1200" />
+                <span class="suffix">$</span>
+              </div>
+              <div></div>
+              <div class="ctrlStack tip" id="tipClv">Delay penalties + idle truck costs + overtime labor impact per overdue truck.</div>
+            </div>
+
+            <div class="rowCtrl hasTip" id="rowSolution">
+              <div class="labelWrap">
+                <div class="lbl">Activate</div>
+                <button class="infoBtn" data-tip="tipSolution" aria-label="DockFlow orchestration info">i</button>
+              </div>
+              <button class="btn btnFlow" id="solutionBtn">
+                <svg class="fgIcon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="6" width="18" height="14" rx="2.5" fill="#C78A32"/>
+                  <rect x="6.8" y="9.2" width="10.4" height="7.6" rx="1.2" fill="#35566F"/>
+                  <path d="M12 10v6M9.5 13h5" stroke="#FFF8EE" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                <span id="solutionBtnLabel">DockFlow OFF</span>
+              </button>
+              <div></div>
+              <div class="ctrlStack tip" id="tipSolution">Digital slot booking + predictive allocation + real-time dock reassignment.</div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="btnRow">
+              <button class="btn" id="playBtn">Pause</button>
+              <button class="btn" id="resetBtn">Reset</button>
+              <select id="speedSel" aria-label="Speed">
+                <option value="0.5">0.5 Slow</option>
+                <option value="1" selected>1.0 Normal</option>
+                <option value="1.5">1.5 Fast</option>
+                <option value="2">2.0 Fast</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card canvasWrap">
+      <div class="simInner">
+        <div class="simHead">
+          <div>
+            <div class="h" id="simTitle">Yard under stress</div>
+            <div class="muted" id="simSub">Increase arrivals. Activate orchestration to stabilize dock throughput.</div>
+          </div>
+          <div class="pill" style="padding:6px 10px;">
+            <span style="opacity:.9;">Story:</span>
+            <strong id="storyReadout">Queue -> Breach -> Stabilize</strong>
+          </div>
+        </div>
+        <div class="canvasHost" id="canvasHost">
+          <canvas id="simCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const isEmbedded = window.parent !== window;
+  if(isEmbedded){
+    document.documentElement.classList.add("embedMode");
+    document.body.classList.add("embedMode");
+  }
+
+  // Report the document height to parent pages so embedded iframes can auto-size.
+  let lastEmbedHeight = 0;
+  let embedHeightRaf = 0;
+  function postEmbedHeight(){
+    if(!isEmbedded) return;
+    const body = document.body;
+    const html = document.documentElement;
+    const docHeight = Math.ceil(Math.max(
+      html ? html.scrollHeight : 0,
+      html ? html.offsetHeight : 0,
+      body ? body.scrollHeight : 0,
+      body ? body.offsetHeight : 0
+    ));
+    const app = document.querySelector(".app");
+    let appHeight = 0;
+    if(app){
+      const cs = getComputedStyle(app);
+      const mt = parseFloat(cs.marginTop) || 0;
+      const mb = parseFloat(cs.marginBottom) || 0;
+      appHeight = Math.ceil(app.getBoundingClientRect().height + mt + mb);
+    }
+    const h = appHeight > 0 ? appHeight : docHeight;
+    if(!Number.isFinite(h) || h <= 0) return;
+    if(Math.abs(h - lastEmbedHeight) < 2) return;
+    lastEmbedHeight = h;
+    // Compatibility: support both DockFlow and legacy FlowGuard iframe host scripts.
+    window.parent.postMessage({ type: "dockflow:height", height: h }, "*");
+    window.parent.postMessage({ type: "flowguard:height", height: h }, "*");
+  }
+  function queueEmbedHeightPost(){
+    if(embedHeightRaf) return;
+    embedHeightRaf = requestAnimationFrame(()=>{
+      embedHeightRaf = 0;
+      postEmbedHeight();
+    });
+  }
+  addEventListener("message", (e)=>{
+    const d = e.data;
+    if(!d) return;
+    if(d.type !== "dockflow:request-height" && d.type !== "flowguard:request-height") return;
+    queueEmbedHeightPost();
+  });
+
+  // Tooltips: click-to-open, one at a time (Prospect-loss-engine style).
+  document.addEventListener("click", (e)=>{
+    const b = e.target.closest(".infoBtn");
+    const open = Array.from(document.querySelectorAll(".hasTipOpen"));
+    if(!b){
+      open.forEach(el=>el.classList.remove("hasTipOpen"));
+      queueEmbedHeightPost();
+      return;
+    }
+    const row = b.closest(".rowCtrl") || b.closest(".metricRow");
+    if(!row) return;
+    open.forEach(el=>{ if(el!==row) el.classList.remove("hasTipOpen"); });
+    row.classList.toggle("hasTipOpen");
+    queueEmbedHeightPost();
+  });
+
+  const ui = {
+    inflow: document.getElementById("inflow"),
+    friction: document.getElementById("friction"),
+    capacity: document.getElementById("capacity"),
+    clv: document.getElementById("clv"),
+    solutionBtn: document.getElementById("solutionBtn"),
+    solutionBtnLabel: document.getElementById("solutionBtnLabel"),
+    modeReadout: document.getElementById("modeReadout"),
+    playBtn: document.getElementById("playBtn"),
+    resetBtn: document.getElementById("resetBtn"),
+    speedSel: document.getElementById("speedSel"),
+    vInflow: document.getElementById("vInflow"),
+    vDelay: document.getElementById("vDelay"),
+    vCap: document.getElementById("vCap"),
+    stepBadge: document.getElementById("stepBadge")
+  };
+
+  const canvas = document.getElementById("simCanvas");
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  let W=1, H=1, DPR=1;
+  function resize(){
+    DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const r = canvas.getBoundingClientRect();
+    W = Math.max(1, Math.floor(r.width));
+    H = Math.max(1, Math.floor(r.height));
+    canvas.width = Math.floor(W * DPR);
+    canvas.height = Math.floor(H * DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  addEventListener("resize", ()=>{
+    resize();
+    queueEmbedHeightPost();
+  }, { passive: true });
+  addEventListener("orientationchange", queueEmbedHeightPost, { passive: true });
+  resize();
+  queueEmbedHeightPost();
+
+  if("ResizeObserver" in window){
+    const ro = new ResizeObserver(()=>queueEmbedHeightPost());
+    ro.observe(document.documentElement);
+    ro.observe(document.body);
+  }
+  addEventListener("load", queueEmbedHeightPost);
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(queueEmbedHeightPost).catch(()=>{});
+  }
+  [120, 380, 900, 1600].forEach(ms=>setTimeout(queueEmbedHeightPost, ms));
+
+  const MAX_STEPS = 300;
+  const ARRIVAL_MASS_SCALE = 0.5;
+  let running = true;
+  let step = 0;
+  let speed = 1;
+  let autoPlay = true;
+  const DEMO_LOOP_MS = 15000;
+  let demoLoopMode = true;
+  let demoLoopElapsedMs = 0;
+
+  let V = +ui.inflow.value;
+  let F = +ui.friction.value;
+  let C = +ui.capacity.value;
+  let CLV = +ui.clv.value || 1200;
+  let solutionOn = true;
+
+  let closedDeals = 0;
+  let lostDeals = 0;
+  let emaEff = 0;
+  let emaLoss = 0;
+  let hudEffText = "0%";
+  let hudLossText = "$0";
+
+  const prospects = [];
+  const closedDots = [];
+  const lostDots = [];
+  const links = [];
+  const dockEvents = [];
+  const palette = {
+    truckActive: "#C78A32",
+    truckServed: "#5A8AA8",
+    truckLost: "#8A6A5B",
+    eventServed: [90, 138, 168],
+    eventLost: [182, 96, 74],
+    agentAiAura: "rgba(90,138,168,.22)",
+    agentAiGradA: "rgba(90,138,168,.95)",
+    agentAiGradB: "rgba(57,98,126,.90)",
+    agentAiStroke: "rgba(217,230,238,.95)",
+    agentManualAura: "rgba(188,173,150,.20)",
+    agentManualGradA: "rgba(177,165,147,.94)",
+    agentManualGradB: "rgba(136,128,114,.90)",
+    agentManualStroke: "rgba(244,237,226,.86)",
+    dockflowAura: "rgba(199,138,50,.24)",
+    dockflowGradA: "rgba(199,138,50,.97)",
+    dockflowGradB: "rgba(164,117,51,.93)",
+    dockflowStroke: "rgba(246,225,184,.96)"
+  };
+  const truckLiveryTones = [
+    { body:"#C8A189", shade:"#A97D64", accent:"#E9D7CC", stripe:"#DFC2B0", cab:"#D2B09C" },
+    { body:"#9AB6C7", shade:"#7C97AB", accent:"#D9E6EE", stripe:"#C2D5E2", cab:"#A8C2D1" },
+    { body:"#9AA8BA", shade:"#7B8DA2", accent:"#D9E0EA", stripe:"#C4CEDB", cab:"#AAB7C7" },
+    { body:"#C4B08C", shade:"#A48F6B", accent:"#E9E0CF", stripe:"#DDD2BC", cab:"#CDBD9E" },
+    { body:"#93B1AD", shade:"#75958F", accent:"#D6E4E2", stripe:"#C0D5D1", cab:"#A6C3BF" },
+    { body:"#BCA6AD", shade:"#9A858C", accent:"#E7DBDF", stripe:"#D8C8CD", cab:"#C9B6BC" }
+  ];
+  const delayedTruckLivery = {
+    body: "#7C6C64",
+    shade: "#403833",
+    accent: "#D8C5B9",
+    stripe: "#A08C82",
+    cab: "#5B4F49",
+    logo: "HOLD",
+    word: "Delayed",
+    decal: 1
+  };
+  const truckLogos = ["DF", "NX", "CT", "PL", "YN", "HP", "AX", "RO"];
+  const truckWords = ["DockFlow", "NorthX", "CargoTech", "PeakLine", "YardNet", "HaulPro", "AxleOne", "RoadOps"];
+
+  function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function fmtPct(x){ return (x*100).toFixed(0)+"%"; }
+  function money(v){
+    const n = Math.abs(Math.round(v)).toLocaleString("en-US").replace(/,/g, " ");
+    return `${n} $`;
+  }
+  function createTruckLivery(){
+    const tone = truckLiveryTones[Math.floor(Math.random() * truckLiveryTones.length)];
+    const brand = Math.floor(Math.random() * truckLogos.length);
+    return {
+      body: tone.body,
+      shade: tone.shade,
+      accent: tone.accent,
+      stripe: tone.stripe,
+      cab: tone.cab,
+      logo: truckLogos[brand],
+      word: truckWords[brand],
+      decal: Math.floor(Math.random() * 4)
+    };
+  }
+  function normalizeTruckLivery(input){
+    if(input && typeof input === "object"){
+      return input;
+    }
+    const base = typeof input === "string" ? input : palette.truckActive;
+    return {
+      body: base,
+      shade: base,
+      accent: "#FFF8EE",
+      stripe: "#E5C97B",
+      cab: base,
+      logo: "DF",
+      word: "DockFlow",
+      decal: 0
+    };
+  }
+  function isAISlot(slot, repCount, aiCount){
+    if(aiCount <= 0) return false;
+    if(slot % 2 === 1){
+      const aiIdx = (slot - 1) / 2;
+      return aiIdx < aiCount;
+    }
+    const repIdx = slot / 2;
+    return repIdx >= repCount;
+  }
+
+  function stressCategory(stress){
+    const s = clamp(stress, 0, 1);
+    if(s < 0.16) return { label: "Stable", color: "#4D86AB" };
+    if(s < 0.32) return { label: "Normal Load", color: "#4D86AB" };
+    if(s < 0.50) return { label: "Busy", color: "#76A3BD" };
+    if(s < 0.68) return { label: "Under Strain", color: "#C9A24C" };
+    if(s < 0.84) return { label: "Overloaded", color: "#C78A32" };
+    return { label: "Critical", color: "#B65B42" };
+  }
+
+  function updateControlReadouts(){
+    ui.vInflow.textContent = String(V);
+    ui.vDelay.textContent = String(F);
+    ui.vCap.textContent = String(C);
+    ui.solutionBtnLabel.textContent = solutionOn ? "DockFlow ON" : "DockFlow OFF";
+    ui.modeReadout.textContent = solutionOn ? "With DockFlow" : "Manual Dispatch";
+    ui.solutionBtn.classList.toggle("isOn", solutionOn);
+    ui.playBtn.textContent = running ? "Pause" : "Play";
+  }
+
+  function resetSimulation(){
+    running = false;
+    step = 0;
+    closedDeals = 0;
+    lostDeals = 0;
+    emaEff = 0;
+    emaLoss = 0;
+    prospects.length = 0;
+    closedDots.length = 0;
+    lostDots.length = 0;
+    links.length = 0;
+    dockEvents.length = 0;
+    updateControlReadouts();
+    updateMetrics(0,0);
+  }
+
+  function startSimulation(){
+    if(step >= MAX_STEPS) resetSimulation();
+    running = true;
+    updateControlReadouts();
+  }
+
+  function pauseSimulation(){
+    running = false;
+    updateControlReadouts();
+  }
+
+  function stopDemoLoop(){
+    if(!demoLoopMode) return;
+    demoLoopMode = false;
+    demoLoopElapsedMs = 0;
+  }
+
+  function restartDemoLoop(){
+    demoLoopElapsedMs = 0;
+    resetSimulation();
+    solutionOn = true;
+    startSimulation();
+  }
+
+  function stressAndCapacity(){
+    const delayNorm = clamp((F / 100) * 0.72, 0, 0.72);
+    const capNorm = clamp(C/100, 0.05, 1.0);
+    const inflowNorm = clamp((V/100) * ARRIVAL_MASS_SCALE, 0, 1.4);
+    const aiBoost = solutionOn ? 1.22 : 1.0;
+    const S = (inflowNorm * (1 + delayNorm*1.1)) / (capNorm * aiBoost);
+    const stress = clamp((S - 0.65)/1.0, 0, 1.25);
+    return { stress, delayNorm, capNorm };
+  }
+
+  function getStageRatios(){
+    // Small screens: emphasize dock assignment area, compress right-side outcome areas.
+    if(W <= 760){
+      return { x1: 0.31, x2: 0.74 };
+    }
+    return { x1: 0.31, x2: 0.62 };
+  }
+
+  function getDockBoundaryP(){
+    const pad = 12;
+    const x0 = pad, x3 = W - pad;
+    const ratios = getStageRatios();
+    const x1 = lerp(x0, x3, ratios.x1), x2 = lerp(x0, x3, ratios.x2);
+    const procX = x1 + 6;
+    const procW = (x2 - x1) - 12;
+    // Place the wall clearly inside assignment area (before unloading doors).
+    const dockBoundaryX = procX + procW * 0.66;
+    const flowStartX = x0 + 6;
+    const flowEndX = x3 - 6;
+    const p = (dockBoundaryX - flowStartX) / Math.max(1, (flowEndX - flowStartX));
+    return clamp(p, 0.46, 0.80);
+  }
+
+  function spawnProspects(stress){
+    const base = lerp(0.24, 2.05, clamp(V/100, 0, 1)) * ARRIVAL_MASS_SCALE;
+    const raw = solutionOn ? base * 0.88 : base;
+    const n = Math.floor(raw + Math.random());
+    for(let i=0;i<n;i++){
+      const livery = createTruckLivery();
+      prospects.push({
+        p: 0,
+        y: 0.14 + Math.random()*0.72,
+        state: "active",
+        served: false,
+        lastLane: 0.5,
+        lastType: "rep",
+        dropT: 0,
+        dropStartY: 0.14,
+        dropP: 0,
+        wait: 0,
+        assist: 0,
+        fade: 1,
+        livery
+      });
+    }
+    if(stress > 0.95 && Math.random() < 0.5){
+      const livery = createTruckLivery();
+      prospects.push({
+        p:0,
+        y:0.18+Math.random()*0.64,
+        state:"active",
+        served:false,
+        lastLane:0.5,
+        lastType:"rep",
+        dropT:0,
+        dropStartY:0.18,
+        dropP:0,
+        wait:0,
+        assist:0,
+        fade:1,
+        livery
+      });
+    }
+  }
+
+  function updateSimulationStep(){
+    const { stress, delayNorm, capNorm } = stressAndCapacity();
+
+    spawnProspects(stress);
+
+    // Keep outcome truck placement aligned with current visual stage boundaries.
+    const pad = 12;
+    const x0 = pad, x3 = W - pad;
+    const ratios = getStageRatios();
+    const x2 = lerp(x0, x3, ratios.x2);
+    const xOutMid = lerp(x2, x3, 0.5);
+    const flowStartX = x0 + 6;
+    const flowEndX = x3 - 6;
+    const flowSpan = Math.max(1, flowEndX - flowStartX);
+    const pFromX = (xx) => clamp((xx - flowStartX) / flowSpan, 0, 1);
+    const outcomeMargin = W <= 760 ? 14 : 8;
+
+    let departMin = pFromX(x2 + outcomeMargin);
+    let departMax = pFromX(xOutMid - outcomeMargin);
+    if(departMax - departMin < 0.02){
+      const mid = (departMin + departMax) * 0.5;
+      departMin = mid - 0.01;
+      departMax = mid + 0.01;
+    }
+    departMin = clamp(departMin, 0, 0.96);
+    departMax = clamp(departMax, departMin + 0.02, 0.985);
+
+    let delayedMin = pFromX(xOutMid + outcomeMargin);
+    let delayedMax = pFromX(x3 - outcomeMargin);
+    if(delayedMax - delayedMin < 0.02){
+      const mid = (delayedMin + delayedMax) * 0.5;
+      delayedMin = mid - 0.01;
+      delayedMax = mid + 0.01;
+    }
+    delayedMin = clamp(delayedMin, departMax + 0.005, 0.99);
+    delayedMax = clamp(delayedMax, delayedMin + 0.01, 0.998);
+
+    const procStart = 0.33;
+    const procEndHit = getDockBoundaryP(); // hard wall aligned with dock-boundary line
+    const procEnd = clamp(procEndHit + 0.012, procStart + 0.08, 0.90);
+
+    const repCount = Math.max(1, Math.round(lerp(1, 4, capNorm))); // normal processors max 4
+    const aiCount = solutionOn ? Math.max(1, Math.round(repCount * 0.5)) : 0; // additional
+    const processors = repCount + aiCount;
+
+    const activeInProc = prospects.filter(a => a.state === "active" && !a.served && a.p >= procStart && a.p < procEnd);
+    const slots = Math.max(2, Math.round(lerp(3, 20, capNorm * (solutionOn ? 1.18 : 1.0))));
+    const overload = Math.max(0, (activeInProc.length - slots) / Math.max(1, slots));
+
+    // Per-processor activation: low delay => more interactions, high delay => fewer.
+    const delayPressure = clamp(delayNorm / 0.72, 0, 1);
+    const delayEffect = Math.pow(1 - delayPressure, 2.2);
+    const overloadPressure = clamp(overload / 1.2, 0, 1);
+    let interactionChance = lerp(0.05, 0.74, delayEffect);
+    interactionChance += (solutionOn ? 0.22 : -0.16) + (0.16 * overloadPressure);
+    interactionChance = clamp(interactionChance, 0.02, 1.00);
+    if(activeInProc.length >= processors && overloadPressure > 0.70 && delayEffect > 0.35){
+      interactionChance = Math.max(interactionChance, 0.90);
+    }
+    // Interaction is not guaranteed conversion. Baseline should leak value under stress.
+    const serveBase =
+      0.18 +
+      0.34 * capNorm +
+      0.22 * delayEffect -
+      0.22 * overloadPressure -
+      0.18 * clamp(stress, 0, 1);
+    const serveChance = clamp(serveBase + (solutionOn ? 0.34 : 0), 0.06, 0.95);
+
+    activeInProc.sort((a,b) => b.wait - a.wait);
+    let clientCursor = 0;
+    const slotOffset = step % Math.max(1, processors);
+    for(let k=0;k<processors;k++){
+      if(clientCursor >= activeInProc.length) break;
+      if(Math.random() > interactionChance) continue;
+      const procSlot = (k + slotOffset) % Math.max(1, processors);
+      const t = activeInProc[clientCursor++];
+      const lane = (procSlot + 1) / (Math.max(1, processors) + 1);
+      const isAI = isAISlot(procSlot, repCount, aiCount);
+      const boost = isAI ? 0.018 : 0.0095;
+      t.assist = clamp(t.assist + (isAI ? 0.36 : 0.18), 0, 1);
+      t.lastLane = lane;
+      t.lastType = isAI ? "ai" : "rep";
+      t.p = clamp(t.p + boost, procStart, procEnd + 0.04);
+      // Only a share of touches converts; others remain in flow and risk wall loss.
+      const converted = Math.random() < clamp(serveChance * (isAI ? 1.10 : 1.0), 0.06, 0.98);
+      if(converted){
+        t.served = true;
+        closedDeals += 1;
+        closedDots.push({
+          p: departMin + Math.random() * (departMax - departMin),
+          y: clamp(0.08 + Math.random()*0.84, 0.08, 0.92),
+          livery: t.livery
+        });
+        t.state = "served";
+      }
+      links.push({
+        kind: "hit",
+        procSlot,
+        procTotal: processors,
+        procIsAI: isAI,
+        p: t.p, // hit position at impact moment
+        y: t.y,
+        type: isAI ? "ai" : "rep",
+        life: 1
+      });
+      dockEvents.push({
+        procSlot,
+        procTotal: processors,
+        success: converted,
+        life: converted ? 1.05 : 0.86,
+        livery: t.livery
+      });
+      if(dockEvents.length > 120){
+        dockEvents.splice(0, dockEvents.length - 120);
+      }
+    }
+
+    const baseSpeed = 0.010;
+    const procSpeed = lerp(0.006, 0.026, capNorm);
+    const delaySlow = 1 - delayNorm * 0.42;
+    const overloadSlow = 1/(1 + overload*1.2);
+
+    for(let i=prospects.length-1;i>=0;i--){
+      const a = prospects[i];
+      if(a.state === "served"){
+        prospects.splice(i,1);
+        continue;
+      }
+      if(a.state === "lost"){
+        if(a.dropT < 1){
+          a.dropT = Math.min(1, a.dropT + 0.16);
+          const ease = 1 - Math.pow(1 - a.dropT, 2);
+          a.y = lerp(a.dropStartY, 0.99, ease);
+          a.p = lerp(a.p, a.dropP, 0.18);
+          a.fade = 1;
+        } else {
+          a.fade -= 0.05;
+        }
+        if(a.fade <= 0){ prospects.splice(i,1); }
+        continue;
+      }
+
+      const inProc = a.p >= procStart && a.p < procEnd;
+      if(inProc) a.wait += 1; else a.wait = Math.max(0, a.wait - 1);
+
+      const procBoost = inProc ? (1 + a.assist*0.25) : 1;
+      const move = inProc
+        ? Math.max(0.004, procSpeed * delaySlow * overloadSlow * procBoost)
+        : baseSpeed;
+
+      a.p += move;
+      a.assist = Math.max(0, a.assist - 0.05);
+
+      // Hard wall: unserved clients hit before process end, then drop down red.
+      if(!a.served && a.p >= procEndHit){
+        a.state = "lost";
+        lostDeals += 1;
+        lostDots.push({
+          p: delayedMin + Math.random() * (delayedMax - delayedMin),
+          y: clamp(0.08 + Math.random()*0.84, 0.08, 0.92),
+          livery: a.livery
+        });
+        a.dropT = 0;
+        a.dropStartY = a.y;
+        a.dropP = clamp(procEndHit - 0.02 + (Math.random()-0.5)*0.04, procStart + 0.04, procEndHit - 0.004);
+        a.p = clamp(procEndHit - 0.004, procStart + 0.02, procEndHit - 0.002);
+        continue;
+      }
+
+      if(a.p >= procEnd){
+        prospects.splice(i,1);
+      }
+    }
+
+    for(let i=links.length-1;i>=0;i--){
+      const l = links[i];
+      l.life -= l.type === "ai" ? 0.36 : 0.30;
+      if(l.life <= 0){
+        links.splice(i,1);
+      }
+    }
+    for(let i=dockEvents.length-1;i>=0;i--){
+      const ev = dockEvents[i];
+      ev.life -= ev.success ? 0.11 : 0.15;
+      if(ev.life <= 0){
+        dockEvents.splice(i,1);
+      }
+    }
+
+    const denom = Math.max(1, closedDeals + lostDeals);
+    const eff = closedDeals / denom;
+    const potLoss = lostDeals * CLV;
+
+    emaEff = emaEff ? (emaEff*0.84 + eff*0.16) : eff;
+    emaLoss = emaLoss ? (emaLoss*0.84 + potLoss*0.16) : potLoss;
+
+    updateMetrics(emaEff, emaLoss);
+    draw({ stress, repCount, aiCount, overload });
+
+    step++;
+    if(step >= MAX_STEPS){
+      if(demoLoopMode){
+        restartDemoLoop();
+      } else {
+        step = MAX_STEPS;
+        pauseSimulation();
+      }
+    }
+  }
+
+  function updateMetrics(eff, loss){
+    hudEffText = fmtPct(eff);
+    hudLossText = money(loss);
+    ui.stepBadge.textContent = `Step ${step} / ${MAX_STEPS}`;
+  }
+
+  function roundRect(x,y,w,h,r){
+    const rr = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr,y);
+    ctx.arcTo(x+w,y,x+w,y+h,rr);
+    ctx.arcTo(x+w,y+h,x,y+h,rr);
+    ctx.arcTo(x,y+h,x,y,rr);
+    ctx.arcTo(x,y,x+w,y,rr);
+    ctx.closePath();
+  }
+
+  function drawPerson(x,y,s,liveryInput){
+    const livery = normalizeTruckLivery(liveryInput);
+    const ss = s * 1.16;
+    const w = ss * 2.28;
+    const h = ss * 0.97;
+    const trailerW = w * 0.64;
+    const cabW = w * 0.46;
+    const top = y - h * 0.58;
+    const left = x - w * 0.60;
+    const cabX = left + trailerW - ss * 0.01;
+    const wheelR = Math.max(1.35, ss * 0.18);
+
+    ctx.fillStyle = "rgba(69,88,101,.16)";
+    roundRect(left - ss*0.1, top + h*0.74, w + ss*0.38, h*0.56, ss*0.24);
+    ctx.fill();
+
+    const trailerShade = ctx.createLinearGradient(left, top, left + trailerW, top + h);
+    trailerShade.addColorStop(0, livery.body);
+    trailerShade.addColorStop(1, livery.shade);
+    ctx.fillStyle = trailerShade;
+    roundRect(left, top, trailerW, h, ss*0.16);
+    ctx.fill();
+
+    ctx.fillStyle = livery.accent;
+    ctx.save();
+    ctx.globalAlpha = 0.78;
+    if((livery.decal % 4) === 0){
+      roundRect(left + trailerW*0.09, top + h*0.18, trailerW*0.72, h*0.11, ss*0.04);
+    } else if((livery.decal % 4) === 1){
+      roundRect(left + trailerW*0.08, top + h*0.60, trailerW*0.74, h*0.10, ss*0.04);
+    } else if((livery.decal % 4) === 2){
+      ctx.beginPath();
+      ctx.moveTo(left + trailerW*0.08, top + h*0.76);
+      ctx.lineTo(left + trailerW*0.84, top + h*0.16);
+      ctx.lineTo(left + trailerW*0.84, top + h*0.25);
+      ctx.lineTo(left + trailerW*0.08, top + h*0.85);
+      ctx.closePath();
+    } else {
+      roundRect(left + trailerW*0.13, top + h*0.16, trailerW*0.16, h*0.58, ss*0.04);
+      roundRect(left + trailerW*0.38, top + h*0.16, trailerW*0.16, h*0.58, ss*0.04);
+      roundRect(left + trailerW*0.63, top + h*0.16, trailerW*0.16, h*0.58, ss*0.04);
+    }
+    ctx.fill();
+    ctx.restore();
+
+    ctx.fillStyle = livery.stripe;
+    ctx.globalAlpha = 0.74;
+    roundRect(left + trailerW*0.08, top + h*0.76, trailerW*0.78, h*0.08, ss*0.03);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    ctx.fillStyle = "rgba(49,71,88,.84)";
+    roundRect(left + trailerW*0.09, top + h*0.36, trailerW*0.21, h*0.23, ss*0.05);
+    ctx.fill();
+    ctx.fillStyle = "#F8FAFC";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `${Math.max(4, ss*0.28)}px Montserrat, "Segoe UI", Arial, sans-serif`;
+    ctx.fillText(livery.logo || "DF", left + trailerW*0.195, top + h*0.475);
+    ctx.fillStyle = "rgba(248,250,252,.86)";
+    ctx.font = `${Math.max(3.4, ss*0.2)}px Montserrat, "Segoe UI", Arial, sans-serif`;
+    ctx.fillText(livery.word || "DockFlow", left + trailerW*0.53, top + h*0.45);
+
+    ctx.fillStyle = "rgba(83,101,114,.72)";
+    roundRect(left + trailerW + ss*0.01, top + h*0.62, ss*0.13, ss*0.12, ss*0.03);
+    ctx.fill();
+
+    const cabShade = ctx.createLinearGradient(cabX, top, cabX + cabW, top + h);
+    cabShade.addColorStop(0, livery.cab || livery.body);
+    cabShade.addColorStop(0.58, livery.body);
+    cabShade.addColorStop(1, livery.shade);
+    ctx.fillStyle = cabShade;
+    ctx.beginPath();
+    ctx.moveTo(cabX, top + h*0.12);
+    ctx.lineTo(cabX + cabW*0.60, top + h*0.12);
+    ctx.lineTo(cabX + cabW*0.98, top + h*0.42);
+    ctx.lineTo(cabX + cabW, top + h*0.98);
+    ctx.lineTo(cabX + cabW*0.02, top + h*0.98);
+    ctx.lineTo(cabX, top + h*0.68);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(79,96,109,.46)";
+    ctx.lineWidth = 0.9;
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(226,232,240,.72)";
+    ctx.beginPath();
+    ctx.moveTo(cabX + cabW*0.46, top + h*0.22);
+    ctx.lineTo(cabX + cabW*0.82, top + h*0.42);
+    ctx.lineTo(cabX + cabW*0.53, top + h*0.42);
+    ctx.lineTo(cabX + cabW*0.41, top + h*0.28);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.40)";
+    ctx.lineWidth = 0.65;
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.26)";
+    ctx.lineWidth = 0.75;
+    ctx.beginPath();
+    ctx.moveTo(cabX + cabW*0.36, top + h*0.30);
+    ctx.lineTo(cabX + cabW*0.36, top + h*0.90);
+    ctx.moveTo(cabX + cabW*0.12, top + h*0.73);
+    ctx.lineTo(cabX + cabW*0.86, top + h*0.73);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(191,219,254,.70)";
+    roundRect(cabX + cabW*0.90, top + h*0.63, ss*0.11, ss*0.09, ss*0.03);
+    ctx.fill();
+    ctx.fillStyle = "rgba(253,186,116,.76)";
+    roundRect(cabX + cabW*0.93, top + h*0.52, ss*0.12, ss*0.10, ss*0.03);
+    ctx.fill();
+    ctx.fillStyle = "rgba(248,250,252,.62)";
+    roundRect(cabX + cabW*0.94, top + h*0.31, ss*0.07, ss*0.04, ss*0.02);
+    ctx.fill();
+
+    const wheelXs = [
+      left + trailerW*0.20,
+      left + trailerW*0.49,
+      left + trailerW*0.76,
+      cabX + cabW*0.52
+    ];
+    ctx.fillStyle = "rgba(60,75,87,.94)";
+    ctx.beginPath();
+    for(const wx of wheelXs){
+      ctx.moveTo(wx + wheelR, top + h + wheelR*0.78);
+      ctx.arc(wx, top + h + wheelR*0.78, wheelR, 0, Math.PI*2);
+    }
+    ctx.fill();
+    ctx.fillStyle = "rgba(148,163,184,.68)";
+    ctx.beginPath();
+    for(const wx of wheelXs){
+      ctx.moveTo(wx + wheelR*0.43, top + h + wheelR*0.78);
+      ctx.arc(wx, top + h + wheelR*0.78, wheelR*0.43, 0, Math.PI*2);
+    }
+    ctx.fill();
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+  }
+
+  function drawForklift(x,y,s,color){
+    const w = s * 1.22;
+    const h = s * 0.72;
+    const left = x - w * 0.5;
+    const top = y - h * 0.5;
+
+    ctx.fillStyle = "rgba(74,94,108,.18)";
+    roundRect(left - s*0.08, top + h*0.64, w + s*0.2, h*0.5, s*0.14);
+    ctx.fill();
+    ctx.fillStyle = color;
+    roundRect(left + w*0.18, top + h*0.24, w*0.56, h*0.44, s*0.12);
+    ctx.fill();
+    ctx.fillStyle = "rgba(58,76,89,.88)";
+    roundRect(left + w*0.24, top + h*0.30, w*0.22, h*0.26, s*0.07);
+    ctx.fill();
+    ctx.fillStyle = "rgba(168,180,186,.78)";
+    roundRect(left + w*0.70, top + h*0.14, s*0.10, h*0.66, s*0.04);
+    ctx.fill();
+    ctx.fillStyle = "rgba(245,247,248,.88)";
+    roundRect(left + w*0.79, top + h*0.56, s*0.28, s*0.06, s*0.02);
+    ctx.fill();
+    roundRect(left + w*0.79, top + h*0.68, s*0.24, s*0.06, s*0.02);
+    ctx.fill();
+    ctx.fillStyle = "rgba(82,98,110,.92)";
+    ctx.beginPath();
+    ctx.arc(left + w*0.30, top + h*0.83, s*0.12, 0, Math.PI*2);
+    ctx.arc(left + w*0.66, top + h*0.83, s*0.12, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  function drawProcessor(x,y,s,isAI,branded){
+    const cx = Math.round(x) + 0.5;
+    const cy = Math.round(y) + 0.5;
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    if(!branded){
+      const r = s * 0.9;
+      ctx.fillStyle = "rgba(74,94,108,.18)";
+      ctx.beginPath();
+      ctx.arc(cx, cy, r*1.08, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(253,249,241,.98)";
+      ctx.beginPath();
+      ctx.arc(cx, cy - r*0.56, r*0.28, 0, Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(88,104,116,.34)";
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(149,160,167,.92)";
+      roundRect(cx-r*0.48, cy-r*0.18, r*0.96, r*0.98, r*0.2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.56)";
+      ctx.lineWidth = 1.05;
+      roundRect(cx-r*0.48, cy-r*0.18, r*0.96, r*0.98, r*0.2);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(199,138,50,.86)";
+      roundRect(cx-r*0.30, cy-r*0.05, r*0.60, r*0.62, r*0.14);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(111,89,47,.30)";
+      ctx.lineWidth = 0.9;
+      roundRect(cx-r*0.30, cy-r*0.05, r*0.60, r*0.62, r*0.14);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(251,246,236,.76)";
+      ctx.lineWidth = 1.15;
+      ctx.beginPath();
+      ctx.moveTo(cx-r*0.12, cy-r*0.02);
+      ctx.lineTo(cx-r*0.12, cy+r*0.50);
+      ctx.moveTo(cx+r*0.12, cy-r*0.02);
+      ctx.lineTo(cx+r*0.12, cy+r*0.50);
+      ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    const w = s * 1.45;
+    const h = s * 1.15;
+    const left = cx - w * 0.5;
+    const top = cy - h * 0.5;
+
+    ctx.fillStyle = palette.dockflowAura;
+    ctx.beginPath();
+    ctx.arc(cx, cy, s * 1.15, 0, Math.PI*2);
+    ctx.fill();
+
+    const shell = ctx.createLinearGradient(left, top, left + w, top + h);
+    shell.addColorStop(0, palette.dockflowGradA);
+    shell.addColorStop(1, palette.dockflowGradB);
+    ctx.fillStyle = shell;
+    roundRect(left, top, w, h, s*0.2);
+    ctx.fill();
+
+    ctx.strokeStyle = palette.dockflowStroke;
+    ctx.lineWidth = 1.45;
+    roundRect(left, top, w, h, s*0.2);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(104,89,58,.28)";
+    ctx.lineWidth = 0.9;
+    roundRect(left + 0.35, top + 0.35, w - 0.7, h - 0.7, s*0.18);
+    ctx.stroke();
+
+    const innerW = w * 0.58;
+    const innerH = h * 0.52;
+    const innerX = cx - innerW * 0.5;
+    const innerY = cy - innerH * 0.5;
+    ctx.fillStyle = "rgba(248,250,251,.94)";
+    roundRect(innerX, innerY, innerW, innerH, s*0.08);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(117,133,144,.52)";
+    ctx.lineWidth = 0.9;
+    roundRect(innerX, innerY, innerW, innerH, s*0.08);
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(67,88,101,.92)";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(cx, innerY + innerH*0.22);
+    ctx.lineTo(cx, innerY + innerH*0.78);
+    ctx.moveTo(innerX + innerW*0.24, cy);
+    ctx.lineTo(innerX + innerW*0.76, cy);
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(90,138,168,.92)";
+    ctx.beginPath();
+    ctx.arc(cx + w*0.34, cy - h*0.34, s*0.11, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(77,92,102,.38)";
+    ctx.lineWidth = 0.85;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function draw(scene){
+    ctx.clearRect(0,0,W,H);
+
+    const warm = "rgba(199,138,50," + clamp(scene.stress*0.12 + (solutionOn?0:0.04), 0.03, 0.16) + ")";
+    const cool = "rgba(90,138,168," + clamp((solutionOn?0.10:0.03) + (1-scene.stress)*0.07, 0.03, 0.16) + ")";
+    ctx.fillStyle = warm;
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = cool;
+    ctx.fillRect(0,0,W,H);
+
+    const pad = 12;
+    const x0 = pad, x3 = W-pad;
+    const y0 = pad, y3 = H-pad;
+    const ratios = getStageRatios();
+    const x1 = lerp(x0,x3,ratios.x1), x2 = lerp(x0,x3,ratios.x2), xOutMid = lerp(x2,x3,0.5);
+
+    // Subtle watermarking for brand protection without harming readability.
+    function drawWatermarks(){
+      const small = W < 620;
+      const tiny = W < 430;
+      const mark = "Simfluence.io";
+      const fs = tiny ? 22 : (small ? 26 : 30);
+
+      // Entry section watermark.
+      ctx.save();
+      ctx.globalAlpha = small ? 0.22 : 0.20;
+      ctx.fillStyle = "rgba(95,116,131,.16)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = `800 ${fs}px Inter,Segoe UI,Arial,sans-serif`;
+      ctx.translate((x0 + (x1 - 6)) * 0.5, y0 + (y3 - y0) * 0.56);
+      ctx.rotate(-0.22);
+      ctx.fillText(mark, 0, 0);
+      ctx.restore();
+
+      // Right-side section watermark.
+      ctx.save();
+      ctx.globalAlpha = small ? 0.22 : 0.20;
+      ctx.fillStyle = "rgba(95,116,131,.16)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = `800 ${fs}px Inter,Segoe UI,Arial,sans-serif`;
+      ctx.translate(((x2 + 6) + x3) * 0.5, y0 + (y3 - y0) * 0.56);
+      ctx.rotate(0.22);
+      ctx.fillText(mark, 0, 0);
+      ctx.restore();
+    }
+    drawWatermarks();
+
+    const procTint = solutionOn
+      ? "rgba(90,138,168,.16)"
+      : "rgba(199,138,50," + clamp(scene.stress*0.16,0.04,0.18) + ")";
+
+    function stage(a,b,label){
+      ctx.fillStyle = "rgba(255,255,255,.56)";
+      roundRect(a,y0,b-a,y3-y0,16);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(95,116,131,.18)";
+      ctx.lineWidth = 1;
+      roundRect(a,y0,b-a,y3-y0,16);
+      ctx.stroke();
+      const stageW = b - a;
+      const maxTextW = Math.max(36, stageW - 16);
+      const smallHeader = W <= 760;
+      ctx.save();
+      ctx.fillStyle = "rgba(69,88,101,.86)";
+      ctx.font = smallHeader
+        ? '700 9px Montserrat, "Segoe UI", Arial, sans-serif'
+        : '700 11px Montserrat, "Segoe UI", Arial, sans-serif';
+      const lines = [];
+      const chunks = String(label)
+        .split(/\n+/)
+        .map(v => v.trim())
+        .filter(Boolean);
+      for(const chunk of chunks){
+        const words = chunk.split(/\s+/);
+        let current = "";
+        for(const w of words){
+          const candidate = current ? `${current} ${w}` : w;
+          if(!current || ctx.measureText(candidate).width <= maxTextW){
+            current = candidate;
+          } else {
+            lines.push(current);
+            current = w;
+          }
+        }
+        if(current) lines.push(current);
+      }
+      const show = lines.length > 2 ? [lines[0], lines.slice(1).join(" ")] : lines;
+      const centerX = (a + b) * 0.5;
+      // Keep stage labels aligned from a consistent top anchor.
+      let ty = y0 + (smallHeader ? 12 : 14);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      for(const t of show){
+        ctx.fillText(t, centerX, ty);
+        ty += smallHeader ? 10 : 11;
+      }
+      ctx.restore();
+    }
+
+    const smallHeaderLabels = W <= 760;
+    stage(x0, x1-6, smallHeaderLabels ? "YARD" : "YARD ENTRY");
+    stage(x1+6, x2-6, smallHeaderLabels ? "DOCK\n& UNLOAD" : "DOCK ASSIGNMENT\n& UNLOADING");
+    stage(x2+6, xOutMid-4, smallHeaderLabels ? "ON-TIME" : "ON-TIME DEPARTURES");
+    stage(xOutMid+4, x3, smallHeaderLabels ? "DELAYED" : "DELAYED\n& DETENTION");
+
+    // Entry area road-network cues for logistics context.
+    const entryW = (x1 - 6) - x0;
+    const entryH = y3 - y0;
+    ctx.save();
+    ctx.beginPath();
+    roundRect(x0, y0, entryW, entryH, 16);
+    ctx.clip();
+    ctx.strokeStyle = "rgba(121,140,151,.20)";
+    ctx.setLineDash([7,7]);
+    ctx.lineWidth = 1;
+    for(let i=1;i<=3;i++){
+      const ry = y0 + (entryH * i)/4;
+      ctx.beginPath();
+      ctx.moveTo(x0 + 8, ry);
+      ctx.lineTo(x1 - 14, ry);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Arrival surge pressure in entry zone.
+    const inflowPulse = clamp((V / 100) * ARRIVAL_MASS_SCALE, 0, 1);
+    if(inflowPulse > 0.08){
+      const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.004);
+      const entryA = 0.04 + inflowPulse * 0.11 * pulse;
+      const entryGlow = ctx.createLinearGradient(x0, y0, x1, y3);
+      entryGlow.addColorStop(0, `rgba(199,138,50,${entryA})`);
+      entryGlow.addColorStop(1, "rgba(199,138,50,0)");
+      ctx.fillStyle = entryGlow;
+      ctx.fillRect(x0, y0, (x1 - x0) - 6, y3 - y0);
+    }
+
+    const procX = x1+6, procW=(x2-x1)-12, procH=(y3-y0);
+    const procY = y0;
+    // Keep processing tint perfectly aligned with the rounded stage card.
+    ctx.fillStyle = procTint;
+    roundRect(procX, procY, procW, procH, 16);
+    ctx.fill();
+    // More realistic dock-process floor: textured pavement + lane guides.
+    ctx.save();
+    ctx.beginPath();
+    roundRect(procX, procY, procW, procH, 16);
+    ctx.clip();
+    const pavement = ctx.createLinearGradient(procX, procY, procX + procW, procY + procH);
+    pavement.addColorStop(0, "rgba(233,238,241,.76)");
+    pavement.addColorStop(1, "rgba(212,220,225,.94)");
+    ctx.fillStyle = pavement;
+    ctx.fillRect(procX, procY, procW, procH);
+    ctx.strokeStyle = "rgba(125,141,151,.16)";
+    ctx.lineWidth = 1;
+    for(let gy = procY + 8; gy < procY + procH; gy += 18){
+      ctx.beginPath();
+      ctx.moveTo(procX + 2, gy);
+      ctx.lineTo(procX + procW - 2, gy);
+      ctx.stroke();
+    }
+    const queuePulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0048);
+    ctx.strokeStyle = solutionOn
+      ? `rgba(90,138,168,${0.12 + 0.10*queuePulse})`
+      : `rgba(199,138,50,${0.10 + 0.10*queuePulse})`;
+    ctx.setLineDash([6,8]);
+    for(let i=1;i<=3;i++){
+      const ry = procY + (procH * i)/4;
+      ctx.beginPath();
+      ctx.moveTo(procX + procW*0.16, ry);
+      ctx.lineTo(procX + procW*0.82, ry);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    const apronX = procX + procW * 0.72;
+    const apronW = procW * 0.21;
+    ctx.fillStyle = "rgba(175,186,193,.44)";
+    roundRect(apronX, procY + 6, apronW, procH - 12, 6);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(111,130,142,.24)";
+    roundRect(apronX, procY + 6, apronW, procH - 12, 6);
+    ctx.stroke();
+    ctx.restore();
+
+    // Dock/warehouse facade with active dock doors.
+    const dockSlots = Math.max(1, scene.repCount + scene.aiCount);
+    const whW = clamp(procW * 0.19, 30, 52);
+    const whX = procX + procW - whW - 4;
+    const dockDoorW = Math.max(10, whW * 0.46);
+    const dockDoorH = Math.max(10, procH * 0.09);
+    function doorCenter(slot, totalSlots){
+      const idx = ((slot % totalSlots) + totalSlots) % totalSlots;
+      const yy = procY + (procH * (idx + 1))/(totalSlots + 1);
+      return { x: whX + dockDoorW*0.5 + 6, y: yy };
+    }
+    const doorActivity = Array.from({ length: dockSlots }, ()=>0);
+    const doorSuccess = Array.from({ length: dockSlots }, ()=>false);
+    for(const ev of dockEvents){
+      const idx = ((ev.procSlot || 0) % dockSlots + dockSlots) % dockSlots;
+      const lv = clamp(ev.life, 0, 1);
+      if(lv >= doorActivity[idx]){
+        doorActivity[idx] = lv;
+        doorSuccess[idx] = !!ev.success;
+      }
+    }
+
+    const whShade = ctx.createLinearGradient(whX, procY, whX + whW, procY + procH);
+    whShade.addColorStop(0, "rgba(182,191,198,.82)");
+    whShade.addColorStop(1, "rgba(145,158,169,.92)");
+    ctx.fillStyle = whShade;
+    roundRect(whX, procY + 4, whW, procH - 8, 9);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(107,123,135,.36)";
+    ctx.lineWidth = 1;
+    roundRect(whX, procY + 4, whW, procH - 8, 9);
+    ctx.stroke();
+
+    const rampLen = Math.max(8, procW * 0.07);
+    for(let i=0;i<dockSlots;i++){
+      const dc = doorCenter(i, dockSlots);
+      const doorX = dc.x - dockDoorW*0.5;
+      const doorY = dc.y - dockDoorH*0.5;
+      const activity = doorActivity[i];
+      const statusColor = doorSuccess[i] ? "rgba(90,138,168,.92)" : "rgba(199,138,50,.90)";
+      const shelterH = Math.max(2, dockDoorH * 0.25);
+      ctx.fillStyle = "rgba(160,171,178,.78)";
+      roundRect(doorX - 1, doorY - shelterH - 1, dockDoorW + 2, shelterH, 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(117,130,138,.88)";
+      roundRect(doorX, doorY, dockDoorW, dockDoorH, 3);
+      ctx.fill();
+      const doorOpen = clamp(0.14 + activity * 0.58, 0.14, 0.72);
+      const openY = doorY + dockDoorH * doorOpen;
+      ctx.fillStyle = "rgba(93,106,114,.90)";
+      roundRect(doorX + 0.8, openY, dockDoorW - 1.6, (doorY + dockDoorH) - openY - 0.6, 2);
+      ctx.fill();
+      ctx.strokeStyle = solutionOn ? "rgba(90,138,168,.82)" : "rgba(123,140,151,.56)";
+      ctx.lineWidth = 1;
+      roundRect(doorX, doorY, dockDoorW, dockDoorH, 3);
+      ctx.stroke();
+      ctx.fillStyle = activity > 0.04 ? statusColor : "rgba(137,150,159,.55)";
+      ctx.beginPath();
+      ctx.arc(doorX + dockDoorW + 4.3, doorY + 2.1, 1.4, 0, Math.PI*2);
+      ctx.fill();
+      const bumperH = dockDoorH * 0.58;
+      ctx.fillStyle = "rgba(88,101,111,.90)";
+      roundRect(doorX - 2.8, dc.y - bumperH*0.5, 2.1, bumperH, 1.1);
+      ctx.fill();
+      roundRect(doorX + dockDoorW + 0.7, dc.y - bumperH*0.5, 2.1, bumperH, 1.1);
+      ctx.fill();
+      ctx.fillStyle = "rgba(170,164,149,.76)";
+      ctx.beginPath();
+      ctx.moveTo(doorX - 0.5, dc.y - dockDoorH*0.20);
+      ctx.lineTo(doorX - rampLen, dc.y - dockDoorH*0.11);
+      ctx.lineTo(doorX - rampLen, dc.y + dockDoorH*0.11);
+      ctx.lineTo(doorX - 0.5, dc.y + dockDoorH*0.20);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "rgba(247,249,250,.54)";
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      ctx.fillStyle = "rgba(96,111,121,.84)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.font = '700 8px Montserrat, "Segoe UI", Arial, sans-serif';
+      ctx.fillText(String(i+1), doorX + dockDoorW*0.5, doorY - shelterH - 2);
+      const palletX = doorX - rampLen - 7;
+      ctx.fillStyle = i % 2 === 0 ? "rgba(199,138,50,.34)" : "rgba(123,147,163,.30)";
+      roundRect(palletX, dc.y + dockDoorH*0.10, 6.2, 2.2, 0.7);
+      ctx.fill();
+      roundRect(palletX + 0.5, dc.y - dockDoorH*0.02, 5.2, 2.0, 0.7);
+      ctx.fill();
+      if(activity > 0.06){
+        const fx = doorX - rampLen - 5.2 - (Math.sin(performance.now()*0.0038 + i*0.9) * 2.4);
+        const fy = dc.y + Math.cos(performance.now()*0.003 + i*1.3) * 0.8;
+        drawForklift(fx, fy, 3.1, doorSuccess[i] ? "#5A8AA8" : "#C78A32");
+      }
+      ctx.strokeStyle = solutionOn ? "rgba(90,138,168,.72)" : "rgba(126,141,151,.56)";
+      ctx.beginPath();
+      ctx.moveTo(doorX - 10, dc.y);
+      ctx.lineTo(doorX - 2, dc.y);
+      ctx.lineTo(doorX - 5, dc.y - 2.8);
+      ctx.moveTo(doorX - 2, dc.y);
+      ctx.lineTo(doorX - 5, dc.y + 2.8);
+      ctx.stroke();
+    }
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+
+    // Animated unloading guidance lanes from assignment area into dock ramps.
+    ctx.save();
+    ctx.beginPath();
+    roundRect(procX, procY, procW, procH, 16);
+    ctx.clip();
+    const unloadPulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0055);
+    ctx.setLineDash([5,6]);
+    ctx.lineWidth = 1;
+    for(let i=0;i<dockSlots;i++){
+      const dc = doorCenter(i, dockSlots);
+      ctx.strokeStyle = solutionOn
+        ? `rgba(90,138,168,${0.14 + 0.13*unloadPulse})`
+        : `rgba(199,138,50,${0.09 + 0.10*unloadPulse})`;
+      ctx.beginPath();
+      ctx.moveTo(procX + procW * 0.22, dc.y);
+      ctx.lineTo(whX - 8, dc.y);
+      ctx.stroke();
+      ctx.fillStyle = solutionOn
+        ? `rgba(90,138,168,${0.18 + 0.2*unloadPulse})`
+        : `rgba(199,138,50,${0.16 + 0.18*unloadPulse})`;
+      const pulseX = lerp(procX + procW*0.24, whX - 10, (Math.sin(performance.now()*0.004 + i*0.8)+1)/2);
+      roundRect(pulseX, dc.y - 1.3, 4.3, 2.6, 0.8);
+      ctx.fill();
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Queue boundary cue. Show only after at least one truck has actually hit the wall.
+    const dockBoundaryX = procX + procW * 0.66;
+    if(lostDeals > 0){
+      ctx.strokeStyle = "rgba(182,91,66,.58)";
+      ctx.lineWidth = 1.25;
+      ctx.beginPath();
+      ctx.moveTo(dockBoundaryX, y0 + 24);
+      ctx.lineTo(dockBoundaryX, y3 - 8);
+      ctx.stroke();
+      const qGlow = ctx.createLinearGradient(dockBoundaryX - 28, y0, dockBoundaryX + 12, y3);
+      qGlow.addColorStop(0, "rgba(182,91,66,0)");
+      qGlow.addColorStop(1, `rgba(182,91,66,${clamp(scene.overload*0.14 + 0.05,0.07,0.20)})`);
+      ctx.fillStyle = qGlow;
+      ctx.fillRect(dockBoundaryX - 28, y0, 40, y3 - y0);
+    }
+
+    // Outcome stabilization glow only (remove stripe/line overlays for cleaner dock area).
+    if(solutionOn){
+      // Stabilization glow in ON-TIME departures area when DockFlow is active.
+      const outX = x2 + 6;
+      const outW = (xOutMid - 4) - (x2 + 6);
+      const protect = ctx.createRadialGradient(outX + outW*0.55, y0 + (y3-y0)*0.5, 10, outX + outW*0.55, y0 + (y3-y0)*0.5, outW*0.95);
+      protect.addColorStop(0, "rgba(90,138,168,.14)");
+      protect.addColorStop(1, "rgba(90,138,168,0)");
+      ctx.fillStyle = protect;
+      ctx.fillRect(outX, y0, outW, y3-y0);
+    }
+
+    const totalP = scene.repCount + scene.aiCount;
+    const t = performance.now()*0.001;
+    function processorPose(slot, totalCount, isAI, timeNow){
+      const lane = (slot + 1) / (Math.max(1, totalCount) + 1);
+      const bx = procX + procW*(isAI?0.62:0.42) + Math.sin(timeNow*(isAI?3.4:2.2)+slot)*3;
+      const by = procY + procH*lane + Math.cos(timeNow*(isAI?4.1:2.6)+slot*0.7)*3;
+      return { bx, by, isAI };
+    }
+
+    for(let i=0;i<totalP;i++){
+      const slotIsAI = isAISlot(i, scene.repCount, scene.aiCount);
+      const pose = processorPose(i, totalP, slotIsAI, t);
+      const bx = pose.bx;
+      const by = pose.by;
+      // OFF: only normal yard agents.
+      // ON: normal agents remain + extra DockFlow logo agents (AI slots), drawn larger.
+      const useDockflowAgent = solutionOn && slotIsAI;
+      const agentSize = useDockflowAgent ? 15.3 : 10.2;
+      drawProcessor(bx, by, agentSize, slotIsAI, useDockflowAgent);
+    }
+
+    // Brief truck-door interaction animation driven by live processing events.
+    for(const ev of dockEvents){
+      const dc = doorCenter(ev.procSlot || 0, ev.procTotal || dockSlots);
+      const a = clamp(ev.life, 0, 1);
+      const ok = palette.eventServed;
+      const bad = palette.eventLost;
+      ctx.strokeStyle = ev.success
+        ? `rgba(${ok[0]},${ok[1]},${ok[2]},${0.7*a})`
+        : `rgba(${bad[0]},${bad[1]},${bad[2]},${0.66*a})`;
+      ctx.lineWidth = 1.2 + (1 - a) * 1.0;
+      ctx.beginPath();
+      ctx.arc(dc.x, dc.y, 5 + (1 - a) * 8, 0, Math.PI*2);
+      ctx.stroke();
+
+      ctx.save();
+      ctx.globalAlpha = 0.34 + a * 0.5;
+      drawPerson(
+        dc.x - 17 + (1-a)*5,
+        dc.y + 1.2,
+        8.2,
+        ev.success ? (ev.livery || palette.truckServed) : delayedTruckLivery
+      );
+      ctx.restore();
+    }
+
+    for(const l of links){
+      const slot = l.procSlot ?? 0;
+      const totalAtHit = l.procTotal ?? totalP;
+      const isAI = !!l.procIsAI;
+      const pose = processorPose(slot, totalAtHit, isAI, t);
+      const bx = pose.bx;
+      const by = pose.by;
+      const tx = lerp(x0+6, x3-6, clamp(l.p,0,1));
+      const ty = lerp(y0+12, y3-12, l.y);
+      const a = clamp(l.life, 0.18, 1) * (isAI ? 0.95 : 0.70);
+      ctx.strokeStyle = isAI ? `rgba(90,138,168,${a})` : `rgba(156,145,128,${a})`;
+      ctx.lineWidth = isAI ? 2.2 : 1.4;
+      ctx.beginPath();
+      ctx.moveTo(bx,by);
+      ctx.quadraticCurveTo((bx+tx)*0.5, ((by+ty)*0.5)-4, tx, ty);
+      ctx.stroke();
+    }
+
+    for(const p of prospects){
+      const x = lerp(x0+6, x3-6, clamp(p.p,0,1));
+      const y = lerp(y0+12, y3-12, p.y);
+      const inDelayedZone = x >= (xOutMid + 4);
+      const flowTruckSize = W <= 760 ? 8.1 : 9.2;
+      if(p.state === "lost" || inDelayedZone){
+        ctx.globalAlpha = clamp(p.fade,0,1);
+        drawPerson(x,y,flowTruckSize,delayedTruckLivery);
+        ctx.globalAlpha = 1;
+      } else {
+        drawPerson(x,y,flowTruckSize,p.livery || palette.truckActive);
+      }
+    }
+
+    const compactOutcome = W <= 760;
+    const outcomeTruckSize = compactOutcome ? 6.2 : 8.1;
+    const outcomeHalfW = outcomeTruckSize * 1.34;
+    function clampOutcomeX(rawX, sectionLeft, sectionRight){
+      const minX = sectionLeft + outcomeHalfW + 1;
+      const maxX = sectionRight - outcomeHalfW - 1;
+      if(minX > maxX){
+        return (sectionLeft + sectionRight) * 0.5;
+      }
+      return clamp(rawX, minX, maxX);
+    }
+
+    for(const d of closedDots){
+      const rawX = lerp(x0+6, x3-6, d.p);
+      const x = compactOutcome ? clampOutcomeX(rawX, x2 + 6, xOutMid - 4) : rawX;
+      const y = lerp(y0+12, y3-12, d.y);
+      drawPerson(x,y,outcomeTruckSize,d.livery || palette.truckServed);
+    }
+    for(const d of lostDots){
+      const rawX = lerp(x0+6, x3-6, d.p);
+      const x = compactOutcome ? clampOutcomeX(rawX, xOutMid + 4, x3) : rawX;
+      const y = lerp(y0+12, y3-12, d.y);
+      drawPerson(x,y,outcomeTruckSize,delayedTruckLivery);
+    }
+
+    const hudCompact = W < 700 || H < 390;
+    const hudTiny = W < 480 || H < 310;
+    const hudW = hudCompact
+      ? Math.min(208, Math.max(148, W * 0.4))
+      : Math.min(260, Math.max(200, W * 0.265));
+    const hudH = hudTiny ? 58 : (hudCompact ? 78 : 98);
+    const hudX = hudCompact ? (x0 + 2) : (x3 - hudW - 2);
+    const hudY = y3 - hudH - 4;
+    ctx.fillStyle = "rgba(255,255,255,.84)";
+    roundRect(hudX,hudY,hudW,hudH,12);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(84,106,121,.18)";
+    roundRect(hudX,hudY,hudW,hudH,12);
+    ctx.stroke();
+    const stateInfo = stressCategory(scene.stress);
+    let barX = hudX + 10;
+    let barY = hudY + hudH - 16;
+    let barW = hudW - 20;
+    let barH = hudTiny ? 7 : 8;
+
+    if(hudTiny){
+      ctx.fillStyle = "rgba(54,74,88,.90)";
+      ctx.font = "700 10px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("State", hudX + 8, hudY + 14);
+      ctx.fillStyle = stateInfo.color;
+      ctx.font = "900 11px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText(stateInfo.label, hudX + 46, hudY + 14);
+      ctx.fillStyle = "rgba(88,106,119,.88)";
+      ctx.font = "700 10px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("On-time", hudX + 8, hudY + 30);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "rgba(36,57,72,.92)";
+      ctx.fillText(hudEffText, hudX + hudW - 8, hudY + 30);
+      ctx.textAlign = "left";
+      barY = hudY + 40;
+      barH = 7;
+    } else if(hudCompact){
+      ctx.fillStyle = "rgba(54,74,88,.90)";
+      ctx.font = "700 10px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("System:", hudX + 8, hudY + 14);
+      ctx.fillStyle = stateInfo.color;
+      ctx.font = "900 12px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText(stateInfo.label, hudX + 52, hudY + 14);
+      ctx.fillStyle = "rgba(88,106,119,.88)";
+      ctx.font = "700 10px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("On-time", hudX + 8, hudY + 33);
+      ctx.fillText("Potential Loss", hudX + 8, hudY + 49);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "rgba(36,57,72,.92)";
+      ctx.fillText(hudEffText, hudX + hudW - 8, hudY + 33);
+      ctx.fillText(hudLossText, hudX + hudW - 8, hudY + 49);
+      ctx.textAlign = "left";
+      barY = hudY + 60;
+    } else {
+      ctx.fillStyle = "rgba(54,74,88,.90)";
+      ctx.font = "700 11px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("System state:", hudX+10, hudY+16);
+      ctx.fillStyle = stateInfo.color;
+      ctx.font = "900 13px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText(stateInfo.label, hudX+84, hudY+16);
+      ctx.fillStyle = "rgba(88,106,119,.88)";
+      ctx.font = "700 11px Inter,Segoe UI,Arial,sans-serif";
+      ctx.fillText("On-time Throughput", hudX + 10, hudY + 40);
+      ctx.fillText("Potential Loss", hudX + 10, hudY + 58);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "rgba(36,57,72,.92)";
+      ctx.fillText(hudEffText, hudX + hudW - 10, hudY + 40);
+      ctx.fillText(hudLossText, hudX + hudW - 10, hudY + 58);
+      ctx.textAlign = "left";
+      barY = hudY + 74;
+      barH = 10;
+    }
+    ctx.fillStyle = "rgba(100,120,134,.16)";
+    roundRect(barX,barY,barW,barH,999); ctx.fill();
+    ctx.fillStyle = stateInfo.color;
+    roundRect(barX,barY,Math.max(2,barW*clamp(scene.stress,0,1)),barH,999); ctx.fill();
+  }
+
+  let last = performance.now();
+  let acc = 0;
+  function frame(now){
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.05, (now-last)/1000);
+    last = now;
+
+    if(running){
+      const sps = 9 * speed;
+      acc += dt * sps;
+      if(demoLoopMode){
+        demoLoopElapsedMs += dt * 1000;
+        if(demoLoopElapsedMs >= DEMO_LOOP_MS){
+          acc = 0;
+          restartDemoLoop();
+          return;
+        }
+      }
+      while(acc >= 1){
+        updateSimulationStep();
+        acc -= 1;
+        if(!running) break;
+      }
+    } else {
+      acc = 0;
+      const capIdle = clamp(C/100, 0.05, 1.0);
+      const repIdle = Math.max(1, Math.round(lerp(1, 4, capIdle)));
+      const aiIdle = solutionOn ? Math.max(1, Math.round(repIdle * 0.5)) : 0;
+      draw({ ...stressAndCapacity(), repCount: repIdle, aiCount: aiIdle, overload: 0 });
+    }
+  }
+
+  ui.inflow.addEventListener("input", ()=>{
+    stopDemoLoop();
+    V = +ui.inflow.value;
+    updateControlReadouts();
+  });
+  ui.friction.addEventListener("input", ()=>{
+    stopDemoLoop();
+    F = +ui.friction.value;
+    updateControlReadouts();
+  });
+  ui.capacity.addEventListener("input", ()=>{
+    stopDemoLoop();
+    C = +ui.capacity.value;
+    updateControlReadouts();
+  });
+  ui.clv.addEventListener("input", ()=>{
+    stopDemoLoop();
+    CLV = Math.max(100, +ui.clv.value || 100);
+    ui.clv.value = String(CLV);
+  });
+  ui.solutionBtn.addEventListener("click", ()=>{
+    stopDemoLoop();
+    solutionOn = !solutionOn;
+    updateControlReadouts();
+  });
+  ui.playBtn.addEventListener("click", ()=>{
+    stopDemoLoop();
+    if(running) pauseSimulation(); else startSimulation();
+  });
+  ui.resetBtn.addEventListener("click", ()=>{
+    stopDemoLoop();
+    resetSimulation();
+  });
+  ui.speedSel.addEventListener("change", ()=>{
+    stopDemoLoop();
+    speed = +ui.speedSel.value;
+  });
+
+  updateControlReadouts();
+  updateMetrics(0,0);
+  if(autoPlay) startSimulation();
+  queueEmbedHeightPost();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

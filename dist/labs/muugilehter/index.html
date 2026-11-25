@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sales Funnel Demo | Auto Run</title>
+  <meta
+    name="description"
+    content="A simple six-step sales funnel demo that shows leads moving toward wins or losses, while referrals bring in new leads."
+  />
+  <link rel="stylesheet" href="styles.css?v=20260331a" />
+</head>
+<body>
+  <div class="page-shell">
+    <main class="widget" id="widgetRoot" data-widget="sim16-sales-funnel">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Sales Funnel Demo | Auto Run</p>
+          <h1>How leads move through the funnel</h1>
+          <p class="hero-text">
+            This demo shows six steps: Awareness, Interest, Evaluation, Engagement, Action, and
+            Retention. You can watch leads move forward, see where they drop out, and see how
+            customers bring in new leads through referrals.
+          </p>
+        </div>
+
+        <div class="hero-actions">
+          <div class="status-chip">
+            <span>Status</span>
+            <strong id="runStateLabel">Running</strong>
+            <small id="clockLabel">Day 0.0 / 10</small>
+          </div>
+          <button
+            class="run-toggle"
+            id="runToggleButton"
+            type="button"
+            aria-pressed="true"
+          >Pause</button>
+          <div class="speed-select-shell">
+            <label class="sr-only" for="speedSelect">Auto run speed</label>
+            <select
+              class="speed-select"
+              id="speedSelect"
+              aria-label="Auto run speed"
+            >
+              <option value="1">Speed 1x</option>
+              <option value="3">Speed 3x</option>
+              <option value="5">Speed 5x</option>
+              <option value="10">Speed 10x</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <section class="progress-card" aria-label="Time progress">
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </section>
+
+      <section class="main-grid">
+        <section class="panel stage-panel" aria-labelledby="stageTitle">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">Main View</p>
+              <h2 id="stageTitle">Six steps from first touch to result</h2>
+            </div>
+            <p class="panel-copy">
+              Dots show how many leads are in each step. Watch leads moving, dropping out,
+              winning, or sending referrals.
+            </p>
+          </div>
+
+          <div class="stage-shell" id="stageShell">
+            <canvas
+              id="stageCanvas"
+              role="img"
+              aria-label="Animated funnel showing the six sales steps, lost leads, and referrals"
+            ></canvas>
+          </div>
+        </section>
+
+        <aside class="side-stack">
+          <section class="panel metrics-panel" aria-labelledby="metricsTitle">
+            <div class="panel-head compact">
+              <div>
+                <p class="section-kicker">Live Numbers</p>
+                <h2 id="metricsTitle">Where leads are now</h2>
+              </div>
+              <p class="panel-copy">
+                These numbers update live while the run plays.
+              </p>
+            </div>
+
+            <div class="kpi-grid">
+              <article class="kpi-card">
+                <span>Leads in funnel</span>
+                <strong id="inFunnelValue">0</strong>
+                <small id="inFunnelNote">Across all 6 steps</small>
+              </article>
+              <article class="kpi-card">
+                <span>Good fit</span>
+                <strong id="qualificationValue">0.0%</strong>
+                <small id="qualificationNote">0 good fit / 0 not a fit</small>
+              </article>
+              <article class="kpi-card kpi-card-closed highlight">
+                <span>Deals closed</span>
+                <strong id="closedValue">0 won / 0 lost</strong>
+                <small id="closedNote">Lost leads do not come back</small>
+              </article>
+              <article class="kpi-card">
+                <span>Referrals</span>
+                <strong id="referralValue">0</strong>
+                <small id="referralNote">0 new leads from referrals</small>
+              </article>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-head">
+                <div>
+                  <p class="section-kicker">By Day</p>
+                  <h3>Won, lost, and referrals</h3>
+                </div>
+              </div>
+              <svg
+                id="seriesChart"
+                viewBox="0 0 360 200"
+                role="img"
+                aria-label="Daily chart of won deals, lost leads, and referral leads"
+              ></svg>
+            </div>
+          </section>
+
+        </aside>
+      </section>
+
+      <div class="summary-backdrop" id="summaryBackdrop" hidden>
+        <section class="summary-card" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
+          <button class="summary-close" id="summaryCloseButton" type="button" aria-label="Close summary">x</button>
+          <p class="section-kicker">End of Run</p>
+          <h2 id="summaryTitle">This run is complete.</h2>
+          <p class="summary-text" id="summaryText">
+            This run ended with 0 won deals, 0 lost leads, and 0 new leads from referrals.
+          </p>
+
+          <div class="summary-grid">
+            <article class="summary-stat">
+              <span>Customers Kept</span>
+              <strong id="summaryRetention">0</strong>
+            </article>
+            <article class="summary-stat">
+              <span>Won Deals</span>
+              <strong id="summaryWon">0</strong>
+            </article>
+            <article class="summary-stat">
+              <span>Lost Leads</span>
+              <strong id="summaryLost">0</strong>
+            </article>
+            <article class="summary-stat highlight">
+              <span>New Leads</span>
+              <strong id="summaryReferrals">0</strong>
+            </article>
+          </div>
+
+          <p class="summary-foot" id="summaryFoot">
+            Close this and press Run to play the same run again.
+          </p>
+        </section>
+      </div>
+
+      <div class="sr-only" id="ariaLive" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <script src="script.js?v=20260331a"></script>
+</body>
+</html>

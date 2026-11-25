@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EV vs Hybrid vs Gas Car Cost Calculator | Simfluence</title>
+  <meta
+    name="description"
+    content="Compare EV, hybrid, and gas car total ownership cost over 0-12 years. Adjust fuel, charging, insurance, taxes, depreciation, resale, and incentives."
+  >
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="theme-color" content="#edf5f7">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="EV vs Hybrid vs Gas Car Cost Calculator">
+  <meta
+    property="og:description"
+    content="Estimate total cost of ownership for electric, hybrid, and gas cars with adjustable mileage, fuel, charging, insurance, taxes, depreciation, and resale assumptions."
+  >
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="EV vs Hybrid vs Gas Car Cost Calculator">
+  <meta
+    name="twitter:description"
+    content="Compare electric, hybrid, and gas car ownership costs over time with a simple educational calculator."
+  >
+  <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "EV vs Hybrid vs Gas Car Cost Calculator",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Any",
+    "description": "Educational total cost of ownership calculator for comparing electric, hybrid, and gas cars over 0 to 12 years.",
+    "featureList": [
+      "Compare electric, hybrid, and gas car total ownership cost",
+      "Estimate fuel and charging costs",
+      "Model insurance, taxes, depreciation, resale value, incentives, and battery risk",
+      "Switch display currency and distance units"
+    ],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    }
+  }
+  </script>
+</head>
+<body>
+  <main class="sf-shell">
+    <section class="sf-widget" id="carCostWidget" aria-labelledby="pageTitle">
+      <header class="sf-hero">
+        <div class="sf-hero-copy">
+          <p class="sf-eyebrow">Total cost of ownership calculator</p>
+          <h1 id="pageTitle">EV vs Hybrid vs Gas Car Cost Calculator</h1>
+          <p class="sf-lede">
+            Compare electric, hybrid, and gas car ownership costs over time, including fuel,
+            charging, maintenance, insurance, taxes, depreciation, resale value, and incentives.
+          </p>
+          <p class="sf-disclaimer">
+            Educational car cost comparison tool, not a vehicle quote or precise finance calculator.
+            Illustrative defaults only.
+          </p>
+        </div>
+
+        <div class="sf-hero-result" aria-live="polite">
+          <span>Cheapest after selected period</span>
+          <strong id="heroWinner">EV</strong>
+          <small id="heroWinnerNote">At year 10 under current assumptions</small>
+        </div>
+      </header>
+
+      <section class="vehicle-strip" aria-label="EV, hybrid, and gas car ownership cost comparison">
+        <h2 class="visually-hidden">EV, hybrid, and gas car comparison</h2>
+        <article class="vehicle-card vehicle-card--combustion">
+          <span>Gas / combustion car</span>
+          <h3>Lower upfront cost</h3>
+          <p>Often cheaper to buy, but fuel, repairs, taxes, and depreciation can add up over time.</p>
+        </article>
+        <article class="vehicle-card vehicle-card--hybrid">
+          <span>Hybrid</span>
+          <h3>Middle-ground fuel savings</h3>
+          <p>Improves fuel economy without requiring home charging or public charging access.</p>
+        </article>
+        <article class="vehicle-card vehicle-card--electric">
+          <span>Electric vehicle (EV)</span>
+          <h3>Lower charging and maintenance cost</h3>
+          <p>Can become cheaper when mileage is high, home charging is available, and resale value holds.</p>
+        </article>
+      </section>
+
+      <div class="sim-grid">
+        <aside class="control-panel" aria-labelledby="controlTitle">
+          <div class="section-head">
+            <p class="section-kicker">Scenario inputs</p>
+            <h2 id="controlTitle">Car cost calculator assumptions</h2>
+          </div>
+
+          <div class="scenario-presets" id="scenarioPresets" aria-label="Compare input scenarios">
+            <button class="scenario-preset" type="button" data-scenario="evFavorable">
+              <strong>EV-friendly</strong>
+              <span>High mileage, home charging</span>
+            </button>
+            <button class="scenario-preset is-active" type="button" data-scenario="balanced" aria-current="true">
+              <strong>Balanced</strong>
+              <span>Typical mixed use</span>
+            </button>
+            <button class="scenario-preset" type="button" data-scenario="gasFavorable">
+              <strong>Gas-friendly</strong>
+              <span>Low mileage, weak charging</span>
+            </button>
+          </div>
+
+          <div class="control-list">
+            <div class="unit-settings" aria-label="Display settings">
+              <label class="select-row" for="displayCurrency">
+                <span>Currency</span>
+                <select id="displayCurrency">
+                  <option value="EUR" selected>EUR</option>
+                  <option value="USD">USD</option>
+                </select>
+              </label>
+
+              <label class="select-row" for="distanceUnit">
+                <span>Distance unit</span>
+                <select id="distanceUnit">
+                  <option value="km" selected>Kilometres</option>
+                  <option value="mi">Miles</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="control-row" for="ownershipYears">
+              <span class="control-top">
+                <span>Ownership period</span>
+                <output id="ownershipYearsValue" for="ownershipYears">10 years</output>
+              </span>
+              <input id="ownershipYears" type="range" min="1" max="12" step="1" value="10">
+            </label>
+
+            <label class="control-row" for="annualKm">
+              <span class="control-top">
+                <span>Annual distance</span>
+                <output id="annualKmValue" for="annualKm">15,000 km</output>
+              </span>
+              <input id="annualKm" type="range" min="5000" max="40000" step="1000" value="15000">
+            </label>
+
+            <label class="control-row" for="fuelPrice">
+              <span class="control-top">
+                <span>Fuel price</span>
+                <output id="fuelPriceValue" for="fuelPrice">EUR 1.80/l</output>
+              </span>
+              <input id="fuelPrice" type="range" min="1.10" max="2.80" step="0.05" value="1.80">
+            </label>
+
+            <label class="control-row" for="homeElectricity">
+              <span class="control-top">
+                <span>Home electricity price</span>
+                <output id="homeElectricityValue" for="homeElectricity">EUR 0.20/kWh</output>
+              </span>
+              <input id="homeElectricity" type="range" min="0.08" max="0.55" step="0.01" value="0.20">
+            </label>
+
+            <label class="control-row" for="publicCharging">
+              <span class="control-top">
+                <span>Public charging price</span>
+                <output id="publicChargingValue" for="publicCharging">EUR 0.45/kWh</output>
+              </span>
+              <input id="publicCharging" type="range" min="0.15" max="0.90" step="0.01" value="0.45">
+            </label>
+
+            <label class="control-row" for="homeShare">
+              <span class="control-top">
+                <span>Home charging share</span>
+                <output id="homeShareValue" for="homeShare">80%</output>
+              </span>
+              <input id="homeShare" type="range" min="0" max="100" step="5" value="80">
+            </label>
+
+            <label class="control-row" for="basePrice">
+              <span class="control-top">
+                <span>Gas / combustion base price</span>
+                <output id="basePriceValue" for="basePrice">EUR 30,000</output>
+              </span>
+              <input id="basePrice" type="range" min="18000" max="60000" step="1000" value="30000">
+            </label>
+
+            <label class="control-row" for="hybridPrice">
+              <span class="control-top">
+                <span>Hybrid vehicle price</span>
+                <output id="hybridPriceValue" for="hybridPrice">EUR 33,000</output>
+              </span>
+              <input id="hybridPrice" type="range" min="18000" max="70000" step="1000" value="33000">
+            </label>
+
+            <label class="control-row" for="evPrice">
+              <span class="control-top">
+                <span>EV vehicle price</span>
+                <output id="evPriceValue" for="evPrice">EUR 38,000</output>
+              </span>
+              <input id="evPrice" type="range" min="18000" max="90000" step="1000" value="38000">
+            </label>
+          </div>
+
+          <div class="advanced-panel" id="advancedPanel">
+            <label class="control-row" for="insuranceLevel">
+              <span class="control-top">
+                <span>Insurance level</span>
+                <output id="insuranceLevelValue" for="insuranceLevel">Typical</output>
+              </span>
+              <input id="insuranceLevel" type="range" min="70" max="145" step="5" value="100">
+            </label>
+
+            <label class="control-row" for="taxLevel">
+              <span class="control-top">
+                <span>Taxes and fees level</span>
+                <output id="taxLevelValue" for="taxLevel">Typical</output>
+              </span>
+              <input id="taxLevel" type="range" min="50" max="170" step="5" value="100">
+            </label>
+
+            <div class="advanced-subhead">
+              <strong>EV policy and discount assumptions</strong>
+              <p>Use these when local rules reduce acquisition taxes, registration fees, annual road taxes, or insurance.</p>
+            </div>
+
+            <label class="control-row" for="evPurchaseIncentive">
+              <span class="control-top">
+                <span>EV purchase incentive</span>
+                <output id="evPurchaseIncentiveValue" for="evPurchaseIncentive">EUR 0</output>
+              </span>
+              <input id="evPurchaseIncentive" type="range" min="0" max="12000" step="500" value="0">
+            </label>
+
+            <label class="control-row" for="evRegistrationDiscount">
+              <span class="control-top">
+                <span>EV registration fee remission</span>
+                <output id="evRegistrationDiscountValue" for="evRegistrationDiscount">0%</output>
+              </span>
+              <input id="evRegistrationDiscount" type="range" min="0" max="100" step="5" value="0">
+            </label>
+
+            <label class="control-row" for="evAnnualTaxDiscount">
+              <span class="control-top">
+                <span>EV annual tax remission</span>
+                <output id="evAnnualTaxDiscountValue" for="evAnnualTaxDiscount">0%</output>
+              </span>
+              <input id="evAnnualTaxDiscount" type="range" min="0" max="100" step="5" value="0">
+            </label>
+
+            <label class="control-row" for="evInsuranceDiscount">
+              <span class="control-top">
+                <span>EV insurance discount</span>
+                <output id="evInsuranceDiscountValue" for="evInsuranceDiscount">0%</output>
+              </span>
+              <input id="evInsuranceDiscount" type="range" min="0" max="20" step="1" value="0">
+            </label>
+
+            <label class="control-row" for="chargerCost">
+              <span class="control-top">
+                <span>Home charger cost</span>
+                <output id="chargerCostValue" for="chargerCost">EUR 1,000</output>
+              </span>
+              <input id="chargerCost" type="range" min="0" max="3000" step="250" value="1000">
+            </label>
+
+            <label class="select-row" for="resalePreset">
+              <span>Resale value assumption</span>
+              <select id="resalePreset">
+                <option value="balanced" selected>Balanced</option>
+                <option value="conservative">Conservative</option>
+                <option value="optimistic">Optimistic</option>
+              </select>
+            </label>
+
+            <label class="select-row" for="maintenanceLevel">
+              <span>Maintenance assumption</span>
+              <select id="maintenanceLevel">
+                <option value="low">Low</option>
+                <option value="typical" selected>Typical</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+
+            <label class="check-row" for="batteryRiskEnabled">
+              <input id="batteryRiskEnabled" type="checkbox">
+              <span>Include EV battery risk as expected cost</span>
+            </label>
+
+            <label class="control-row battery-control" for="batteryProbability">
+              <span class="control-top">
+                <span>Battery replacement chance</span>
+                <output id="batteryProbabilityValue" for="batteryProbability">8%</output>
+              </span>
+              <input id="batteryProbability" type="range" min="0" max="25" step="1" value="8">
+            </label>
+
+            <label class="control-row battery-control" for="batteryCost">
+              <span class="control-top">
+                <span>Battery replacement cost</span>
+                <output id="batteryCostValue" for="batteryCost">EUR 8,000</output>
+              </span>
+              <input id="batteryCost" type="range" min="3000" max="18000" step="500" value="8000">
+            </label>
+          </div>
+        </aside>
+
+        <div class="output-stack">
+          <section class="result-panel" aria-labelledby="chartTitle">
+            <div class="section-head result-head">
+              <div>
+                <p class="section-kicker">Main result</p>
+                <h2 id="chartTitle">EV vs hybrid vs gas ownership cost over time</h2>
+              </div>
+              <div class="legend" aria-label="Chart legend">
+                <span><i class="legend-swatch swatch-combustion"></i>Gas</span>
+                <span><i class="legend-swatch swatch-hybrid"></i>Hybrid</span>
+                <span><i class="legend-swatch swatch-electric"></i>EV</span>
+              </div>
+            </div>
+
+            <div class="chart-frame">
+              <canvas
+                id="costChart"
+                role="img"
+                aria-label="Line chart comparing cumulative total ownership cost for gas, hybrid, and electric vehicles from year 0 to year 12"
+              ></canvas>
+            </div>
+
+            <div class="result-cards" aria-label="Selected scenario summary">
+              <article class="result-card">
+                <span>Break-even</span>
+                <strong id="breakEvenCard">Year 6</strong>
+              <p id="breakEvenNote">EV becomes cheaper than a gas car.</p>
+            </article>
+            <article class="result-card">
+              <span>Cost per distance</span>
+              <strong id="costPer100Card">EUR 23 / 100 km</strong>
+              <p id="costPer100Note">Selected period average for the cheapest type.</p>
+            </article>
+              <article class="result-card">
+                <span>Biggest driver</span>
+                <strong id="driverCard">Depreciation</strong>
+                <p id="driverNote">Largest selected-year cost component.</p>
+              </article>
+              <article class="result-card result-card--warning">
+                <span>EV sensitivity</span>
+                <strong id="sensitivityCard">Moderate</strong>
+                <p id="sensitivityNote">Charging mix and mileage shape the EV result.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="breakdown-section" aria-labelledby="breakdownTitle">
+            <div class="section-head breakdown-head">
+              <div>
+                <p class="section-kicker">Year <span id="selectedYearLabel">10</span> snapshot</p>
+                <h2 id="breakdownTitle">Total cost of ownership breakdown</h2>
+                <p class="section-lede" id="breakdownLead">Compare the main cost blocks at the selected ownership period.</p>
+              </div>
+              <span class="year-chip" id="selectedYearChip">10 years</span>
+            </div>
+            <div class="breakdown-grid" id="breakdownGrid"></div>
+          </section>
+
+          <section class="explanation-section" aria-labelledby="explanationTitle">
+            <article class="explanation-box">
+              <p class="section-kicker">Why this result?</p>
+              <h2 id="explanationTitle">Ownership cost insight</h2>
+              <p id="explanationText"></p>
+            </article>
+
+            <article class="caveat-box">
+              <p class="section-kicker">Model notes</p>
+              <h2>Cost calculator notes</h2>
+              <ul>
+                <li>Similar vehicle size and use case assumed.</li>
+                <li>Vehicle archetypes, not exact models.</li>
+                <li>Local tax, subsidy, energy, and resale rules matter.</li>
+                <li>Currency and distance settings are display conversions.</li>
+                <li>EV incentives and remissions can expire.</li>
+                <li>Depreciation and battery outcomes are uncertain.</li>
+                <li>Plug-in hybrids are outside this version.</li>
+              </ul>
+            </article>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

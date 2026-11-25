@@ -1,0 +1,3010 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Retail Self-Service Simulation</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Space+Grotesk:wght@400;500;700&display=swap");
+
+:root{
+  --bg-1:#fcf5ec;
+  --bg-2:#f2efe8;
+  --ink:#13263c;
+  --ink-soft:rgba(19,38,60,.72);
+  --line:rgba(19,38,60,.12);
+  --card:rgba(242,245,247,.78);
+  --card-strong:rgba(248,250,251,.92);
+  --shadow:none;
+  --trad:#2962d9;
+  --self:#ff7a1a;
+  --staff:#0a8f84;
+  --danger:#e64b3c;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:100%}
+html.embedMode,body.embedMode{height:auto;min-height:0}
+body{
+  background:transparent;
+  color:var(--ink);
+  font-family:"Space Grotesk",sans-serif;
+}
+#app{width:min(1360px,100%);margin:0 auto;padding:18px;display:grid;gap:14px;background:transparent}
+body.embedMode{background:transparent;min-height:0;overflow:hidden}
+body.embedMode #app{width:100%;max-width:none;margin:0}
+.card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:28px;
+  background:linear-gradient(180deg, var(--card-strong), var(--card));
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(14px);
+}
+.hero{padding:22px 24px 20px;display:flex;justify-content:space-between;gap:18px;align-items:stretch}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(135deg, rgba(255,122,26,.10), transparent 34%),
+    linear-gradient(220deg, rgba(41,98,217,.10), transparent 40%);
+  pointer-events:none;
+}
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 12px;
+  max-width:100%;
+  border-radius:18px;
+  background:rgba(19,38,60,.06);
+  color:var(--ink-soft);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.04em;
+  line-height:1.25;
+  text-transform:none;
+}
+.eyebrow::before{
+  content:"";
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:linear-gradient(180deg, var(--self), #ffb175);
+  box-shadow:0 0 0 6px rgba(255,122,26,.14);
+}
+h1{margin:12px 0 8px;font-size:clamp(1.7rem,1.2rem + 2vw,3.1rem);line-height:1;letter-spacing:-.04em}
+.hero p{margin:0;max-width:760px;color:var(--ink-soft);font-size:1rem}
+.statusRail{min-width:min(360px,100%);display:flex;flex-direction:column;justify-content:flex-start;gap:10px;align-self:stretch}
+.chipRow{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px}
+.windowProgress{
+  align-self:flex-end;
+  margin-top:auto;
+  width:min(360px,100%);
+  padding:12px 14px 13px;
+  border-radius:18px;
+  border:1px solid rgba(19,38,60,.08);
+  background:linear-gradient(180deg, rgba(246,248,250,.98), rgba(238,242,245,.94))
+}
+.windowProgressHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:8px
+}
+.windowProgressHead span{
+  color:var(--ink-soft);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase
+}
+.windowProgressHead strong{
+  color:var(--ink);
+  font:700 13px/1 "IBM Plex Mono", monospace
+}
+.windowTrack{
+  position:relative;
+  height:12px;
+  border-radius:999px;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg, rgba(19,38,60,.05), rgba(19,38,60,.09)),
+    rgba(255,255,255,.72);
+  border:1px solid rgba(19,38,60,.08)
+}
+.windowFill{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:0%;
+  border-radius:inherit;
+  background:
+    linear-gradient(90deg, rgba(41,98,217,.82), rgba(255,122,26,.86));
+  transition:width .18s linear
+}
+.windowFill::after{
+  content:"";
+  position:absolute;
+  top:1px;
+  right:2px;
+  width:20px;
+  height:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.42);
+  filter:blur(2px)
+}
+.windowScale{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:7px;
+  color:rgba(19,38,60,.56);
+  font:600 10px/1 "IBM Plex Mono", monospace
+}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding:10px 14px;
+  border-radius:16px;
+  border:1px solid rgba(19,38,60,.08);
+  background:linear-gradient(180deg, rgba(246,248,250,.96), rgba(238,242,245,.92));
+  color:var(--ink);
+  font-size:13px;
+  font-weight:700;
+  box-shadow:none;
+}
+.chip strong,.mono{font-family:"IBM Plex Mono",monospace}
+.chip.live{background:linear-gradient(135deg, rgba(255,122,26,.10), rgba(240,244,247,.94))}
+.chip.live .dot{
+  width:9px;height:9px;border-radius:50%;background:var(--danger);
+  box-shadow:0 0 0 6px rgba(230,75,60,.14);animation:pulse 1.2s ease-in-out infinite alternate
+}
+@keyframes pulse{from{transform:scale(.9);opacity:.8}to{transform:scale(1.15);opacity:1}}
+.narrative{
+  padding:14px 16px;border-radius:18px;background:rgba(243,246,248,.92);
+  border:1px solid rgba(19,38,60,.10);color:var(--ink);font-size:14px;line-height:1.45
+}
+.stageOverlay .narrative{
+  position:absolute;
+  left:50%;
+  bottom:0.5cm;
+  transform:translateX(-50%);
+  width:min(760px, calc(100% - 36px));
+  text-align:center;
+  box-shadow:none;
+  backdrop-filter:blur(12px);
+  pointer-events:none
+}
+.mainGrid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(340px,440px);gap:14px;align-items:stretch}
+.stage{position:relative;min-height:720px;height:720px;padding:0;background:transparent;line-height:0}
+#simCanvas{display:block;width:100%;height:100%;vertical-align:top}
+.stageOverlay{position:absolute;inset:0;pointer-events:auto}
+.stageLegend{
+  position:absolute;top:18px;left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100% - 36px);padding:10px 12px;border-radius:18px;background:rgba(243,246,248,.88);
+  border:1px solid rgba(19,38,60,.09);backdrop-filter:blur(12px);box-shadow:none
+}
+.stageLegend{display:flex;justify-content:flex-start;flex-wrap:wrap;gap:10px 14px;font-size:12px;color:var(--ink-soft);pointer-events:none}
+.legendItem{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.legendSwatch{width:11px;height:11px;border-radius:50%;display:inline-block}
+.summary{
+  position:absolute;inset:0;display:grid;place-items:center;padding:24px;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,122,26,.16), transparent 26%),
+    radial-gradient(circle at 78% 20%, rgba(41,98,217,.14), transparent 24%),
+    rgba(10,18,30,.58);
+  backdrop-filter:blur(6px);
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease, visibility .18s ease
+}
+.summary.show{opacity:1;visibility:visible;pointer-events:auto}
+.summaryCard{
+  position:relative;width:min(740px,100%);padding:16px 16px 14px;border-radius:24px;
+  background:
+    linear-gradient(180deg, rgba(18,31,47,.98), rgba(26,41,62,.96)),
+    linear-gradient(135deg, rgba(255,122,26,.12), rgba(41,98,217,.12));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 36px 90px rgba(8,16,28,.45);
+  color:rgba(247,250,255,.98);
+  overflow:hidden;
+  transform:translateY(10px) scale(.98);
+  transition:transform .2s ease;
+  pointer-events:auto
+}
+.summary.show .summaryCard{transform:translateY(0) scale(1)}
+.summaryCard::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255,122,26,.18), transparent 28%),
+    radial-gradient(circle at 88% 12%, rgba(109,160,255,.16), transparent 24%),
+    linear-gradient(135deg, rgba(255,255,255,.05), transparent 46%);
+  pointer-events:none
+}
+.summaryClose{
+  position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:999px;padding:0;
+  display:grid;place-items:center;font:700 16px/1 "IBM Plex Mono", monospace;
+  background:rgba(255,255,255,.10);color:rgba(255,255,255,.92);box-shadow:none;border-color:rgba(255,255,255,.12);
+  z-index:4;
+  pointer-events:auto;
+  cursor:pointer
+}
+.summaryClose:hover{box-shadow:none}
+.summaryCard h2{
+  position:relative;
+  margin:0 0 12px;
+  font-size:1.36rem;
+  letter-spacing:-.04em;
+  color:rgba(255,255,255,.98);
+  text-shadow:0 10px 24px rgba(255,122,26,.18)
+}
+.summaryCard p{position:relative;margin:0 0 6px;color:rgba(225,235,247,.78);line-height:1.32;font-size:11.5px}
+.summaryGrid{margin-top:10px;display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:8px}
+.summaryTile{
+  position:relative;
+  padding:9px 10px 10px;
+  border-radius:15px;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)
+}
+.summaryTile .summaryLabel{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:rgba(208,221,236,.68);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.10em;
+  line-height:1.3
+}
+.summaryTile strong{display:block;margin-top:5px;font-size:.99rem;color:rgba(255,255,255,.98);letter-spacing:-.02em;line-height:1.22}
+.summaryTile small{display:block;margin-top:4px;color:rgba(208,221,236,.74);font-size:10px;line-height:1.28}
+.summaryTile.hasTip{display:grid;gap:2px}
+.summaryTopGrid .summaryTile{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:6px 10px;
+  padding:9px 11px
+}
+.summaryTopGrid .summaryTile strong{
+  margin-top:0;
+  font-size:1rem;
+  line-height:1.15;
+  text-align:right;
+  white-space:nowrap
+}
+.summaryTopGrid .summaryTile .tip{grid-column:1 / -1}
+.summarySignals{
+  margin-top:9px;
+  padding:9px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+  border:1px solid rgba(255,255,255,.10)
+}
+.summarySignalsHead{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-end;
+  margin-bottom:11px
+}
+.summarySignalsHead strong{font-size:11px;color:rgba(255,255,255,.96)}
+.summarySignalsHead span{color:rgba(208,221,236,.72);font-size:10px}
+.summarySignals .summaryGrid{margin-top:0}
+.summaryImpact{
+  margin-top:9px;
+  padding:9px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.10)
+}
+.summaryImpactHead{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-end;
+  margin-bottom:11px
+}
+.summaryImpactHead strong{font-size:11px;color:rgba(255,255,255,.96)}
+.summaryImpactHead span{color:rgba(208,221,236,.72);font-size:10px}
+.summaryImpact .summaryGrid{margin-top:0}
+.summaryTrend{
+  margin-top:9px;
+  padding:10px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.10)
+}
+.summaryTrendHead{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-end;
+  margin-bottom:11px
+}
+.summaryTrendHead strong{font-size:12px;color:rgba(255,255,255,.96)}
+.summaryTrendHead span{color:rgba(208,221,236,.72);font-size:10px}
+.summaryTrend .trendLegend{margin-top:10px;gap:8px 10px;font-size:10.5px;line-height:1.3}
+.summaryCard .tip{
+  margin-top:7px;
+  padding:7px 9px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(9,18,30,.92);
+  color:rgba(225,235,247,.84);
+  box-shadow:0 14px 28px rgba(0,0,0,.28)
+}
+.summaryCard .infoBtn{
+  width:16px;
+  height:16px;
+  border-color:rgba(255,255,255,.14);
+  background:radial-gradient(circle at 30% 28%, rgba(255,255,255,.28), rgba(120,147,174,.26) 42%, rgba(53,74,98,.95) 100%);
+  color:#f5fbff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 4px 10px rgba(0,0,0,.18);
+  text-shadow:none
+}
+.summaryCard .infoBtn::before{border-color:rgba(255,255,255,.12)}
+.summaryCard .infoBtn::after{background:rgba(255,255,255,.24)}
+.summaryCard .infoBtn:hover{
+  background:radial-gradient(circle at 30% 28%, rgba(255,255,255,.36), rgba(147,180,214,.34) 42%, rgba(63,91,122,.98) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 8px 16px rgba(0,0,0,.22)
+}
+.summaryCard .hasTipOpen .infoBtn{
+  border-color:rgba(255,255,255,.18);
+  background:radial-gradient(circle at 30% 28%, rgba(255,255,255,.24), rgba(255,160,97,.92) 42%, rgba(163,74,20,.98) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 10px 20px rgba(255,122,26,.24)
+}
+.side{display:grid;grid-template-rows:minmax(0,1fr) auto;gap:14px;height:100%}
+.metricPanel{padding:16px;height:100%}
+.controls{padding:16px}
+.brandPanel{
+  padding:0;
+  overflow:hidden;
+  background:linear-gradient(135deg, #355063, #4c6b7a 54%, #658490);
+  border:1px solid rgba(19,38,60,.10)
+}
+.brandInner{
+  position:relative;
+  padding:16px 18px 17px;
+  color:rgba(247,251,255,.98)
+}
+.brandInner::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 82% 22%, rgba(255,255,255,.14), transparent 24%),
+    linear-gradient(135deg, rgba(255,255,255,.08), transparent 44%);
+  pointer-events:none
+}
+.brandLogo{
+  position:relative;
+  display:block;
+  width:min(152px, 52%);
+  height:auto;
+  margin:0 0 10px
+}
+.brandCopy{
+  position:relative;
+  margin:0;
+  font-size:12.5px;
+  line-height:1.45;
+  color:rgba(246,250,255,.94)
+}
+.brandLink{
+  display:inline-flex;
+  align-items:center;
+  margin-left:8px;
+  font-size:12px;
+  font-weight:800;
+  color:#effbff;
+  text-decoration:none;
+  border-bottom:1px solid rgba(239,251,255,.68);
+  white-space:nowrap
+}
+.brandLink:hover{opacity:.92}
+.panelHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:12px}
+.panelHead h3{margin:0;font-size:1.02rem;letter-spacing:-.02em}
+.panelHead span{color:var(--ink-soft);font-size:13px}
+.metricGrid{display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:10px}
+.metricCard{padding:14px 14px 13px;border-radius:20px;background:rgba(239,243,246,.82);border:1px solid rgba(19,38,60,.08)}
+.metricCard .label{display:block;color:var(--ink-soft);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.metricCard .value{display:block;margin-top:7px;font-size:1.38rem;font-weight:700;letter-spacing:-.03em}
+.metricCard .sub{display:block;margin-top:6px;color:var(--ink-soft);font-size:12px}
+.laneStrip{margin-top:12px;display:grid;gap:10px}
+.laneRow{padding:12px 14px;border-radius:18px;border:1px solid rgba(19,38,60,.08);background:rgba(241,245,247,.86)}
+.laneRow header{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px;font-size:13px;font-weight:700}
+.laneMeta{display:flex;gap:12px;flex-wrap:wrap;color:var(--ink-soft);font-size:12px}
+.bar{height:10px;border-radius:999px;background:rgba(19,38,60,.08);overflow:hidden}
+.fill{height:100%;width:0%;border-radius:inherit;transition:width .12s linear}
+#trendCanvas{
+  display:block;width:100%;height:150px;margin-top:0;border-radius:18px;
+  background:linear-gradient(180deg, rgba(19,38,60,.05), rgba(19,38,60,.02))
+}
+.trendLegend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;color:var(--ink-soft);font-size:12px}
+.summaryTrend #trendCanvas{
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)
+}
+.summaryTrend .trendLegend{color:rgba(208,221,236,.72)}
+.controlsPanel{padding:16px 18px 18px}
+.controlsGrid{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:14px;align-items:start}
+.controlList{display:grid;gap:12px}
+.controlCol{
+  display:grid;
+  gap:12px;
+  padding:14px;
+  border-radius:22px;
+  background:rgba(239,243,246,.84);
+  border:1px solid rgba(19,38,60,.08)
+}
+.hasTip{position:relative}
+.controlRow{display:grid;gap:7px}
+.controlRow label{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;font-weight:700}
+.controlRow span{color:var(--ink-soft)}
+.labelWithInfo{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.tip{
+  display:none;
+  margin-top:2px;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(19,38,60,.10);
+  background:rgba(246,248,250,.97);
+  color:var(--ink-soft);
+  font-size:12px;
+  line-height:1.38;
+  box-shadow:none;
+  position:relative;
+  z-index:4
+}
+.hasTipOpen .tip{display:block}
+input[type="range"]{width:100%;margin:0;accent-color:var(--self)}
+.controlActions{
+  display:grid;
+  gap:12px;
+  align-self:stretch
+}
+.actionCard{
+  height:100%;
+  padding:14px;
+  border-radius:22px;
+  background:rgba(239,243,246,.84);
+  border:1px solid rgba(19,38,60,.08);
+  display:grid;
+  align-content:start
+}
+.actionStack{display:grid;gap:12px}
+.buttonRow{display:grid;grid-template-columns:92px minmax(188px,1.18fr) 92px;gap:10px;align-items:center}
+.speedSelect{
+  appearance:none;
+  width:100%;
+  border:1px solid rgba(19,38,60,.10);
+  border-radius:16px;
+  padding:12px 40px 12px 14px;
+  font:700 13px "Space Grotesk",sans-serif;
+  color:var(--ink);
+  background:
+    linear-gradient(45deg, transparent 50%, rgba(19,38,60,.72) 50%) calc(100% - 19px) calc(50% - 3px) / 7px 7px no-repeat,
+    linear-gradient(135deg, rgba(19,38,60,.72) 50%, transparent 50%) calc(100% - 13px) calc(50% - 3px) / 7px 7px no-repeat,
+    linear-gradient(180deg, rgba(246,248,250,.98), rgba(235,240,244,.94));
+  box-shadow:none;
+  cursor:pointer
+}
+button{
+  appearance:none;border:1px solid rgba(19,38,60,.10);border-radius:16px;padding:12px 14px;font:700 13px "Space Grotesk",sans-serif;
+  color:var(--ink);background:linear-gradient(180deg, rgba(246,248,250,.98), rgba(235,240,244,.94));
+  box-shadow:none;cursor:pointer;transition:transform .14s ease, box-shadow .14s ease, filter .14s ease
+}
+button:hover{transform:translateY(-1px);box-shadow:none;filter:saturate(1.02)}
+button:active{transform:translateY(0)}
+button.primary{background:linear-gradient(135deg, var(--ink), #29496e);color:#fff}
+.infoBtn{
+  appearance:none;
+  position:relative;
+  width:20px;
+  height:20px;
+  border-radius:999px;
+  border:1px solid rgba(36,71,103,.18);
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255,255,255,.98), rgba(255,255,255,.92) 36%, rgba(214,227,239,.98) 100%);
+  color:#244767;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font:800 11px/1 "IBM Plex Mono", monospace;
+  cursor:pointer;
+  flex:0 0 auto;
+  padding:0;
+  overflow:hidden;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.92);
+  transform:none;
+  filter:none;
+  transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease, color .14s ease
+}
+.infoBtn::before{
+  content:"";
+  position:absolute;
+  inset:2px;
+  border-radius:inherit;
+  border:1px solid rgba(255,255,255,.58);
+  pointer-events:none
+}
+.infoBtn::after{
+  content:"";
+  position:absolute;
+  top:2px;
+  right:2px;
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background:rgba(110,165,255,.28);
+  filter:blur(2px);
+  pointer-events:none
+}
+.infoBtn:hover{
+  transform:translateY(-1px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.96);
+  filter:none;
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255,255,255,1), rgba(255,255,255,.96) 36%, rgba(225,236,246,1) 100%)
+}
+.hasTipOpen .infoBtn{
+  border-color:rgba(45,104,160,.34);
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255,255,255,.26), rgba(118,171,227,.96) 42%, rgba(48,103,156,1) 100%);
+  color:#f8fcff;
+  text-shadow:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20)
+}
+.hasTipOpen .infoBtn::before{border-color:rgba(255,255,255,.22)}
+.hasTipOpen .infoBtn::after{background:rgba(255,255,255,.52)}
+.metricCard.hasTip{display:grid;gap:0}
+.metricCard .label{display:inline-flex;align-items:center;gap:6px}
+.metricCard .tip{margin-top:8px}
+@media (max-width:1220px){
+  .controlsGrid{grid-template-columns:repeat(2, minmax(0,1fr))}
+}
+@media (max-width:1080px){
+  .hero{flex-direction:column}.statusRail{min-width:0;width:100%}.chipRow{justify-content:flex-start}.windowProgress{align-self:stretch;width:100%}
+  .mainGrid{grid-template-columns:1fr}.side{grid-template-rows:auto;height:auto}.stage{min-height:0;height:680px}
+}
+@media (max-width:720px){
+  #app{padding:12px}.hero{padding:18px}.stage{height:760px}
+  .controlsGrid,.controlActions,.buttonRow{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .metricGrid,.summaryGrid{grid-template-columns:1fr}
+  .stage{height:820px}
+  .stageLegend{top:12px;max-width:calc(100% - 24px)}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <section class="hero card">
+    <div>
+      <div class="eyebrow">Throughput &amp; Capacity Simulation: Queues, Bottlenecks</div>
+      <h1>Retail Self-Service</h1>
+      <p>One full hour of retail checkout activity, played back at 10x, 25x, 100x, 200x, or 400x speed. Sliders define the scenario before the run; changing any of them restarts the hour from the beginning.</p>
+    </div>
+    <div class="statusRail">
+      <div class="chipRow">
+        <div class="chip live"><span class="dot"></span><span id="playbackChip">Speed 25x/144s</span></div>
+        <div class="chip">Time <strong id="clockLabel">00:00 / 60:00</strong></div>
+      </div>
+      <div class="windowProgress" aria-label="Simulation time progress">
+        <div class="windowProgressHead">
+          <span>Time progress</span>
+          <strong id="windowProgressLabel">0%</strong>
+        </div>
+        <div class="windowTrack">
+          <div id="windowProgressFill" class="windowFill"></div>
+        </div>
+        <div class="windowScale">
+          <span>00m</span>
+          <span>30m</span>
+          <span>60m</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="controls controlsPanel card">
+    <div class="controlsGrid">
+      <div class="controlCol controlList">
+        <div class="controlRow hasTip">
+          <label for="selfPreference"><span class="labelWithInfo">Self-Service preference<button class="infoBtn" data-tip="tipSelfPreference" aria-label="Self-Service preference info">i</button></span><strong id="selfPreferenceValue">60%</strong></label>
+          <input id="selfPreference" type="range" min="0" max="100" step="1" value="60" />
+          <div class="tip" id="tipSelfPreference">How many arriving shoppers initially lean toward Self-Service before queue conditions sway them.</div>
+        </div>
+        <div class="controlRow hasTip">
+          <label for="kiosks"><span class="labelWithInfo">Nr of Self-Service kiosks<button class="infoBtn" data-tip="tipKiosks" aria-label="Self-Service kiosks info">i</button></span><strong id="kiosksValue">6</strong></label>
+          <input id="kiosks" type="range" min="2" max="12" step="1" value="6" />
+          <div class="tip" id="tipKiosks">How many Self-Service kiosks are physically open and visible on the floor.</div>
+        </div>
+      </div>
+      <div class="controlCol controlList">
+        <div class="controlRow hasTip">
+          <label for="cashiers"><span class="labelWithInfo">Number of cashiers<button class="infoBtn" data-tip="tipCashiers" aria-label="Number of cashiers info">i</button></span><strong id="cashiersValue">2</strong></label>
+          <input id="cashiers" type="range" min="1" max="6" step="1" value="2" />
+          <div class="tip" id="tipCashiers">How many traditional checkout lanes are staffed and available to serve baskets.</div>
+        </div>
+        <div class="controlRow hasTip">
+          <label for="selfServeAssistants"><span class="labelWithInfo">Number of Self-Service assistants<button class="infoBtn" data-tip="tipAssistants" aria-label="Self-Service assistants info">i</button></span><strong id="selfServeAssistantsValue">1</strong></label>
+          <input id="selfServeAssistants" type="range" min="0" max="3" step="1" value="1" />
+          <div class="tip" id="tipAssistants">Assistants handle kiosk issues, approval prompts, and ID-style checks. More coverage reduces how long Self-Service sessions stay blocked.</div>
+        </div>
+      </div>
+      <div class="controlActions">
+        <div class="actionCard">
+          <div class="actionStack">
+            <div class="controlRow hasTip">
+              <label for="customersPerHour"><span class="labelWithInfo">Clients / hour<button class="infoBtn" data-tip="tipCustomersPerHour" aria-label="Clients per hour info">i</button></span><strong id="customersPerHourValue">120</strong></label>
+              <input id="customersPerHour" type="range" min="10" max="300" step="1" value="120" />
+              <div class="tip" id="tipCustomersPerHour">How much arrival demand enters the store during the simulated hour.</div>
+            </div>
+            <div class="buttonRow">
+              <button id="runAgain" class="primary" type="button">Pause</button>
+              <select id="playbackDuration" class="speedSelect" aria-label="Playback speed">
+                <option value="10">Speed 10x/360s</option>
+                <option value="25" selected>Speed 25x/144s</option>
+                <option value="100">Speed 100x/36s</option>
+                <option value="200">Speed 200x/18s</option>
+                <option value="400">Speed 400x/9s</option>
+              </select>
+              <button id="reset" type="button">Reset</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="mainGrid">
+    <section class="stage card">
+      <canvas id="simCanvas"></canvas>
+      <div class="stageOverlay">
+        <div class="stageLegend">
+          <span class="legendItem"><i class="legendSwatch" style="background:var(--trad)"></i>Traditional shopper</span>
+          <span class="legendItem"><i class="legendSwatch" style="background:var(--self)"></i>Self-Service shopper</span>
+          <span class="legendItem"><i class="legendSwatch" style="background:var(--danger)"></i>Kiosk error</span>
+          <span class="legendItem"><i class="legendSwatch" style="background:var(--staff)"></i>Checkout staff</span>
+        </div>
+        <div id="narrative" class="narrative">Customers are still entering. Watch which lane looks faster once real waits start to diverge.</div>
+        <div id="summary" class="summary">
+          <div class="summaryCard">
+            <button id="summaryClose" class="summaryClose" type="button" aria-label="Close summary">X</button>
+            <h2>Simulation Complete</h2>
+            <p id="summaryText">One-hour checkout result with actual queueing, service, and kiosk assist conditions.</p>
+            <div class="summaryGrid summaryTopGrid">
+              <div class="summaryTile hasTip">
+                <div class="summaryLabel">Served<button class="infoBtn" type="button" aria-label="Served info">i</button></div>
+                <strong id="summaryServed">0</strong>
+                <div class="tip">Total shoppers who completed checkout during the simulated 60-minute window.</div>
+              </div>
+              <div class="summaryTile hasTip">
+                <div class="summaryLabel">Avg wait<button class="infoBtn" type="button" aria-label="Average wait info">i</button></div>
+                <strong id="summaryWait">0s / 0s</strong>
+                <div class="tip">Completed-customer average wait in Traditional first, then Self-Service.</div>
+              </div>
+              <div class="summaryTile hasTip">
+                <div class="summaryLabel">Peak congestion<button class="infoBtn" type="button" aria-label="Peak congestion info">i</button></div>
+                <strong id="summaryCongestion">0 / 100</strong>
+                <div class="tip">Highest combined queue-and-blockage pressure reached at any point in the hour.</div>
+              </div>
+            </div>
+            <div class="summarySignals">
+              <div class="summarySignalsHead">
+                <strong>Owner signals</strong>
+                <span>Workforce vs customer experience</span>
+              </div>
+              <div class="summaryGrid">
+                <div class="summaryTile hasTip">
+                  <div class="summaryLabel">Workforce fit<button class="infoBtn" type="button" aria-label="Workforce fit info">i</button></div>
+                  <strong id="summaryWorkforceFit">Balanced</strong>
+                  <small id="summaryWorkforceMeta">0 / staffed hr</small>
+                  <div class="tip">Shows whether the current cashier and Self-Service assist staffing looks lean, balanced, or heavier than needed for this demand.</div>
+                </div>
+                <div class="summaryTile hasTip">
+                  <div class="summaryLabel">Queue comfort<button class="infoBtn" type="button" aria-label="Queue comfort info">i</button></div>
+                  <strong id="summaryQueueComfort">Calm</strong>
+                  <small id="summaryQueueComfortMeta">Peak 0 / 0</small>
+                  <div class="tip">A simple customer-experience read on whether the hour stayed calm, fair, strained, or risky.</div>
+                </div>
+                <div class="summaryTile hasTip">
+                  <div class="summaryLabel">Choice health<button class="infoBtn" type="button" aria-label="Choice health info">i</button></div>
+                  <strong id="summaryChoiceHealth">Strong</strong>
+                  <small id="summaryChoiceMeta">Split 0 / 0</small>
+                  <div class="tip">Shows whether both checkout options remained genuinely usable, or whether one side stopped being an attractive choice.</div>
+                </div>
+              </div>
+            </div>
+            <div class="summaryImpact">
+              <div class="summaryImpactHead">
+                <strong>Why Both Options Matter</strong>
+                <span>Better for shoppers and society</span>
+              </div>
+              <div class="summaryGrid">
+                <div class="summaryTile hasTip">
+                  <div class="summaryLabel">Quick route used<button class="infoBtn" type="button" aria-label="Quick route used info">i</button></div>
+                  <strong id="summarySharedLoad">0% Self-Service</strong>
+                  <small id="summarySharedLoadMeta">Simple baskets used the faster option</small>
+                  <div class="tip">When some shoppers use Self-Service, short simple trips can finish faster without taking the staffed option away from others.</div>
+                </div>
+                <div class="summaryTile hasTip">
+                  <div class="summaryLabel">Staff freed to help<button class="infoBtn" type="button" aria-label="Staff freed to help info">i</button></div>
+                  <strong id="summaryRedirectedTime">0s</strong>
+                  <small id="summaryRedirectedMeta">Less routine scanning for staff</small>
+                  <div class="tip">Time not spent repeatedly scanning simple baskets can be used for help, approvals, accessibility support, and problem solving.</div>
+                </div>
+                <div class="summaryTile hasTip">
+                  <div class="summaryLabel">Cashier option kept<button class="infoBtn" type="button" aria-label="Cashier option kept info">i</button></div>
+                  <strong id="summaryHumanReach">0% Traditional</strong>
+                  <small id="summaryHumanReachMeta">Human checkout stayed available</small>
+                  <div class="tip">Traditional checkout still matters for larger baskets, cash, accessibility needs, or anyone who simply prefers a person.</div>
+                </div>
+              </div>
+            </div>
+            <div class="summaryTrend">
+              <div class="summaryTrendHead">
+                <strong>Queue pulse</strong>
+                <span class="mono">1h window</span>
+              </div>
+              <canvas id="trendCanvas"></canvas>
+              <div class="trendLegend">
+                <span class="legendItem"><i class="legendSwatch" style="background:var(--trad)"></i>Traditional queue</span>
+                <span class="legendItem"><i class="legendSwatch" style="background:var(--self)"></i>Self-Service queue</span>
+                <span class="legendItem"><i class="legendSwatch" style="background:var(--staff); border-radius:3px"></i>Self-Service assist busyness</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="metricPanel card">
+        <div class="panelHead">
+          <h3>Live metrics</h3>
+        </div>
+        <div class="metricGrid">
+          <article class="metricCard hasTip">
+            <span class="label">Trad wait now<button class="infoBtn" data-tip="tipMetricTradWait" aria-label="Traditional wait info">i</button></span>
+            <strong class="value" id="avgTradWait">0s</strong>
+            <span class="sub" id="tradQueueMeta">0 waiting now</span>
+            <div class="tip" id="tipMetricTradWait">Estimated wait if the next shopper joins the fastest traditional lane right now.</div>
+          </article>
+          <article class="metricCard hasTip">
+            <span class="label">Self-Service wait now<button class="infoBtn" data-tip="tipMetricSelfWait" aria-label="Self-Service wait info">i</button></span>
+            <strong class="value" id="avgSelfWait">0s</strong>
+            <span class="sub" id="selfQueueMeta">0 waiting now</span>
+            <div class="tip" id="tipMetricSelfWait">Estimated wait if the next shopper joins the fastest open Self-Service kiosk right now.</div>
+          </article>
+          <article class="metricCard hasTip">
+            <span class="label">Served by clock<button class="infoBtn" data-tip="tipMetricServed" aria-label="Served by clock info">i</button></span>
+            <strong class="value" id="throughputValue">0</strong>
+            <span class="sub" id="throughputMeta">By 00:00 of 60:00</span>
+            <div class="tip" id="tipMetricServed">Total shoppers who have fully completed checkout by the current simulated time.</div>
+          </article>
+          <article class="metricCard hasTip">
+            <span class="label">Queue pressure<button class="infoBtn" data-tip="tipMetricPressure" aria-label="Queue pressure info">i</button></span>
+            <strong class="value" id="congestionValue">Light</strong>
+            <div class="tip" id="tipMetricPressure">A simplified pressure reading that combines visible queues and blocked Self-Service capacity into one easy signal.</div>
+            <span class="sub" id="bottleneckLabel">Index 0 | Balanced flow</span>
+          </article>
+        </div>
+        <div class="laneStrip">
+          <div class="laneRow">
+            <header><span>Traditional</span><span id="tradUtilLabel">0% busy</span></header>
+            <div class="bar"><div id="tradFill" class="fill" style="background:linear-gradient(90deg, #6da0ff, var(--trad))"></div></div>
+            <div class="laneMeta"><span id="tradStationsMeta">2 active cashiers</span><span id="tradServedMeta">Completed 0 by 00:00</span></div>
+          </div>
+          <div class="laneRow">
+            <header><span>Self-Service</span><span id="selfUtilLabel">0% busy</span></header>
+            <div class="bar"><div id="selfFill" class="fill" style="background:linear-gradient(90deg, #ffbf8d, var(--self))"></div></div>
+            <div class="laneMeta"><span id="selfStationsMeta">6 active Self-Service kiosks</span><span id="selfServedMeta">Completed 0 by 00:00</span></div>
+          </div>
+          <div class="laneRow">
+            <header><span>Self-Service assist</span><span id="staffUtilLabel">0% busy</span></header>
+            <div class="bar"><div id="staffFill" class="fill" style="background:linear-gradient(90deg, #7fe0d5, var(--staff))"></div></div>
+            <div class="laneMeta"><span id="staffCapacityMeta">1 assistant</span><span id="selfErrorMeta">0 active assist calls</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card brandPanel">
+        <div class="brandInner">
+          <img class="brandLogo" src="../../media/simfluence.webp" alt="Simfluence logo" />
+          <p class="brandCopy">Make goals and behaviour patterns seen in 20 seconds with interactive simulations. Get your ideas powered visually and answers seen clearly.<a class="brandLink" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">Visit website</a></p>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+</div>
+<script>
+(() => {
+  "use strict";
+
+  const URL_PARAMS = new URLSearchParams(window.location.search);
+  const IS_EMBEDDED = window.parent !== window || URL_PARAMS.get("embedMode") === "1" || URL_PARAMS.get("embed") === "1";
+  if (IS_EMBEDDED) {
+    document.documentElement.classList.add("embedMode");
+    document.body.classList.add("embedMode");
+  }
+
+  const CFG = {
+    durationSec: 3600,
+    dt: 1,
+    trendIntervalSec: 15,
+    maxCustomers: 220,
+    worldW: 1280,
+    worldH: 760,
+    customerSpeed: 52,
+    staffSpeed: 64,
+    defaults: {
+      customersPerHour: 120,
+      selfPreference: 60,
+      cashiers: 2,
+      kiosks: 6,
+      selfServeAssistants: 1,
+      playbackSpeed: 25
+    }
+  };
+
+  const STAGE_X_SHIFT = -56;
+  const shiftX = (x) => x + STAGE_X_SHIFT;
+
+  const LAYOUT = {
+    entry: { x: shiftX(122), y: 335 },
+    decision: { x: shiftX(272), y: 335 },
+    exit: { x: shiftX(1262), y: 335 },
+    tradBox: { x: shiftX(352), y: 92, w: 876, h: 218 },
+    selfBox: { x: shiftX(352), y: 360, w: 876, h: 296 },
+    staffBay: { x: shiftX(676), y: 518, w: 228, h: 46 }
+  };
+
+  const TRAD_POSITIONS = [
+    [shiftX(640), 156], [shiftX(860), 156], [shiftX(1080), 156],
+    [shiftX(640), 252], [shiftX(860), 252], [shiftX(1080), 252]
+  ];
+
+  const SELF_POSITIONS = [
+    [shiftX(446), 448], [shiftX(558), 448], [shiftX(670), 448], [shiftX(930), 448], [shiftX(1042), 448], [shiftX(1154), 448],
+    [shiftX(446), 608], [shiftX(558), 608], [shiftX(670), 608], [shiftX(930), 608], [shiftX(1042), 608], [shiftX(1154), 608]
+  ];
+
+  const STAFF_HOME = [
+    { x: shiftX(732), y: 541 },
+    { x: shiftX(790), y: 541 },
+    { x: shiftX(848), y: 541 }
+  ];
+
+  const COLORS = {
+    trad: "#2962d9",
+    self: "#ff7a1a",
+    staff: "#0a8f84",
+    danger: "#e64b3c",
+    ink: "#13263c"
+  };
+
+  const UI = {
+    clockLabel: document.getElementById("clockLabel"),
+    playbackChip: document.getElementById("playbackChip"),
+    windowProgressLabel: document.getElementById("windowProgressLabel"),
+    windowProgressFill: document.getElementById("windowProgressFill"),
+    narrative: document.getElementById("narrative"),
+    summary: document.getElementById("summary"),
+    summaryClose: document.getElementById("summaryClose"),
+    summaryText: document.getElementById("summaryText"),
+    summaryServed: document.getElementById("summaryServed"),
+    summaryWait: document.getElementById("summaryWait"),
+    summaryCongestion: document.getElementById("summaryCongestion"),
+    summaryWorkforceFit: document.getElementById("summaryWorkforceFit"),
+    summaryWorkforceMeta: document.getElementById("summaryWorkforceMeta"),
+    summaryQueueComfort: document.getElementById("summaryQueueComfort"),
+    summaryQueueComfortMeta: document.getElementById("summaryQueueComfortMeta"),
+    summaryChoiceHealth: document.getElementById("summaryChoiceHealth"),
+    summaryChoiceMeta: document.getElementById("summaryChoiceMeta"),
+    summaryRedirectedTime: document.getElementById("summaryRedirectedTime"),
+    summaryRedirectedMeta: document.getElementById("summaryRedirectedMeta"),
+    summaryHumanReach: document.getElementById("summaryHumanReach"),
+    summaryHumanReachMeta: document.getElementById("summaryHumanReachMeta"),
+    summarySharedLoad: document.getElementById("summarySharedLoad"),
+    summarySharedLoadMeta: document.getElementById("summarySharedLoadMeta"),
+    avgTradWait: document.getElementById("avgTradWait"),
+    avgSelfWait: document.getElementById("avgSelfWait"),
+    tradQueueMeta: document.getElementById("tradQueueMeta"),
+    selfQueueMeta: document.getElementById("selfQueueMeta"),
+    throughputValue: document.getElementById("throughputValue"),
+    throughputMeta: document.getElementById("throughputMeta"),
+    congestionValue: document.getElementById("congestionValue"),
+    bottleneckLabel: document.getElementById("bottleneckLabel"),
+    tradFill: document.getElementById("tradFill"),
+    selfFill: document.getElementById("selfFill"),
+    staffFill: document.getElementById("staffFill"),
+    tradUtilLabel: document.getElementById("tradUtilLabel"),
+    selfUtilLabel: document.getElementById("selfUtilLabel"),
+    staffUtilLabel: document.getElementById("staffUtilLabel"),
+    tradStationsMeta: document.getElementById("tradStationsMeta"),
+    selfStationsMeta: document.getElementById("selfStationsMeta"),
+    staffCapacityMeta: document.getElementById("staffCapacityMeta"),
+    tradServedMeta: document.getElementById("tradServedMeta"),
+    selfServedMeta: document.getElementById("selfServedMeta"),
+    selfErrorMeta: document.getElementById("selfErrorMeta"),
+    runAgain: document.getElementById("runAgain"),
+    reset: document.getElementById("reset"),
+    playbackDuration: document.getElementById("playbackDuration"),
+    customersPerHour: document.getElementById("customersPerHour"),
+    selfPreference: document.getElementById("selfPreference"),
+    cashiers: document.getElementById("cashiers"),
+    kiosks: document.getElementById("kiosks"),
+    selfServeAssistants: document.getElementById("selfServeAssistants"),
+    customersPerHourValue: document.getElementById("customersPerHourValue"),
+    selfPreferenceValue: document.getElementById("selfPreferenceValue"),
+    cashiersValue: document.getElementById("cashiersValue"),
+    kiosksValue: document.getElementById("kiosksValue"),
+    selfServeAssistantsValue: document.getElementById("selfServeAssistantsValue"),
+    simCanvas: document.getElementById("simCanvas"),
+    trendCanvas: document.getElementById("trendCanvas")
+  };
+
+  const syncEmbedHeight = setupEmbedAutoHeight();
+  const simCtx = UI.simCanvas.getContext("2d", { alpha: true });
+  const trendCtx = UI.trendCanvas.getContext("2d", { alpha: true });
+
+  const currentParams = { ...CFG.defaults };
+  let state;
+  let rafId = 0;
+  let lastFrame = performance.now();
+
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const dist = (ax, ay, bx, by) => Math.hypot(bx - ax, by - ay);
+  const sigmoid = (x) => 1 / (1 + Math.exp(-x));
+  const logit = (prob) => {
+    const p = clamp(prob, 0.001, 0.999);
+    return Math.log(p / (1 - p));
+  };
+
+  function mulberry32(seed) {
+    let t = seed >>> 0;
+    return function rand() {
+      t += 0x6D2B79F5;
+      let x = Math.imul(t ^ (t >>> 15), t | 1);
+      x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+      return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function createRng(seed) {
+    const rand = mulberry32(seed);
+    return {
+      float: () => rand(),
+      range: (min, max) => min + rand() * (max - min),
+      int: (min, max) => min + Math.floor(rand() * (max - min + 1))
+    };
+  }
+
+  function samplePoisson(lambda, rng) {
+    if (lambda <= 0) return 0;
+    const limit = Math.exp(-lambda);
+    let k = 0;
+    let p = 1;
+    do {
+      k += 1;
+      p *= Math.max(1e-9, rng.float());
+    } while (p > limit);
+    return k - 1;
+  }
+
+  function sampleBinomial(trials, probability, rng) {
+    let hits = 0;
+    for (let i = 0; i < trials; i += 1) {
+      if (rng.float() < probability) hits += 1;
+    }
+    return hits;
+  }
+
+  function bell(rng, mean, spread) {
+    const blended = (rng.float() + rng.float() + rng.float()) / 3;
+    return clamp(mean + (blended - 0.5) * spread * 2, 0, 1);
+  }
+
+  const randomSeed = () => Math.floor(Math.random() * 1e9);
+
+  function roundRect(ctx, x, y, w, h, r) {
+    const radius = Math.max(0, Math.min(r, w / 2, h / 2));
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + w, y, x + w, y + h, radius);
+    ctx.arcTo(x + w, y + h, x, y + h, radius);
+    ctx.arcTo(x, y + h, x, y, radius);
+    ctx.arcTo(x, y, x + w, y, radius);
+    ctx.closePath();
+  }
+
+  function setCanvasSize(canvas, ctx) {
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.floor(canvas.clientWidth * dpr));
+    const height = Math.max(1, Math.floor(canvas.clientHeight * dpr));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    return { dpr, width: canvas.clientWidth, height: canvas.clientHeight };
+  }
+
+  function setupEmbedAutoHeight() {
+    if (!IS_EMBEDDED) return () => {};
+    let rafId = 0;
+    let lastHeight = 0;
+    const rootEl = document.getElementById("app");
+
+    const measureHeight = () => {
+      const body = document.body;
+      const html = document.documentElement;
+      const docHeight = Math.ceil(Math.max(
+        html ? html.scrollHeight : 0,
+        html ? html.offsetHeight : 0,
+        body ? body.scrollHeight : 0,
+        body ? body.offsetHeight : 0
+      ));
+      let appHeight = 0;
+      if (rootEl) {
+        const rectHeight = rootEl.getBoundingClientRect().height;
+        const styles = getComputedStyle(rootEl);
+        const marginTop = parseFloat(styles.marginTop) || 0;
+        const marginBottom = parseFloat(styles.marginBottom) || 0;
+        appHeight = Math.ceil(rectHeight + marginTop + marginBottom);
+      }
+      return appHeight > 0 ? appHeight : docHeight;
+    };
+
+    const pushHeight = () => {
+      rafId = 0;
+      const height = measureHeight();
+      if (Math.abs(height - lastHeight) < 1) return;
+      lastHeight = height;
+      document.documentElement.style.minHeight = `${height}px`;
+      document.body.style.minHeight = `${height}px`;
+      try {
+        const frame = window.frameElement;
+        if (frame) {
+          frame.style.height = `${height}px`;
+          frame.setAttribute("height", String(height));
+        }
+      } catch (_) {}
+      try {
+        window.parent?.postMessage({ type: "widget:resize", widget: "sim8-retail-self-service", height }, "*");
+        window.parent?.postMessage({ type: "sim8-retail-self-service:height", height }, "*");
+        window.parent?.postMessage({ type: "simfluence-widget:resize", widget: "sim8-retail-self-service", height, mode: "default" }, "*");
+      } catch (_) {}
+    };
+
+    const schedule = () => {
+      if (!rafId) rafId = window.requestAnimationFrame(pushHeight);
+    };
+
+    schedule();
+    window.setTimeout(schedule, 60);
+    window.setTimeout(schedule, 240);
+    window.setTimeout(schedule, 900);
+    window.addEventListener("message", (event) => {
+      const data = event.data;
+      if (!data || typeof data !== "object") return;
+      if (
+        data.type === "widget:request-height" ||
+        data.type === "sim8-retail-self-service:request-height" ||
+        data.type === "simfluence-widget:request-height"
+      ) {
+        schedule();
+      }
+    }, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("load", schedule);
+    if ("ResizeObserver" in window && rootEl) {
+      const observer = new ResizeObserver(schedule);
+      observer.observe(rootEl);
+    }
+    return schedule;
+  }
+
+  function worldTransform(canvas, ctx) {
+    const dpr = window.devicePixelRatio || 1;
+    const scaleX = canvas.clientWidth / CFG.worldW;
+    const scaleY = canvas.clientHeight / CFG.worldH;
+    ctx.setTransform(scaleX * dpr, 0, 0, scaleY * dpr, 0, 0);
+  }
+
+  function createStations(channel, positions) {
+    return positions.map((position, index) => ({
+      id: `${channel}-${index + 1}`,
+      index,
+      channel,
+      x: position[0],
+      y: position[1],
+      queue: [],
+      activeCustomerId: null,
+      receiving: false,
+      errorActive: false,
+      errorRemaining: 0,
+      needsStaff: false,
+      staffAssignedId: null,
+      errorFlash: 0,
+      errorSince: 0,
+      serviceAvg: channel === "trad" ? 108 : 74
+    }));
+  }
+
+  function createStaffAgents() {
+    return STAFF_HOME.map((home, index) => ({
+      id: `staff-${index + 1}`,
+      index,
+      homeX: home.x,
+      homeY: home.y,
+      x: home.x,
+      y: home.y,
+      targetX: home.x,
+      targetY: home.y,
+      enabled: false,
+      status: "idle",
+      targetKioskId: null,
+      fixRemaining: 0
+    }));
+  }
+
+  function makeMetrics() {
+    return {
+      arrivals: 0,
+      served: 0,
+      servedByChannel: { trad: 0, self: 0 },
+      servedWaitTotal: { trad: 0, self: 0 },
+      servedWaitCount: { trad: 0, self: 0 },
+      errorEvents: 0,
+      laborBusySeconds: { trad: 0, assist: 0 },
+      selfTradEquivalentSeconds: 0,
+      peakCongestion: 0,
+      peakTradQueue: 0,
+      peakSelfQueue: 0,
+      peakErrorCount: 0,
+      live: {
+        avgTradWait: 0,
+        avgSelfWait: 0,
+        tradQueue: 0,
+        selfQueue: 0,
+        congestion: 0,
+        tradUtil: 0,
+        selfUtil: 0,
+        staffUtil: 0,
+        errorCount: 0,
+        bottleneck: "Balanced flow"
+      }
+    };
+  }
+
+  function createState(seed, params) {
+    const stationById = new Map();
+    const next = {
+      seed,
+      rng: createRng(seed),
+      params: { ...params },
+      running: true,
+      paused: false,
+      finished: false,
+      simTime: 0,
+      accumulator: 0,
+      nextTrendAt: 0,
+      customerId: 1,
+      customers: [],
+      customerById: new Map(),
+      stations: {
+        trad: createStations("trad", TRAD_POSITIONS),
+        self: createStations("self", SELF_POSITIONS)
+      },
+      stationById,
+      staff: createStaffAgents(),
+      observed: { trad: 108, self: 74 },
+      metrics: makeMetrics(),
+      trend: [],
+      narrative: "",
+      garbage: 0
+    };
+    [...next.stations.trad, ...next.stations.self].forEach((station) => stationById.set(station.id, station));
+    syncStationAvailability(next);
+    syncStaffCapacity(next);
+    computeMetrics(next, true);
+    return next;
+  }
+
+  const customerRadius = (customer) => customer.basket === "L" ? 12.2 : customer.basket === "M" ? 10.1 : 8.8;
+  const activeSpot = (station) => ({ x: station.x - (station.channel === "trad" ? 38 : 34), y: station.y });
+  const arrivalRateFor = (params) => params.customersPerHour / 3600;
+
+  function queueSlot(station, index) {
+    const depth = Math.floor(index / 2);
+    const lane = index % 2;
+    if (station.channel === "trad") {
+      return { x: station.x - 84 - depth * 42, y: station.y + (lane === 0 ? 18 : -18) };
+    }
+    const topRow = station.y < 520;
+    return {
+      x: station.x - 58 - depth * 38,
+      y: station.y + (topRow ? (lane === 0 ? 30 : 58) : (lane === 0 ? -30 : -58))
+    };
+  }
+
+  function syncStationAvailability(current) {
+    current.stations.trad.forEach((station, index) => {
+      station.receiving = index < current.params.cashiers;
+    });
+    current.stations.self.forEach((station, index) => {
+      station.receiving = index < current.params.kiosks;
+    });
+  }
+
+  function syncStaffCapacity(current) {
+    current.staff.forEach((agent) => {
+      const busy = agent.status === "moving" || agent.status === "fixing";
+      agent.enabled = busy || agent.index < current.params.selfServeAssistants;
+      if (!busy && !agent.enabled) {
+        agent.targetKioskId = null;
+        agent.targetX = agent.homeX;
+        agent.targetY = agent.homeY;
+      }
+    });
+  }
+
+  function sampleBasket(rng) {
+    const roll = rng.float();
+    if (roll < 0.55) return { basket: "S", items: rng.int(1, 8) };
+    if (roll < 0.90) return { basket: "M", items: rng.int(9, 25) };
+    return { basket: "L", items: rng.int(26, 60) };
+  }
+
+  function makeCustomer(current) {
+    const basket = sampleBasket(current.rng);
+    const techComfort = bell(current.rng, 0.68, 0.26);
+    const patience = current.rng.range(180, 720) * (0.82 + 0.36 * techComfort);
+    const manualApprovalRisk = clamp(
+      (basket.basket === "L" ? 0.22 : basket.basket === "M" ? 0.13 : 0.06) +
+      (basket.items > 18 ? 0.07 : basket.items > 8 ? 0.03 : 0) +
+      (1 - techComfort) * 0.12 +
+      current.rng.range(-0.03, 0.04),
+      0.03,
+      0.6
+    );
+    const startY = LAYOUT.entry.y + current.rng.range(-18, 18);
+    return {
+      id: current.customerId++,
+      x: LAYOUT.entry.x - current.rng.range(0, 44),
+      y: startY,
+      targetX: LAYOUT.decision.x + current.rng.range(-18, 18),
+      targetY: LAYOUT.decision.y + current.rng.range(-16, 16),
+      basket: basket.basket,
+      items: basket.items,
+      techComfort,
+      manualApprovalRisk,
+      patience,
+      status: "deciding",
+      channel: null,
+      assignedStationId: null,
+      tEntered: current.simTime,
+      tQueueStart: null,
+      tServiceStart: null,
+      remainingServiceTime: 0,
+      baseServiceTime: 0,
+      serviceElapsed: 0,
+      scheduledErrors: [],
+      decideAt: current.simTime + current.rng.range(3.2, 7.8),
+      remove: false
+    };
+  }
+
+  function spawnArrivals(current) {
+    if (current.customers.length >= CFG.maxCustomers) return;
+    const throttle = current.customers.length > CFG.maxCustomers * 0.9 ? 0.45 : 1;
+    const count = samplePoisson(arrivalRateFor(current.params) * CFG.dt * throttle, current.rng);
+    for (let i = 0; i < count; i += 1) {
+      if (current.customers.length >= CFG.maxCustomers) break;
+      const customer = makeCustomer(current);
+      current.customers.push(customer);
+      current.customerById.set(customer.id, customer);
+      current.metrics.arrivals += 1;
+    }
+  }
+
+  function serviceEstimateForCustomer(customer, channel, current) {
+    if (!customer) return channel === "trad" ? current.observed.trad : current.observed.self;
+    if (channel === "trad") return (42 + customer.items * 5.2) * 1.02;
+    const scanIssueChance = 0.0102 * (0.62 + 1.08 * (1 - customer.techComfort));
+    const expectedScanIssues = customer.items * scanIssueChance;
+    const expectedApprovals = customer.manualApprovalRisk + (customer.items > 22 ? 0.12 : 0);
+    const scanPenalty = current.params.selfServeAssistants > 0 ? 34 : 110;
+    const approvalPenalty = current.params.selfServeAssistants > 0 ? 18 : 64;
+    return (28 + customer.items * 3.8) + expectedScanIssues * scanPenalty + expectedApprovals * approvalPenalty;
+  }
+
+  function estimateStationWait(station, current) {
+    let total = 0;
+    if (station.activeCustomerId) {
+      const activeCustomer = current.customerById.get(station.activeCustomerId);
+      total += activeCustomer ? activeCustomer.remainingServiceTime : station.serviceAvg;
+      if (station.channel === "self" && station.errorActive) {
+        if (current.params.selfServeAssistants === 0) return Number.POSITIVE_INFINITY;
+        total += station.errorRemaining + (station.needsStaff && !station.staffAssignedId ? 18 : 0);
+      }
+    }
+    for (const id of station.queue) {
+      total += serviceEstimateForCustomer(current.customerById.get(id), station.channel, current);
+    }
+    return total;
+  }
+
+  function bestStationFor(channel, customer, current) {
+    const stations = current.stations[channel].filter((station) => station.receiving);
+    if (!stations.length) return null;
+    let best = stations[0];
+    let bestWait = Infinity;
+    for (const station of stations) {
+      const wait = estimateStationWait(station, current);
+      if (wait < bestWait) {
+        bestWait = wait;
+        best = station;
+      }
+    }
+    return { station: best, wait: bestWait };
+  }
+
+  function decideChannel(customer, current) {
+    const tradBest = bestStationFor("trad", customer, current);
+    const selfBest = bestStationFor("self", customer, current);
+    if (!tradBest && !selfBest) return null;
+    if (!tradBest) return selfBest.station;
+    if (!selfBest) return tradBest.station;
+    const walkTrad = 0.9 + Math.abs(tradBest.station.y - customer.y) / 180;
+    const walkSelf = 0.8 + Math.abs(selfBest.station.y - customer.y) / 180;
+    const costTrad = tradBest.wait + 6 * walkTrad + Math.max(0, customer.items - 26) * 0.55;
+    const costSelf = selfBest.wait + 6 * walkSelf + 22 * (1 - customer.techComfort) + 0.75 * customer.items;
+    const bias = logit(current.params.selfPreference / 100) * 0.62;
+    return current.rng.float() < sigmoid(-(costSelf - costTrad) + bias) ? selfBest.station : tradBest.station;
+  }
+
+  function refreshQueueTargets(current) {
+    ["trad", "self"].forEach((channel) => {
+      current.stations[channel].forEach((station) => {
+        station.queue.forEach((customerId, index) => {
+          const customer = current.customerById.get(customerId);
+          if (!customer) return;
+          const slot = queueSlot(station, index);
+          customer.targetX = slot.x;
+          customer.targetY = slot.y;
+        });
+        if (station.activeCustomerId) {
+          const customer = current.customerById.get(station.activeCustomerId);
+          if (customer) {
+            const spot = activeSpot(station);
+            customer.targetX = spot.x;
+            customer.targetY = spot.y;
+          }
+        }
+      });
+    });
+  }
+
+  function assignCustomerToStation(customer, station, current) {
+    customer.channel = station.channel;
+    customer.assignedStationId = station.id;
+    customer.status = "queueing";
+    customer.tQueueStart = current.simTime;
+    station.queue.push(customer.id);
+    refreshQueueTargets(current);
+  }
+
+  function processDecisions(current) {
+    current.customers.forEach((customer) => {
+      if (customer.status !== "deciding") return;
+      if (current.simTime < customer.decideAt && dist(customer.x, customer.y, customer.targetX, customer.targetY) > 16) return;
+      const station = decideChannel(customer, current);
+      if (station) assignCustomerToStation(customer, station, current);
+    });
+  }
+
+  function computeServiceTime(channel, customer, current) {
+    const noise = current.rng.range(0.92, 1.08);
+    return channel === "trad" ? (42 + customer.items * 5.2) * noise : (28 + customer.items * 3.8) * noise;
+  }
+
+  function prepareSelfErrors(customer, current) {
+    const scanIssueChance = 0.0102 * (0.62 + 1.08 * (1 - customer.techComfort));
+    const scanIssues = Math.min(4, sampleBinomial(customer.items, scanIssueChance, current.rng));
+    const approvalCount = current.rng.float() < customer.manualApprovalRisk
+      ? 1 + (current.rng.float() < customer.manualApprovalRisk * 0.24 ? 1 : 0)
+      : 0;
+    if (!scanIssues && !approvalCount) return [];
+    const events = [];
+    for (let i = 0; i < approvalCount; i += 1) {
+      events.push({
+        type: "approval",
+        at: customer.baseServiceTime * current.rng.range(0.12, 0.58),
+        duration: current.rng.range(10, 22) * (current.params.selfServeAssistants === 0 ? 2.5 : 1.1)
+      });
+    }
+    for (let i = 0; i < scanIssues; i += 1) {
+      events.push({
+        type: "error",
+        at: customer.baseServiceTime * current.rng.range(0.18, 0.86),
+        duration: current.rng.range(18, 46) * (current.params.selfServeAssistants === 0 ? 2.3 : 1.08)
+      });
+    }
+    events.sort((a, b) => a.at - b.at);
+    return events.filter((event, index) => index === 0 || event.at - events[index - 1].at > 10);
+  }
+
+  function startServiceAtStation(station, current) {
+    if (station.activeCustomerId || !station.queue.length) return;
+    const customer = current.customerById.get(station.queue.shift());
+    if (!customer) return;
+    station.activeCustomerId = customer.id;
+    customer.status = "serving";
+    customer.tServiceStart = current.simTime;
+    customer.baseServiceTime = computeServiceTime(station.channel, customer, current);
+    customer.remainingServiceTime = customer.baseServiceTime;
+    customer.serviceElapsed = 0;
+    customer.scheduledErrors = station.channel === "self" ? prepareSelfErrors(customer, current) : [];
+    station.errorActive = false;
+    station.errorRemaining = 0;
+    station.needsStaff = false;
+    station.staffAssignedId = null;
+    refreshQueueTargets(current);
+  }
+
+  function clearKioskError(station, current) {
+    station.errorActive = false;
+    station.errorRemaining = 0;
+    station.needsStaff = false;
+    station.errorFlash = 0;
+    station.errorSince = 0;
+    if (station.staffAssignedId) {
+      const helper = current.staff.find((agent) => agent.id === station.staffAssignedId);
+      if (helper) {
+        helper.status = "idle";
+        helper.targetKioskId = null;
+        helper.fixRemaining = 0;
+      }
+      station.staffAssignedId = null;
+    }
+  }
+
+  function completeCustomerService(station, customer, current) {
+    station.activeCustomerId = null;
+    const serviceDuration = current.simTime - customer.tServiceStart;
+    const wait = Math.max(0, customer.tServiceStart - customer.tQueueStart);
+    current.metrics.served += 1;
+    current.metrics.servedByChannel[station.channel] += 1;
+    current.metrics.servedWaitTotal[station.channel] += wait;
+    current.metrics.servedWaitCount[station.channel] += 1;
+    if (station.channel === "self") current.metrics.selfTradEquivalentSeconds += 42 + customer.items * 5.2;
+    station.serviceAvg = lerp(station.serviceAvg, serviceDuration, 0.2);
+    current.observed[station.channel] = lerp(current.observed[station.channel], serviceDuration, 0.18);
+    customer.status = "done";
+    customer.assignedStationId = null;
+    customer.targetX = LAYOUT.exit.x + 42;
+    customer.targetY = LAYOUT.exit.y + current.rng.range(-20, 20);
+    if (station.channel === "self") clearKioskError(station, current);
+    refreshQueueTargets(current);
+  }
+
+  function triggerKioskError(station, customer, current) {
+    if (!customer.scheduledErrors.length) return;
+    const event = customer.scheduledErrors.shift();
+    station.errorActive = true;
+    station.errorRemaining = event.duration;
+    station.needsStaff = true;
+    station.staffAssignedId = null;
+    station.errorFlash = 1;
+    station.errorSince = current.simTime;
+    if (event.type === "error") current.metrics.errorEvents += 1;
+  }
+
+  function updateTraditionalStations(current) {
+    current.stations.trad.forEach((station) => {
+      if (!station.activeCustomerId && station.queue.length) startServiceAtStation(station, current);
+      if (!station.activeCustomerId) return;
+      const customer = current.customerById.get(station.activeCustomerId);
+      if (!customer) {
+        station.activeCustomerId = null;
+        return;
+      }
+      customer.remainingServiceTime -= CFG.dt;
+      customer.serviceElapsed += CFG.dt;
+      if (customer.remainingServiceTime <= 0) completeCustomerService(station, customer, current);
+    });
+  }
+
+  function updateSelfStations(current) {
+    current.stations.self.forEach((station) => {
+      if (!station.activeCustomerId && station.queue.length) startServiceAtStation(station, current);
+      if (!station.activeCustomerId) return;
+      const customer = current.customerById.get(station.activeCustomerId);
+      if (!customer) {
+        station.activeCustomerId = null;
+        clearKioskError(station, current);
+        return;
+      }
+      station.errorFlash = Math.max(0, station.errorFlash - CFG.dt * 0.7);
+      if (station.errorActive) {
+        return;
+      }
+      customer.remainingServiceTime -= CFG.dt;
+      customer.serviceElapsed += CFG.dt;
+      if (customer.scheduledErrors.length && customer.serviceElapsed >= customer.scheduledErrors[0].at) triggerKioskError(station, customer, current);
+      if (customer.remainingServiceTime <= 0 && !station.errorActive) completeCustomerService(station, customer, current);
+    });
+  }
+
+  function updateStaff(current) {
+    syncStaffCapacity(current);
+    current.staff.forEach((agent) => {
+      if (agent.status === "idle" && agent.enabled) {
+        const target = current.stations.self
+          .filter((kiosk) => kiosk.errorActive && kiosk.needsStaff && !kiosk.staffAssignedId)
+          .sort((a, b) => a.errorSince - b.errorSince)[0];
+        if (target) {
+          target.staffAssignedId = agent.id;
+          agent.status = "moving";
+          agent.targetKioskId = target.id;
+        }
+      }
+    });
+
+    current.staff.forEach((agent) => {
+      if (agent.status === "moving") {
+        const kiosk = current.stationById.get(agent.targetKioskId);
+        if (!kiosk || !kiosk.errorActive) {
+          agent.status = "idle";
+          agent.targetKioskId = null;
+          return;
+        }
+        agent.targetX = kiosk.x + 18;
+        agent.targetY = kiosk.y - 40;
+        const move = CFG.staffSpeed * CFG.dt;
+        const distance = dist(agent.x, agent.y, agent.targetX, agent.targetY);
+        if (distance <= move) {
+          agent.x = agent.targetX;
+          agent.y = agent.targetY;
+          agent.status = "fixing";
+          agent.fixRemaining = kiosk.errorRemaining;
+        } else {
+          agent.x += ((agent.targetX - agent.x) / distance) * move;
+          agent.y += ((agent.targetY - agent.y) / distance) * move;
+        }
+      } else if (agent.status === "fixing") {
+        const kiosk = current.stationById.get(agent.targetKioskId);
+        if (!kiosk || !kiosk.errorActive) {
+          agent.status = "idle";
+          agent.targetKioskId = null;
+          agent.fixRemaining = 0;
+          return;
+        }
+        agent.fixRemaining -= CFG.dt;
+        kiosk.errorRemaining = Math.max(0, agent.fixRemaining);
+        if (agent.fixRemaining <= 0) clearKioskError(kiosk, current);
+      } else {
+        agent.targetX = agent.homeX;
+        agent.targetY = agent.homeY;
+        const move = CFG.staffSpeed * CFG.dt * 0.75;
+        const distance = dist(agent.x, agent.y, agent.targetX, agent.targetY);
+        if (distance <= move) {
+          agent.x = agent.targetX;
+          agent.y = agent.targetY;
+        } else if (distance > 0) {
+          agent.x += ((agent.targetX - agent.x) / distance) * move;
+          agent.y += ((agent.targetY - agent.y) / distance) * move;
+        }
+      }
+    });
+  }
+
+  function computeChannelWait(current, channel) {
+    const stations = current.stations[channel].filter((station) => station.receiving);
+    if (!stations.length) return 0;
+    return stations.reduce((best, station) => Math.min(best, estimateStationWait(station, current)), Number.POSITIVE_INFINITY);
+  }
+
+  function computeServedAverageWait(current, channel) {
+    const total = current.metrics.servedWaitTotal[channel];
+    const count = current.metrics.servedWaitCount[channel];
+    return count ? total / count : 0;
+  }
+
+  function computeOverallAverageWait(current) {
+    const total = current.metrics.servedWaitTotal.trad + current.metrics.servedWaitTotal.self;
+    const count = current.metrics.servedWaitCount.trad + current.metrics.servedWaitCount.self;
+    return count ? total / count : 0;
+  }
+
+  function accumulateLaborUsage(current) {
+    const busyTrad = current.stations.trad.filter((station) => !!station.activeCustomerId).length;
+    const busyAssist = current.staff.filter((agent) => agent.status === "moving" || agent.status === "fixing").length;
+    current.metrics.laborBusySeconds.trad += busyTrad * CFG.dt;
+    current.metrics.laborBusySeconds.assist += busyAssist * CFG.dt;
+  }
+
+  function computeOwnerSignals(current) {
+    const overallWait = computeOverallAverageWait(current);
+    const staffCount = current.params.cashiers + current.params.selfServeAssistants;
+    const servedPerStaffHour = staffCount > 0 ? current.metrics.served / staffCount : current.metrics.served;
+    const peakQueueLoad = current.metrics.peakTradQueue + current.metrics.peakSelfQueue;
+    const tradShare = current.metrics.served > 0 ? current.metrics.servedByChannel.trad / current.metrics.served : 0;
+    const selfShare = current.metrics.served > 0 ? current.metrics.servedByChannel.self / current.metrics.served : 0;
+    const channelWaitGap = Math.abs(
+      computeServedAverageWait(current, "trad") - computeServedAverageWait(current, "self")
+    );
+
+    let workforceFit = "Balanced";
+    if (overallWait > 120 || current.metrics.peakCongestion > 82 || peakQueueLoad >= 13) workforceFit = "Too lean";
+    else if (overallWait < 28 && current.metrics.peakCongestion < 28 && servedPerStaffHour < 22) workforceFit = "Heavy";
+    else if (overallWait > 70 || current.metrics.peakCongestion > 62 || peakQueueLoad >= 9) workforceFit = "Tight";
+
+    let queueComfort = "Calm";
+    if (overallWait > 120 || current.metrics.peakCongestion > 85 || peakQueueLoad >= 14) queueComfort = "Risky";
+    else if (overallWait > 75 || current.metrics.peakCongestion > 65 || peakQueueLoad >= 10) queueComfort = "Strained";
+    else if (overallWait > 35 || current.metrics.peakCongestion > 40 || peakQueueLoad >= 6) queueComfort = "Fair";
+
+    let choiceHealth = "Strong";
+    if (current.metrics.served === 0) choiceHealth = "Unclear";
+    else if (Math.min(tradShare, selfShare) < 0.15 || channelWaitGap > 130) choiceHealth = "One-sided";
+    else if (Math.min(tradShare, selfShare) < 0.24 || channelWaitGap > 80) choiceHealth = "Fragile";
+    else if (channelWaitGap > 45) choiceHealth = "Usable";
+
+    return {
+      workforceFit,
+      workforceMeta: `${servedPerStaffHour.toFixed(0)} / staffed hr`,
+      queueComfort,
+      queueComfortMeta: `Peak ${current.metrics.peakTradQueue} / ${current.metrics.peakSelfQueue}`,
+      choiceHealth,
+      choiceMeta: `Split ${formatPercent(tradShare * 100)} / ${formatPercent(selfShare * 100)}`
+    };
+  }
+
+  function computePublicSignals(current) {
+    const selfServed = current.metrics.servedByChannel.self;
+    const tradServed = current.metrics.servedByChannel.trad;
+    const served = current.metrics.served;
+    const assistSeconds = current.metrics.laborBusySeconds.assist;
+    const redirectedSeconds = Math.max(0, current.metrics.selfTradEquivalentSeconds - assistSeconds);
+    const selfShare = served > 0 ? selfServed / served : 0;
+    const tradShare = served > 0 ? tradServed / served : 0;
+
+    let redirectedMeta = "No simple baskets shifted yet";
+    if (selfServed > 0) redirectedMeta = "Less routine scanning for staff";
+
+    let humanReachMeta = "Human checkout stayed available";
+    if (served === 0) humanReachMeta = "Traditional share will appear after completions";
+    else if (tradShare < 0.2) humanReachMeta = "Cashier use was light in this run";
+
+    let sharedLoadMeta = "Checkout split appears after completions";
+    if (served > 0 && selfShare > 0.2 && tradShare > 0.2) sharedLoadMeta = "Both options carried real customer flow";
+    else if (served > 0) sharedLoadMeta = "Simple baskets leaned toward the quicker path";
+
+    return {
+      redirectedTime: formatDuration(redirectedSeconds),
+      redirectedMeta,
+      humanReach: `${formatPercent(tradShare * 100)} Traditional`,
+      humanReachMeta,
+      sharedLoad: `${formatPercent(selfShare * 100)} Self-Service`,
+      sharedLoadMeta
+    };
+  }
+
+  function deriveBottleneck(current, live) {
+    if (current.params.selfServeAssistants === 0 && live.errorCount > 0 && live.selfQueue > 0) return "Unattended kiosk errors";
+    if (live.staffUtil > 0.92 && live.selfQueue >= live.tradQueue + 2 && live.errorCount >= 2) return "Staff overload";
+    if (live.tradQueue >= live.selfQueue + 3 && live.avgTradWait > live.avgSelfWait + 45) return "Traditional queue drag";
+    if (live.selfQueue >= live.tradQueue + 3 && live.avgSelfWait > live.avgTradWait + 30) return "Self-Service congestion";
+    if (live.congestion > 70) return "Demand spike";
+    return "Balanced flow";
+  }
+
+  function narrativeFromBottleneck(label) {
+    if (label === "Staff overload") return "Assist is setting the pace.";
+    if (label === "Traditional queue drag") return "Traditional lanes are dragging.";
+    if (label === "Unattended kiosk errors") return "Kiosk issues are going untouched.";
+    if (label === "Self-Service congestion") return "Self-Service is over-attracting demand.";
+    if (label === "Demand spike") return "Demand is outrunning clean flow.";
+    return "Flow is balanced.";
+  }
+
+  function buildNarrative(current, live) {
+    const waitGap = live.avgTradWait - live.avgSelfWait;
+    const queueGap = live.tradQueue - live.selfQueue;
+    const backlog = Math.max(0, current.metrics.arrivals - current.metrics.served);
+    const progress = current.simTime / CFG.durationSec;
+
+    if (current.finished) return `Hour complete. ${narrativeFromBottleneck(live.bottleneck)}`;
+    if (current.simTime < 4 * 60) {
+      if (live.tradQueue === 0 && live.selfQueue === 0) return "Opening minutes. Both checkout paths are still clear.";
+      if (queueGap >= 2) return "Early drift toward traditional. Self-Service still has room.";
+      if (queueGap <= -2) return "Early drift toward Self-Service. Watch for kiosk friction.";
+      return "Opening flow. Shoppers are still testing both paths.";
+    }
+    if (current.params.selfServeAssistants === 0 && live.errorCount > 0) return "No assistant is available. Self-Service calls will stay blocked.";
+    if (live.errorCount > 0 && live.staffUtil > 0.92) return "Assist is fully occupied. New kiosk issues will hit the line harder.";
+    if (live.errorCount > 0 && live.selfQueue <= 2) return "A kiosk issue is live, but the line is still absorbing it.";
+    if (queueGap >= 4 && waitGap > 60) return "Traditional is backing up first. New arrivals have a reason to pivot.";
+    if (queueGap <= -4 && waitGap < -45) return "Self-Service is now the crowded side. Convenience is pulling too much demand.";
+    if (waitGap > 120) return "Traditional baskets are taking longer. Self-Service is clearly faster right now.";
+    if (waitGap < -90) return "Traditional has become the quicker route. Self-Service friction is showing.";
+    if (live.congestion > 82) return "Pressure is critical. Throughput is struggling to stay ahead.";
+    if (live.congestion > 58 && backlog > 10) return "Pressure is building on both sides. Backlog is still growing.";
+    if (progress > 0.8) return `Late-hour view. ${narrativeFromBottleneck(live.bottleneck)}`;
+    if (backlog <= 4 && current.metrics.served > Math.max(8, current.metrics.arrivals * 0.85)) return "Checkout is keeping up. Most shoppers are flowing straight through.";
+    return "Balanced phase. Small staffing changes would move this quickly.";
+  }
+
+  function computeMetrics(current, recordTrend = false) {
+    const tradQueue = current.stations.trad.reduce((sum, station) => sum + station.queue.length, 0);
+    const selfQueue = current.stations.self.reduce((sum, station) => sum + station.queue.length, 0);
+    const busyTrad = current.stations.trad.filter((station) => !!station.activeCustomerId).length;
+    const busySelf = current.stations.self.filter((station) => !!station.activeCustomerId).length;
+    const errorCount = current.stations.self.filter((station) => station.errorActive).length;
+    const busyStaff = current.staff.filter((agent) => agent.status === "moving" || agent.status === "fixing").length;
+    const live = current.metrics.live;
+    live.avgTradWait = computeChannelWait(current, "trad");
+    live.avgSelfWait = computeChannelWait(current, "self");
+    live.tradQueue = tradQueue;
+    live.selfQueue = selfQueue;
+    live.congestion = clamp(((tradQueue + selfQueue + errorCount * 2) / 18) * 100, 0, 100);
+    live.tradUtil = busyTrad / Math.max(1, current.params.cashiers);
+    live.selfUtil = busySelf / Math.max(1, current.params.kiosks);
+    live.staffUtil = current.params.selfServeAssistants > 0 ? busyStaff / Math.max(1, current.params.selfServeAssistants) : 0;
+    live.errorCount = errorCount;
+    live.bottleneck = deriveBottleneck(current, live);
+    current.metrics.peakCongestion = Math.max(current.metrics.peakCongestion, live.congestion);
+    current.metrics.peakTradQueue = Math.max(current.metrics.peakTradQueue, tradQueue);
+    current.metrics.peakSelfQueue = Math.max(current.metrics.peakSelfQueue, selfQueue);
+    current.metrics.peakErrorCount = Math.max(current.metrics.peakErrorCount, errorCount);
+    if (recordTrend) {
+      while (!current.trend.length || current.simTime >= current.nextTrendAt || (current.finished && current.nextTrendAt <= CFG.durationSec)) {
+        current.trend.push({ t: Math.min(current.nextTrendAt, CFG.durationSec), tradQueue, selfQueue, assistBusy: busyStaff });
+        current.nextTrendAt += CFG.trendIntervalSec;
+        if (current.trend.length > 260) current.trend.shift();
+        if (current.nextTrendAt > CFG.durationSec) break;
+      }
+    }
+    current.narrative = buildNarrative(current, live);
+  }
+
+  function stepSimulation(current) {
+    spawnArrivals(current);
+    processDecisions(current);
+    current.stations.trad.forEach((station) => { if (!station.activeCustomerId && station.queue.length) startServiceAtStation(station, current); });
+    current.stations.self.forEach((station) => { if (!station.activeCustomerId && station.queue.length) startServiceAtStation(station, current); });
+    updateTraditionalStations(current);
+    updateSelfStations(current);
+    updateStaff(current);
+    accumulateLaborUsage(current);
+    if (current.simTime >= CFG.durationSec) {
+      current.simTime = CFG.durationSec;
+      current.running = false;
+      current.paused = false;
+      current.finished = true;
+      computeMetrics(current, true);
+      UI.summary.classList.add("show");
+      return;
+    }
+    current.simTime += CFG.dt;
+    computeMetrics(current, true);
+    if (current.simTime >= CFG.durationSec) {
+      current.simTime = CFG.durationSec;
+      current.running = false;
+      current.paused = false;
+      current.finished = true;
+      computeMetrics(current, true);
+      UI.summary.classList.add("show");
+    }
+  }
+
+  function moveVisuals(current, simDt) {
+    const customerMove = CFG.customerSpeed * simDt;
+    current.customers.forEach((customer) => {
+      const speed = customerMove;
+      const distance = dist(customer.x, customer.y, customer.targetX, customer.targetY);
+      if (distance > 0.001) {
+        if (distance <= speed) {
+          customer.x = customer.targetX;
+          customer.y = customer.targetY;
+        } else {
+          customer.x += ((customer.targetX - customer.x) / distance) * speed;
+          customer.y += ((customer.targetY - customer.y) / distance) * speed;
+        }
+      }
+      if (customer.status === "done" && distance < 8) customer.remove = true;
+    });
+    current.garbage += simDt;
+    if (current.garbage > 4) {
+      current.garbage = 0;
+      current.customers = current.customers.filter((customer) => {
+        if (!customer.remove) return true;
+        current.customerById.delete(customer.id);
+        return false;
+      });
+    }
+  }
+
+  function formatDuration(value) {
+    const totalSeconds = Math.max(0, Math.round(value));
+    if (totalSeconds >= 3600) {
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      return `${hours}h ${String(minutes).padStart(2, "0")}m`;
+    }
+    if (totalSeconds >= 60) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}m ${String(seconds).padStart(2, "0")}s`;
+    }
+    return `${totalSeconds}s`;
+  }
+  const formatPercent = (value) => `${value.toFixed(0)}%`;
+  const plural = (value, one, many = `${one}s`) => `${value} ${value === 1 ? one : many}`;
+  const pressureLabel = (value) => {
+    if (value < 18) return "Light";
+    if (value < 40) return "Building";
+    if (value < 65) return "Busy";
+    if (value < 85) return "Heavy";
+    return "Critical";
+  };
+  const formatClock = (value) => {
+    const safe = clamp(value, 0, CFG.durationSec);
+    const minutes = Math.floor(safe / 60);
+    const seconds = Math.floor(safe % 60);
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
+  const playbackRuntimeSeconds = (speed) => Math.round(CFG.durationSec / speed);
+  const playbackLabel = (speed) => `Speed ${speed}x/${playbackRuntimeSeconds(speed)}s`;
+
+  function updateUi(current) {
+    const live = current.metrics.live;
+    const simulatedClock = formatClock(current.simTime);
+    const summaryTradWait = computeServedAverageWait(current, "trad");
+    const summarySelfWait = computeServedAverageWait(current, "self");
+    const ownerSignals = computeOwnerSignals(current);
+    const publicSignals = computePublicSignals(current);
+    const progress = clamp((current.simTime / CFG.durationSec) * 100, 0, 100);
+    UI.playbackChip.textContent = playbackLabel(currentParams.playbackSpeed);
+    UI.clockLabel.textContent = `${simulatedClock} / 60:00`;
+    UI.windowProgressLabel.textContent = `${Math.round(progress)}%`;
+    UI.windowProgressFill.style.width = `${progress}%`;
+    UI.narrative.textContent = current.paused
+      ? (current.simTime === 0
+        ? "Ready at 00:00. Press Run to watch the hour unfold."
+        : `Paused at ${simulatedClock}. ${current.narrative}`)
+      : current.narrative;
+    UI.runAgain.textContent = current.running && !current.paused ? "Pause" : "Run";
+    UI.avgTradWait.textContent = formatDuration(live.avgTradWait);
+    UI.avgSelfWait.textContent = formatDuration(live.avgSelfWait);
+    UI.tradQueueMeta.textContent = `${live.tradQueue} waiting now`;
+    UI.selfQueueMeta.textContent = `${live.selfQueue} waiting now`;
+    UI.throughputValue.textContent = String(current.metrics.served);
+    UI.throughputMeta.textContent = `By ${simulatedClock} of 60:00`;
+    UI.congestionValue.textContent = pressureLabel(live.congestion);
+    UI.bottleneckLabel.textContent = `Index ${Math.round(live.congestion)} | ${live.bottleneck}`;
+    UI.tradFill.style.width = `${(live.tradUtil * 100).toFixed(1)}%`;
+    UI.selfFill.style.width = `${(live.selfUtil * 100).toFixed(1)}%`;
+    UI.staffFill.style.width = `${(live.staffUtil * 100).toFixed(1)}%`;
+    UI.tradUtilLabel.textContent = `${formatPercent(live.tradUtil * 100)} busy`;
+    UI.selfUtilLabel.textContent = `${formatPercent(live.selfUtil * 100)} busy`;
+    UI.staffUtilLabel.textContent = current.params.selfServeAssistants > 0 ? `${formatPercent(live.staffUtil * 100)} busy` : "0% busy";
+    UI.tradStationsMeta.textContent = `${current.params.cashiers} active ${current.params.cashiers === 1 ? "cashier" : "cashiers"}`;
+    UI.selfStationsMeta.textContent = `${current.params.kiosks} active Self-Service kiosks`;
+    UI.staffCapacityMeta.textContent = current.params.selfServeAssistants > 0 ? plural(current.params.selfServeAssistants, "assistant") : "No assistant";
+    UI.tradServedMeta.textContent = `Completed ${current.metrics.servedByChannel.trad} by ${simulatedClock}`;
+    UI.selfServedMeta.textContent = `Completed ${current.metrics.servedByChannel.self} by ${simulatedClock}`;
+    UI.selfErrorMeta.textContent = `${live.errorCount} active calls | peak ${current.metrics.peakErrorCount}`;
+    UI.summaryServed.textContent = String(current.metrics.served);
+    UI.summaryWait.textContent = `${formatDuration(summaryTradWait)} / ${formatDuration(summarySelfWait)}`;
+    UI.summaryCongestion.textContent = `${Math.round(current.metrics.peakCongestion)} / 100`;
+    UI.summaryWorkforceFit.textContent = ownerSignals.workforceFit;
+    UI.summaryWorkforceMeta.textContent = ownerSignals.workforceMeta;
+    UI.summaryQueueComfort.textContent = ownerSignals.queueComfort;
+    UI.summaryQueueComfortMeta.textContent = ownerSignals.queueComfortMeta;
+    UI.summaryChoiceHealth.textContent = ownerSignals.choiceHealth;
+    UI.summaryChoiceMeta.textContent = ownerSignals.choiceMeta;
+    UI.summaryRedirectedTime.textContent = publicSignals.redirectedTime;
+    UI.summaryRedirectedMeta.textContent = publicSignals.redirectedMeta;
+    UI.summaryHumanReach.textContent = publicSignals.humanReach;
+    UI.summaryHumanReachMeta.textContent = publicSignals.humanReachMeta;
+    UI.summarySharedLoad.textContent = publicSignals.sharedLoad;
+    UI.summarySharedLoadMeta.textContent = publicSignals.sharedLoadMeta;
+    UI.summaryText.textContent = `60-min result: ${current.metrics.served} served. Wait ${formatDuration(summaryTradWait)} traditional, ${formatDuration(summarySelfWait)} Self-Service. Workforce ${ownerSignals.workforceFit.toLowerCase()}, comfort ${ownerSignals.queueComfort.toLowerCase()}, redirected ${publicSignals.redirectedTime}.`;
+  }
+
+  function drawBackdrop(ctx) {
+    const background = ctx.createLinearGradient(0, 0, 0, CFG.worldH);
+    background.addColorStop(0, "#dce9f1");
+    background.addColorStop(0.48, "#ccdbe6");
+    background.addColorStop(1, "#bdd0db");
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, CFG.worldW, CFG.worldH);
+
+    const topWash = ctx.createLinearGradient(0, 0, 0, 210);
+    topWash.addColorStop(0, "rgba(255,255,255,.34)");
+    topWash.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = topWash;
+    ctx.fillRect(0, 0, CFG.worldW, 210);
+
+    ctx.strokeStyle = "rgba(19,38,60,.035)";
+    ctx.lineWidth = 1;
+    for (let x = 26; x < CFG.worldW; x += 58) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, CFG.worldH);
+      ctx.stroke();
+    }
+    for (let y = 28; y < CFG.worldH; y += 58) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(CFG.worldW, y);
+      ctx.stroke();
+    }
+
+    const ceilingGlow = ctx.createRadialGradient(640, -60, 20, 640, 120, 720);
+    ceilingGlow.addColorStop(0, "rgba(255,255,255,.34)");
+    ceilingGlow.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = ceilingGlow;
+    ctx.fillRect(0, 0, CFG.worldW, 340);
+
+    const tradGlow = ctx.createRadialGradient(
+      LAYOUT.tradBox.x + LAYOUT.tradBox.w * 0.54,
+      LAYOUT.tradBox.y + LAYOUT.tradBox.h * 0.24,
+      0,
+      LAYOUT.tradBox.x + LAYOUT.tradBox.w * 0.54,
+      LAYOUT.tradBox.y + LAYOUT.tradBox.h * 0.24,
+      420
+    );
+    tradGlow.addColorStop(0, "rgba(41,98,217,.12)");
+    tradGlow.addColorStop(1, "rgba(41,98,217,0)");
+    ctx.fillStyle = tradGlow;
+    ctx.fillRect(0, 0, CFG.worldW, CFG.worldH);
+
+    const selfGlow = ctx.createRadialGradient(
+      LAYOUT.selfBox.x + LAYOUT.selfBox.w * 0.56,
+      LAYOUT.selfBox.y + LAYOUT.selfBox.h * 0.42,
+      0,
+      LAYOUT.selfBox.x + LAYOUT.selfBox.w * 0.56,
+      LAYOUT.selfBox.y + LAYOUT.selfBox.h * 0.42,
+      440
+    );
+    selfGlow.addColorStop(0, "rgba(255,122,26,.12)");
+    selfGlow.addColorStop(1, "rgba(255,122,26,0)");
+    ctx.fillStyle = selfGlow;
+    ctx.fillRect(0, 0, CFG.worldW, CFG.worldH);
+
+    const centerGlow = ctx.createRadialGradient(610, 332, 0, 610, 332, 230);
+    centerGlow.addColorStop(0, "rgba(255,255,255,.18)");
+    centerGlow.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = centerGlow;
+    ctx.fillRect(0, 0, CFG.worldW, CFG.worldH);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(84, 268);
+    ctx.lineTo(1196, 268);
+    ctx.lineTo(1260, 744);
+    ctx.lineTo(20, 744);
+    ctx.closePath();
+    const floorPlane = ctx.createLinearGradient(0, 268, 0, 744);
+    floorPlane.addColorStop(0, "rgba(255,251,244,.72)");
+    floorPlane.addColorStop(1, "rgba(184,197,206,.72)");
+    ctx.fillStyle = floorPlane;
+    ctx.fill();
+    ctx.clip();
+    for (let i = -4; i <= 8; i += 1) {
+      const startX = 180 + i * 94;
+      const endX = 54 + i * 118;
+      ctx.beginPath();
+      ctx.moveTo(startX, 268);
+      ctx.lineTo(endX, 744);
+      ctx.strokeStyle = "rgba(19,38,60,.055)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    for (let y = 300; y < 740; y += 54) {
+      const lift = (y - 268) * 0.16;
+      ctx.beginPath();
+      ctx.moveTo(118 - lift, y);
+      ctx.lineTo(1168 + lift, y);
+      ctx.strokeStyle = "rgba(19,38,60,.045)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    [LAYOUT.tradBox, LAYOUT.selfBox].forEach((box, index) => {
+      ctx.save();
+      ctx.shadowColor = index === 0 ? "rgba(41,98,217,.10)" : "rgba(255,122,26,.10)";
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetY = 16;
+      roundRect(ctx, box.x - 8, box.y - 8, box.w + 16, box.h + 18, 34);
+      ctx.fillStyle = "rgba(255,255,255,.24)";
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  function drawZone(ctx, box, title, fill, accent) {
+    ctx.save();
+    const titleText = title.toUpperCase();
+    ctx.font = '700 18px "IBM Plex Mono", monospace';
+    const titleWidth = Math.max(188, ctx.measureText(titleText).width + 52);
+    const titleLeft = box.x + 16;
+    const titleTop = box.y - 18;
+    const titleHeight = 44;
+
+    ctx.save();
+    ctx.shadowColor = "rgba(19,38,60,.12)";
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 18;
+    roundRect(ctx, box.x + 10, box.y + 16, box.w - 20, box.h, 30);
+    ctx.fillStyle = "rgba(255,255,255,.20)";
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.shadowColor = "rgba(19,38,60,.14)";
+    ctx.shadowBlur = 15;
+    ctx.shadowOffsetY = 18;
+    roundRect(ctx, box.x, box.y, box.w, box.h, 30);
+    ctx.fillStyle = "rgba(118,136,154,.72)";
+    ctx.fill();
+    ctx.restore();
+
+    const panel = ctx.createLinearGradient(box.x, box.y, box.x, box.y + box.h);
+    panel.addColorStop(0, "rgba(236,244,249,.88)");
+    panel.addColorStop(1, fill);
+    roundRect(ctx, box.x, box.y, box.w, box.h, 30);
+    ctx.fillStyle = panel;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.28)";
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+
+    roundRect(ctx, box.x + 10, box.y + 10, box.w - 20, box.h - 20, 24);
+    ctx.strokeStyle = "rgba(255,255,255,.12)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    roundRect(ctx, box.x + 2, box.y + 2, box.w - 4, 18, 18);
+    ctx.fillStyle = "rgba(255,255,255,.16)";
+    ctx.fill();
+
+    roundRect(ctx, box.x + 18, box.y + 30, 8, box.h - 60, 4);
+    ctx.fillStyle = accent;
+    ctx.globalAlpha = 0.28;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    roundRect(ctx, titleLeft, titleTop, titleWidth, titleHeight, 16);
+    ctx.fillStyle = "rgba(69,90,111,.88)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.24)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(titleLeft + 22, titleTop + titleHeight / 2, 5, 0, Math.PI * 2);
+    ctx.fillStyle = accent;
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,.96)";
+    ctx.font = '700 18px "IBM Plex Mono", monospace';
+    ctx.fillText(titleText, titleLeft + 34, titleTop + 29);
+
+    const interior = ctx.createLinearGradient(box.x, box.y + 18, box.x, box.y + box.h);
+    interior.addColorStop(0, "rgba(255,255,255,.20)");
+    interior.addColorStop(1, "rgba(255,255,255,.08)");
+    ctx.beginPath();
+    roundRect(ctx, box.x + 16, box.y + 18, box.w - 32, box.h - 36, 24);
+    ctx.fillStyle = interior;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.12)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawEntryExit(ctx) {
+    const drawLabel = (x, y, title, accent) => {
+      const text = title.toUpperCase();
+      ctx.save();
+      ctx.font = '700 18px "IBM Plex Mono", monospace';
+      const width = ctx.measureText(text).width + 52;
+      const height = 44;
+      const left = clamp(x - width / 2, 14, CFG.worldW - width - 14);
+      const top = y - 84;
+      roundRect(ctx, left, top, width, height, 16);
+      ctx.fillStyle = "rgba(241,246,249,.78)";
+      ctx.fill();
+      ctx.restore();
+      roundRect(ctx, left, top, width, height, 16);
+      ctx.strokeStyle = "rgba(19,38,60,.12)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.font = '700 18px "IBM Plex Mono", monospace';
+      ctx.textBaseline = "alphabetic";
+      ctx.beginPath();
+      ctx.arc(left + 22, top + height / 2, 5, 0, Math.PI * 2);
+      ctx.fillStyle = accent;
+      ctx.fill();
+      ctx.fillStyle = "rgba(19,38,60,.82)";
+      ctx.fillText(text, left + 34, top + 29);
+    };
+
+    const drawNode = (x, y, title, style, type) => {
+      drawLabel(x, y, title, style.accent);
+      const transform = ctx.getTransform();
+      const circleFixY = transform.a && transform.d ? transform.a / transform.d : 1;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(1, circleFixY);
+      const glow = ctx.createRadialGradient(0, 0, 6, 0, 0, 74);
+      glow.addColorStop(0, style.glowCore);
+      glow.addColorStop(0.6, style.glowSoft);
+      glow.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.beginPath();
+      ctx.arc(0, 0, 74, 0, Math.PI * 2);
+      ctx.fillStyle = glow;
+      ctx.fill();
+
+      ctx.shadowColor = style.glowSoft;
+      ctx.shadowBlur = 18;
+      ctx.shadowOffsetY = 10;
+      ctx.beginPath();
+      ctx.arc(0, 0, 38, 0, Math.PI * 2);
+      ctx.fillStyle = style.shell;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(0, 0, 38, 0, Math.PI * 2);
+      ctx.strokeStyle = style.edge;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 26, 0, Math.PI * 2);
+      ctx.fillStyle = style.core;
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.58)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(22, -22, 5, 0, Math.PI * 2);
+      ctx.fillStyle = style.accent;
+      ctx.fill();
+
+      ctx.beginPath();
+      if (type === "entry") {
+        ctx.moveTo(-12, 0);
+        ctx.lineTo(11, 0);
+        ctx.lineTo(2, -8);
+        ctx.moveTo(11, 0);
+        ctx.lineTo(2, 8);
+        ctx.moveTo(-17, -9);
+        ctx.lineTo(-17, 9);
+      } else if (type === "exit") {
+        ctx.moveTo(-10, 0);
+        ctx.lineTo(12, 0);
+        ctx.lineTo(3, -8);
+        ctx.moveTo(12, 0);
+        ctx.lineTo(3, 8);
+        ctx.moveTo(17, -9);
+        ctx.lineTo(17, 9);
+      } else {
+        ctx.moveTo(-16, 0);
+        ctx.lineTo(-2, 0);
+        ctx.lineTo(-2, -11);
+        ctx.lineTo(11, -11);
+        ctx.moveTo(-2, 0);
+        ctx.lineTo(-2, 11);
+        ctx.lineTo(11, 11);
+        ctx.moveTo(11, -11);
+        ctx.lineTo(4, -17);
+        ctx.moveTo(11, -11);
+        ctx.lineTo(4, -5);
+        ctx.moveTo(11, 11);
+        ctx.lineTo(4, 5);
+        ctx.moveTo(11, 11);
+        ctx.lineTo(4, 17);
+      }
+      ctx.strokeStyle = style.icon;
+      ctx.lineWidth = 2.8;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    drawNode(LAYOUT.entry.x, LAYOUT.entry.y, "Entry", {
+      accent: "rgba(68,164,154,.92)",
+      shell: "rgba(238,247,245,.96)",
+      edge: "rgba(68,164,154,.34)",
+      core: "rgba(181,229,223,.92)",
+      glowCore: "rgba(68,164,154,.16)",
+      glowSoft: "rgba(68,164,154,.05)",
+      icon: "rgba(47,126,119,.92)"
+    }, "entry");
+    drawNode(LAYOUT.decision.x, LAYOUT.decision.y, "Decision", {
+      accent: "rgba(220,169,92,.94)",
+      shell: "rgba(248,244,236,.96)",
+      edge: "rgba(220,169,92,.36)",
+      core: "rgba(241,219,177,.94)",
+      glowCore: "rgba(220,169,92,.16)",
+      glowSoft: "rgba(220,169,92,.05)",
+      icon: "rgba(119,86,36,.92)"
+    }, "decision");
+    drawNode(LAYOUT.exit.x, LAYOUT.exit.y, "Exit", {
+      accent: "rgba(110,154,230,.94)",
+      shell: "rgba(239,244,251,.96)",
+      edge: "rgba(110,154,230,.34)",
+      core: "rgba(196,216,248,.92)",
+      glowCore: "rgba(110,154,230,.16)",
+      glowSoft: "rgba(110,154,230,.05)",
+      icon: "rgba(64,105,177,.92)"
+    }, "exit");
+  }
+
+  function drawRetailFixtures(ctx, current) {
+    current.stations.trad
+      .filter((station) => station.receiving || station.activeCustomerId || station.queue.length)
+      .forEach((station, index) => {
+      const { x, y } = station;
+      const shadow = ctx.createRadialGradient(x - 18, y + 30, 0, x - 18, y + 30, 86);
+      shadow.addColorStop(0, "rgba(0,0,0,.20)");
+      shadow.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = shadow;
+      ctx.beginPath();
+      ctx.ellipse(x - 18, y + 30, 88, 16, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const counter = ctx.createLinearGradient(x - 92, y - 30, x + 54, y + 26);
+      counter.addColorStop(0, "rgba(218,226,234,.92)");
+      counter.addColorStop(0.48, "rgba(188,199,210,.96)");
+      counter.addColorStop(1, "rgba(164,178,192,.98)");
+      roundRect(ctx, x - 92, y - 28, 138, 46, 18);
+      ctx.fillStyle = counter;
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.34)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      roundRect(ctx, x - 84, y - 18, 62, 25, 10);
+      ctx.fillStyle = "rgba(228,235,241,.98)";
+      ctx.fill();
+      roundRect(ctx, x - 78, y - 13, 44, 4, 2);
+      ctx.fillStyle = "rgba(128,141,154,.44)";
+      ctx.fill();
+      roundRect(ctx, x + 2, y - 20, 20, 27, 8);
+      ctx.fillStyle = "rgba(208,217,226,.62)";
+      ctx.fill();
+      roundRect(ctx, x + 25, y - 18, 18, 22, 7);
+      ctx.fillStyle = "rgba(186,198,210,.52)";
+      ctx.fill();
+      roundRect(ctx, x - 26, y - 31, 28, 5, 3);
+      ctx.fillStyle = index % 2 === 0 ? "rgba(109,160,255,.26)" : "rgba(255,191,141,.26)";
+      ctx.fill();
+    });
+
+    current.stations.self
+      .filter((station) => station.receiving || station.activeCustomerId || station.queue.length)
+      .forEach((station) => {
+      const { x, y } = station;
+      ctx.beginPath();
+      ctx.ellipse(x, y + 34, 36, 10, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(0,0,0,.18)";
+      ctx.fill();
+      roundRect(ctx, x - 36, y + 24, 72, 12, 6);
+      ctx.fillStyle = "rgba(194,204,214,.94)";
+      ctx.fill();
+      roundRect(ctx, x - 30, y + 26, 60, 4, 2);
+      ctx.fillStyle = "rgba(255,255,255,.44)";
+      ctx.fill();
+    });
+
+  }
+
+  function stationStyle(station) {
+    if (station.errorActive) return { shell: "rgba(49,19,23,.94)", panel: "rgba(87,34,40,.84)", edge: COLORS.danger, screen: "rgba(255,129,115,.92)", glow: "rgba(230,75,60,.34)", detail: "rgba(255,255,255,.12)" };
+    if (station.receiving) return station.channel === "trad"
+      ? { shell: "rgba(223,232,241,.96)", panel: "rgba(198,213,228,.94)", edge: "rgba(109,160,255,.72)", screen: "rgba(138,198,255,.98)", glow: "rgba(41,98,217,.10)", detail: "rgba(255,255,255,.34)" }
+      : { shell: "rgba(241,230,220,.96)", panel: "rgba(229,210,191,.94)", edge: "rgba(255,191,141,.74)", screen: "rgba(255,220,178,.98)", glow: "rgba(255,122,26,.12)", detail: "rgba(255,255,255,.34)" };
+    if (station.activeCustomerId || station.queue.length) return { shell: "rgba(212,223,234,.94)", panel: "rgba(193,206,218,.90)", edge: "rgba(170,191,214,.46)", screen: "rgba(222,232,242,.90)", glow: "rgba(19,38,60,.10)", detail: "rgba(255,255,255,.22)" };
+    return { shell: "rgba(214,223,232,.84)", panel: "rgba(198,208,219,.82)", edge: "rgba(255,255,255,.18)", screen: "rgba(188,202,216,.56)", glow: "rgba(19,38,60,.05)", detail: "rgba(255,255,255,.18)" };
+  }
+
+  function drawStaffFigure(ctx, x, y, options = {}) {
+    const scale = (options.scale || 1) * 1.16;
+    const accent = options.accent || COLORS.staff;
+    const skin = options.skin || "#e9c39f";
+    const active = !!options.active;
+    const alert = !!options.alert;
+    const badge = options.badge || "rgba(245,250,255,.96)";
+    ctx.save();
+    const halo = ctx.createRadialGradient(x, y, 2, x, y, 32 * scale);
+    halo.addColorStop(0, active ? "rgba(10,143,132,.68)" : "rgba(10,143,132,.38)");
+    halo.addColorStop(.56, active ? "rgba(10,143,132,.26)" : "rgba(10,143,132,.14)");
+    halo.addColorStop(1, "rgba(10,143,132,0)");
+    ctx.beginPath();
+    ctx.arc(x, y, 28 * scale, 0, Math.PI * 2);
+    ctx.fillStyle = halo;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x, y + 17.5 * scale, 19 * scale, 9.8 * scale, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(8,20,33,.38)";
+    ctx.fill();
+    const uniform = ctx.createLinearGradient(x, y - 1 * scale, x, y + 22 * scale);
+    uniform.addColorStop(0, accent);
+    uniform.addColorStop(.55, "rgba(13,122,112,.98)");
+    uniform.addColorStop(1, "rgba(7,72,66,.98)");
+    roundRect(ctx, x - 11 * scale, y - 1 * scale, 22 * scale, 18 * scale, 8 * scale);
+    ctx.fillStyle = uniform;
+    ctx.fill();
+    roundRect(ctx, x - 11 * scale, y - 1 * scale, 22 * scale, 18 * scale, 8 * scale);
+    ctx.strokeStyle = "rgba(4,18,30,.54)";
+    ctx.lineWidth = 1.3 * scale;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x, y - 10 * scale, 8.4 * scale, 0, Math.PI * 2);
+    ctx.fillStyle = skin;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(16,31,44,.30)";
+    ctx.lineWidth = 1 * scale;
+    ctx.stroke();
+    roundRect(ctx, x - 8 * scale, y + 3 * scale, 16 * scale, 7 * scale, 3 * scale);
+    ctx.fillStyle = "rgba(245,250,255,.98)";
+    ctx.fill();
+    roundRect(ctx, x - 8 * scale, y + 11 * scale, 16 * scale, 2.6 * scale, 1.3 * scale);
+    ctx.fillStyle = "rgba(144,255,231,.96)";
+    ctx.fill();
+    roundRect(ctx, x - 6.4 * scale, y + 13.9 * scale, 12.8 * scale, 1.9 * scale, 1 * scale);
+    ctx.fillStyle = "rgba(255,255,255,.62)";
+    ctx.fill();
+    roundRect(ctx, x - 9 * scale, y + 18 * scale, 6 * scale, 9 * scale, 2.5 * scale);
+    roundRect(ctx, x + 3 * scale, y + 18 * scale, 6 * scale, 9 * scale, 2.5 * scale);
+    ctx.fillStyle = "rgba(23,41,60,.86)";
+    ctx.fill();
+    roundRect(ctx, x - 14 * scale, y + 2 * scale, 4 * scale, 12 * scale, 2 * scale);
+    roundRect(ctx, x + 10 * scale, y + 2 * scale, 4 * scale, 12 * scale, 2 * scale);
+    ctx.fillStyle = accent;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 13 * scale, y - 3 * scale, 4 * scale, 0, Math.PI * 2);
+    ctx.fillStyle = badge;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 13 * scale, y - 3 * scale, 1.8 * scale, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(12,111,102,.92)";
+    ctx.fill();
+    if (active) {
+      ctx.beginPath();
+      ctx.arc(x, y, 23 * scale, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(166,255,237,.96)";
+      ctx.lineWidth = 2.2 * scale;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, 27 * scale, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(10,143,132,.38)";
+      ctx.lineWidth = 1.8 * scale;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, 29.5 * scale, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255,255,255,.24)";
+      ctx.lineWidth = 1.1 * scale;
+      ctx.stroke();
+    }
+    if (alert) {
+      ctx.beginPath();
+      ctx.arc(x + 19 * scale, y - 14 * scale, 6 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(230,75,60,.92)";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 19 * scale, y - 17.2 * scale);
+      ctx.lineTo(x + 19 * scale, y - 12.4 * scale);
+      ctx.strokeStyle = "rgba(255,255,255,.96)";
+      ctx.lineWidth = 1.6 * scale;
+      ctx.lineCap = "round";
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x + 19 * scale, y - 10.2 * scale, 0.95 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,.96)";
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawStations(ctx, current) {
+    const cashierSkins = ["#f3d5bd", "#e9c39f", "#ddb18a"];
+    current.stations.trad.forEach((station) => {
+      if (!station.receiving && !station.activeCustomerId && !station.queue.length) return;
+      const style = stationStyle(station);
+      ctx.save();
+      ctx.shadowColor = style.glow;
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetY = 12;
+      ctx.beginPath();
+      ctx.ellipse(station.x, station.y + 26, 60, 12, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(0,0,0,.22)";
+      ctx.fill();
+      roundRect(ctx, station.x - 42, station.y - 24, 84, 54, 18);
+      ctx.fillStyle = style.shell;
+      ctx.fill();
+      ctx.restore();
+
+      roundRect(ctx, station.x - 48, station.y - 10, 96, 24, 12);
+      ctx.fillStyle = style.panel;
+      ctx.fill();
+      roundRect(ctx, station.x - 42, station.y - 24, 84, 54, 18);
+      ctx.strokeStyle = style.edge;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      roundRect(ctx, station.x - 20, station.y - 34, 32, 18, 8);
+      ctx.fillStyle = style.screen;
+      ctx.fill();
+      roundRect(ctx, station.x - 34, station.y - 4, 14, 12, 5);
+      ctx.fillStyle = style.detail;
+      ctx.fill();
+      roundRect(ctx, station.x + 18, station.y - 4, 14, 12, 5);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(station.x + 26, station.y + 2, 8, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,.18)";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(station.x - 6, station.y - 2, 7, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,.82)";
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.52)";
+      ctx.font = '700 10px "IBM Plex Mono", monospace';
+      ctx.fillText(String(station.index + 1), station.x - 1, station.y + 2);
+      if (station.receiving) {
+        drawStaffFigure(ctx, station.x + 56, station.y - 3, {
+          scale: 0.92,
+          skin: cashierSkins[station.index % cashierSkins.length],
+          active: !!station.activeCustomerId
+        });
+      }
+    });
+    current.stations.self.forEach((station) => {
+      if (!station.receiving && !station.activeCustomerId && !station.queue.length) return;
+      const style = stationStyle(station);
+      const pulse = station.errorActive ? 2 + Math.sin((current.simTime + station.index) * 8) * 2 : 0;
+      ctx.save();
+      ctx.shadowColor = style.glow;
+      ctx.shadowBlur = station.errorActive ? 30 : 20;
+      ctx.shadowOffsetY = 10;
+      ctx.beginPath();
+      ctx.ellipse(station.x, station.y + 30, 28, 9, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(0,0,0,.22)";
+      ctx.fill();
+      roundRect(ctx, station.x - 24, station.y - 30, 48, 60, 16);
+      ctx.fillStyle = style.shell;
+      ctx.fill();
+      ctx.restore();
+
+      roundRect(ctx, station.x - 24, station.y - 30, 48, 60, 16);
+      ctx.strokeStyle = style.edge;
+      ctx.lineWidth = 2 + (station.errorActive ? pulse * 0.3 : 0);
+      ctx.stroke();
+      roundRect(ctx, station.x - 15, station.y - 22, 30, 22, 8);
+      ctx.fillStyle = style.screen;
+      ctx.fill();
+      roundRect(ctx, station.x - 10, station.y + 7, 20, 12, 6);
+      ctx.fillStyle = style.panel;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(station.x - 7, station.y + 30);
+      ctx.lineTo(station.x - 3, station.y + 46);
+      ctx.lineTo(station.x + 3, station.y + 46);
+      ctx.lineTo(station.x + 7, station.y + 30);
+      ctx.closePath();
+      ctx.fillStyle = style.panel;
+      ctx.fill();
+      roundRect(ctx, station.x - 17, station.y - 6, 34, 42, 12);
+      ctx.strokeStyle = "rgba(255,255,255,.08)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      if (station.errorActive) {
+        ctx.beginPath();
+        ctx.arc(station.x, station.y + 1, 34 + pulse, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(230,75,60,${0.22 + station.errorFlash * 0.18})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    });
+  }
+
+  function drawStaffBay(ctx, current) {
+    const cx = LAYOUT.staffBay.x + LAYOUT.staffBay.w / 2;
+    const cy = LAYOUT.staffBay.y + LAYOUT.staffBay.h / 2 + 1;
+    void current;
+
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 12, 72, 22, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0,0,0,.16)";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 72, 24, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(127,224,213,.32)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([10, 10]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.beginPath();
+    ctx.arc(cx - 54, cy, 5, 0, Math.PI * 2);
+    ctx.arc(cx + 54, cy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(127,224,213,.88)";
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(34,76,72,.96)";
+    ctx.font = '700 13px "Space Grotesk", sans-serif';
+    ctx.textAlign = "center";
+    ctx.fillText("Self-Service assist", cx, cy - 32);
+    ctx.textAlign = "start";
+  }
+
+  function customerFill(customer) {
+    if (customer.channel === "trad") return "#0d6fff";
+    if (customer.channel === "self") return "#ff7d12";
+    return "#416fa9";
+  }
+
+  function customerSkin(customer) {
+    const tones = ["#f3d5bd", "#e9c39f", "#ddb18a", "#c9966b"];
+    return tones[Math.abs(customer.id) % tones.length];
+  }
+
+  function customerAccent(customer) {
+    if (customer.channel === "trad") return "rgba(245,249,255,.995)";
+    if (customer.channel === "self") return "rgba(255,246,233,.995)";
+    return "rgba(247,250,253,.99)";
+  }
+
+  function customerBagColor(customer) {
+    if (customer.channel === "trad") return "rgba(17,49,111,.98)";
+    if (customer.channel === "self") return "rgba(132,71,18,.98)";
+    return "rgba(58,71,91,.92)";
+  }
+
+  function drawCustomers(ctx, current) {
+    const ordered = current.customers.slice().sort((a, b) => a.y - b.y);
+    ordered.forEach((customer) => {
+      const radius = customerRadius(customer);
+      const fade = customer.status === "done" ? 0.68 : 1;
+      const urgency = customer.status === "queueing" ? clamp((current.simTime - customer.tQueueStart) / Math.max(0.1, customer.patience), 0, 1) : 0;
+      const fill = customerFill(customer);
+      const skin = customerSkin(customer);
+      const accent = customerAccent(customer);
+      const bagFill = customerBagColor(customer);
+      const basketW = customer.basket === "L" ? 10 : customer.basket === "M" ? 8 : 6;
+      const basketH = customer.basket === "L" ? 8 : 6;
+      const pulse = 0.5 + 0.5 * Math.sin(current.simTime * 7 + customer.id * 0.8);
+      const haloFill = customer.channel === "trad"
+        ? `rgba(13,111,255,${0.38 + pulse * 0.12})`
+        : customer.channel === "self"
+          ? `rgba(255,125,18,${0.36 + pulse * 0.12})`
+          : `rgba(65,111,169,${0.22 + pulse * 0.08})`;
+      ctx.save();
+      ctx.globalAlpha = fade;
+      ctx.beginPath();
+      ctx.ellipse(customer.x, customer.y + radius + 7, radius + 10.4, radius * 0.82, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(8,22,36,.28)";
+      ctx.fill();
+      const halo = ctx.createRadialGradient(customer.x, customer.y - 1, 2, customer.x, customer.y - 1, radius + 18);
+      halo.addColorStop(0, haloFill);
+      halo.addColorStop(.62, customer.channel === "trad"
+        ? `rgba(13,111,255,${0.16 + pulse * 0.04})`
+        : customer.channel === "self"
+          ? `rgba(255,125,18,${0.15 + pulse * 0.04})`
+          : `rgba(65,111,169,${0.10 + pulse * 0.03})`);
+      halo.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.beginPath();
+      ctx.arc(customer.x, customer.y - 1, radius + 12, 0, Math.PI * 2);
+      ctx.fillStyle = halo;
+      ctx.fill();
+      if (urgency > 0.58) {
+        ctx.beginPath();
+        ctx.arc(customer.x, customer.y, radius + 11 + urgency * 2.8, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(230,75,60,${0.12 + urgency * 0.28})`;
+        ctx.fill();
+      }
+      const body = ctx.createLinearGradient(customer.x, customer.y - radius * 0.3, customer.x, customer.y + radius * 2.3);
+      body.addColorStop(0, accent);
+      body.addColorStop(.22, fill);
+      body.addColorStop(1, customer.channel === "trad"
+        ? "rgba(7,73,190,.99)"
+        : customer.channel === "self"
+          ? "rgba(197,89,8,.99)"
+          : "rgba(47,82,122,.99)");
+      ctx.shadowColor = customer.channel === "trad"
+        ? `rgba(13,111,255,${0.24 + pulse * 0.08})`
+        : customer.channel === "self"
+          ? `rgba(255,125,18,${0.22 + pulse * 0.08})`
+          : `rgba(65,111,169,${0.14 + pulse * 0.05})`;
+      ctx.shadowBlur = 10 + pulse * 4;
+      roundRect(ctx, customer.x - radius * 0.9, customer.y - radius * 0.18, radius * 1.8, radius * 2.2, Math.max(5, radius * 0.54));
+      ctx.fillStyle = body;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      roundRect(ctx, customer.x - radius * 0.9, customer.y - radius * 0.18, radius * 1.8, radius * 2.2, Math.max(5, radius * 0.54));
+      ctx.strokeStyle = "rgba(8,24,36,.48)";
+      ctx.lineWidth = 1.3;
+      ctx.stroke();
+      roundRect(ctx, customer.x - radius * 0.94, customer.y - radius * 0.22, radius * 1.88, radius * 2.28, Math.max(5, radius * 0.56));
+      ctx.strokeStyle = "rgba(255,255,255,.20)";
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
+      roundRect(ctx, customer.x - radius * 0.62, customer.y + radius * 0.22, radius * 1.24, radius * 0.74, Math.max(3, radius * 0.2));
+      ctx.fillStyle = accent;
+      ctx.fill();
+      roundRect(ctx, customer.x - radius * 0.3, customer.y + radius * 0.18, radius * 0.6, radius * 1.08, Math.max(3, radius * 0.18));
+      ctx.fillStyle = "rgba(255,255,255,.20)";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(customer.x, customer.y - radius * 1.02, Math.max(5.2, radius * 0.62), 0, Math.PI * 2);
+      ctx.fillStyle = skin;
+      ctx.fill();
+      ctx.strokeStyle = "rgba(16,31,44,.26)";
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
+      ctx.fillStyle = "rgba(10,37,64,.90)";
+      ctx.beginPath();
+      ctx.arc(customer.x - radius * 0.22, customer.y - radius * 1.08, 0.85, 0, Math.PI * 2);
+      ctx.arc(customer.x + radius * 0.22, customer.y - radius * 1.08, 0.85, 0, Math.PI * 2);
+      ctx.fill();
+      roundRect(ctx, customer.x - radius * 0.78, customer.y + radius * 1.72, radius * 0.54, radius * 0.78, 2.2);
+      roundRect(ctx, customer.x + radius * 0.24, customer.y + radius * 1.72, radius * 0.54, radius * 0.78, 2.2);
+      ctx.fillStyle = "rgba(27,43,63,.86)";
+      ctx.fill();
+      roundRect(ctx, customer.x - radius * 1.18, customer.y + radius * 0.06, radius * 0.32, radius * 1.08, 2);
+      roundRect(ctx, customer.x + radius * 0.86, customer.y + radius * 0.06, radius * 0.32, radius * 1.08, 2);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(customer.x, customer.y + 1, radius + 6.8, 0, Math.PI * 2);
+      ctx.strokeStyle = customer.channel === "trad"
+        ? `rgba(13,111,255,${0.34 + pulse * 0.10})`
+        : customer.channel === "self"
+          ? `rgba(255,125,18,${0.32 + pulse * 0.10})`
+          : `rgba(65,111,169,${0.18 + pulse * 0.06})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      roundRect(ctx, customer.x + radius * 0.82, customer.y - basketH / 2, basketW, basketH, 2.6);
+      ctx.fillStyle = bagFill;
+      ctx.fill();
+      if (customer.status === "serving") {
+        ctx.beginPath();
+        ctx.arc(customer.x, customer.y + 1, radius + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255,255,255,.98)";
+        ctx.lineWidth = 2.4;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(customer.x, customer.y + 1, radius + 8, 0, Math.PI * 2);
+        ctx.strokeStyle = haloFill;
+        ctx.lineWidth = 1.7;
+        ctx.stroke();
+      }
+      ctx.restore();
+    });
+  }
+
+  function drawStaffAgents(ctx, current) {
+    const skinTones = ["#f3d5bd", "#e9c39f", "#ddb18a"];
+    current.staff.forEach((agent) => {
+      if (!agent.enabled && agent.status === "idle") return;
+      const engaged = agent.status === "moving" || agent.status === "fixing";
+      if (engaged) {
+        const kiosk = current.stationById.get(agent.targetKioskId);
+        if (kiosk) {
+          ctx.beginPath();
+          ctx.moveTo(agent.x, agent.y);
+          ctx.lineTo(kiosk.x, kiosk.y);
+          ctx.strokeStyle = "rgba(127,224,213,.22)";
+          ctx.lineWidth = 2;
+          ctx.setLineDash([8, 8]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+      drawStaffFigure(ctx, agent.x, agent.y, {
+        skin: skinTones[agent.index % skinTones.length],
+        active: engaged,
+        alert: agent.status === "fixing"
+      });
+    });
+  }
+
+  function drawStage(current) {
+    setCanvasSize(UI.simCanvas, simCtx);
+    worldTransform(UI.simCanvas, simCtx);
+    simCtx.save();
+    drawBackdrop(simCtx);
+    drawZone(simCtx, LAYOUT.tradBox, "Traditional lanes", "rgba(132,156,183,.84)", COLORS.trad);
+    drawZone(simCtx, LAYOUT.selfBox, "Self-Service kiosks", "rgba(197,164,130,.84)", COLORS.self);
+    drawRetailFixtures(simCtx, current);
+    drawStaffBay(simCtx, current);
+    drawEntryExit(simCtx);
+    drawStations(simCtx, current);
+    drawCustomers(simCtx, current);
+    drawStaffAgents(simCtx, current);
+    simCtx.restore();
+  }
+
+  function renderTrend(current) {
+    const { dpr, width, height } = setCanvasSize(UI.trendCanvas, trendCtx);
+    trendCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    trendCtx.clearRect(0, 0, width, height);
+
+    const pad = { top: 16, right: 16, bottom: 34, left: 48 };
+    const chartW = Math.max(10, width - pad.left - pad.right);
+    const chartH = Math.max(10, height - pad.top - pad.bottom);
+    const maxValue = Math.max(
+      4,
+      ...current.trend.map((point) => Math.max(point.tradQueue, point.selfQueue, point.assistBusy * 4))
+    );
+
+    trendCtx.strokeStyle = "rgba(208,221,236,.12)";
+    trendCtx.lineWidth = 1;
+    trendCtx.fillStyle = "rgba(208,221,236,.72)";
+    trendCtx.font = '500 11px "IBM Plex Mono", monospace';
+
+    for (let i = 0; i <= 3; i += 1) {
+      const y = pad.top + (chartH / 3) * i;
+      const tickValue = Math.round((maxValue / 3) * (3 - i));
+      trendCtx.beginPath();
+      trendCtx.moveTo(pad.left, y);
+      trendCtx.lineTo(width - pad.right, y);
+      trendCtx.stroke();
+      trendCtx.fillText(String(tickValue), 10, y + (i === 3 ? -2 : 4));
+    }
+
+    trendCtx.beginPath();
+    trendCtx.moveTo(pad.left, pad.top);
+    trendCtx.lineTo(pad.left, pad.top + chartH);
+    trendCtx.lineTo(width - pad.right, pad.top + chartH);
+    trendCtx.strokeStyle = "rgba(208,221,236,.20)";
+    trendCtx.stroke();
+
+    if (current.trend.length) {
+      const stepX = current.trend.length > 1 ? chartW / (current.trend.length - 1) : 0;
+      current.trend.forEach((point, index) => {
+        const x = pad.left + index * stepX;
+        const barHeight = (point.assistBusy * 4 / maxValue) * chartH;
+        if (barHeight <= 0) return;
+        trendCtx.fillStyle = "rgba(10,143,132,.22)";
+        trendCtx.fillRect(x - 1.5, pad.top + chartH - barHeight, 3, barHeight);
+      });
+
+      const drawLine = (field, color) => {
+        trendCtx.beginPath();
+        current.trend.forEach((point, index) => {
+          const x = pad.left + index * stepX;
+          const y = pad.top + chartH - (point[field] / maxValue) * chartH;
+          if (index === 0) trendCtx.moveTo(x, y);
+          else trendCtx.lineTo(x, y);
+        });
+        trendCtx.strokeStyle = color;
+        trendCtx.lineWidth = 2.5;
+        trendCtx.stroke();
+      };
+
+      drawLine("tradQueue", COLORS.trad);
+      drawLine("selfQueue", COLORS.self);
+    }
+
+    const xTicks = [
+      { label: "0m", ratio: 0 },
+      { label: "15m", ratio: 0.25 },
+      { label: "30m", ratio: 0.5 },
+      { label: "45m", ratio: 0.75 },
+      { label: "60m", ratio: 1 }
+    ];
+    trendCtx.fillStyle = "rgba(208,221,236,.72)";
+    trendCtx.font = '500 11px "IBM Plex Mono", monospace';
+    xTicks.forEach((tick) => {
+      const x = pad.left + chartW * tick.ratio;
+      trendCtx.beginPath();
+      trendCtx.moveTo(x, pad.top + chartH);
+      trendCtx.lineTo(x, pad.top + chartH + 4);
+      trendCtx.strokeStyle = "rgba(208,221,236,.20)";
+      trendCtx.stroke();
+      const align = tick.ratio === 0 ? "left" : tick.ratio === 1 ? "right" : "center";
+      trendCtx.textAlign = align;
+      trendCtx.fillText(tick.label, x, height - 12);
+    });
+
+    trendCtx.save();
+    trendCtx.translate(14, pad.top + chartH / 2);
+    trendCtx.rotate(-Math.PI / 2);
+    trendCtx.textAlign = "center";
+    trendCtx.fillStyle = "rgba(208,221,236,.60)";
+    trendCtx.fillText("Load", 0, 0);
+    trendCtx.restore();
+
+    trendCtx.textAlign = "center";
+    trendCtx.fillStyle = "rgba(208,221,236,.60)";
+    trendCtx.fillText("Simulated time", pad.left + chartW / 2, height - 2);
+    trendCtx.textAlign = "left";
+  }
+
+  function syncControlLabels() {
+    UI.customersPerHourValue.textContent = String(currentParams.customersPerHour);
+    UI.selfPreferenceValue.textContent = `${currentParams.selfPreference}%`;
+    UI.cashiersValue.textContent = String(currentParams.cashiers);
+    UI.kiosksValue.textContent = String(currentParams.kiosks);
+    UI.selfServeAssistantsValue.textContent = String(currentParams.selfServeAssistants);
+  }
+
+  function syncControls() {
+    UI.playbackDuration.value = String(currentParams.playbackSpeed);
+    UI.customersPerHour.value = String(currentParams.customersPerHour);
+    UI.selfPreference.value = String(currentParams.selfPreference);
+    UI.cashiers.value = String(currentParams.cashiers);
+    UI.kiosks.value = String(currentParams.kiosks);
+    UI.selfServeAssistants.value = String(currentParams.selfServeAssistants);
+    syncControlLabels();
+  }
+
+  function restartScenario(seed = state ? state.seed : randomSeed(), paused = false) {
+    restartSimulation(seed, paused);
+  }
+
+  function closeInfoTips() {
+    document.querySelectorAll(".hasTipOpen").forEach((element) => {
+      element.classList.remove("hasTipOpen");
+      const button = element.querySelector(".infoBtn");
+      if (button) button.setAttribute("aria-expanded", "false");
+    });
+  }
+
+  function syncSliderValue(key, value) {
+    currentParams[key] = value;
+    syncControlLabels();
+  }
+
+  function updatePlaybackSpeed(value) {
+    currentParams.playbackSpeed = value;
+    if (!state) return;
+    updateUi(state);
+    drawStage(state);
+    renderTrend(state);
+  }
+
+  function restartSimulation(seed = randomSeed(), paused = false) {
+    state = createState(seed, currentParams);
+    state.paused = paused;
+    UI.summary.classList.remove("show");
+    lastFrame = performance.now();
+    updateUi(state);
+    drawStage(state);
+    renderTrend(state);
+    syncEmbedHeight();
+  }
+
+  function resetControls() {
+    Object.assign(currentParams, CFG.defaults);
+    syncControls();
+    restartSimulation(randomSeed(), true);
+  }
+
+  function bindControls() {
+    UI.playbackDuration.addEventListener("change", () => updatePlaybackSpeed(Number(UI.playbackDuration.value)));
+
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest(".infoBtn");
+      if (!button) {
+        closeInfoTips();
+        syncEmbedHeight();
+        return;
+      }
+      const host = button.closest(".controlRow") || button.closest(".metricCard") || button.closest(".summaryTile");
+      if (!host) return;
+      const shouldOpen = !host.classList.contains("hasTipOpen");
+      closeInfoTips();
+      host.classList.toggle("hasTipOpen", shouldOpen);
+      button.setAttribute("aria-expanded", String(shouldOpen));
+      syncEmbedHeight();
+    });
+
+    [
+      [UI.customersPerHour, "customersPerHour"],
+      [UI.selfPreference, "selfPreference"],
+      [UI.cashiers, "cashiers"],
+      [UI.kiosks, "kiosks"],
+      [UI.selfServeAssistants, "selfServeAssistants"]
+    ].forEach(([control, key]) => {
+      control.addEventListener("input", () => syncSliderValue(key, Number(control.value)));
+      control.addEventListener("change", () => {
+        syncSliderValue(key, Number(control.value));
+        closeInfoTips();
+        restartScenario(state ? state.seed : randomSeed(), true);
+        syncEmbedHeight();
+      });
+    });
+
+    UI.runAgain.addEventListener("click", () => {
+      if (!state || state.finished) {
+        restartSimulation();
+        return;
+      }
+      state.paused = !state.paused;
+      if (!state.paused) lastFrame = performance.now();
+      updateUi(state);
+      drawStage(state);
+      renderTrend(state);
+    });
+    UI.reset.addEventListener("click", () => {
+      closeInfoTips();
+      resetControls();
+      syncEmbedHeight();
+    });
+    UI.summaryClose.addEventListener("click", () => {
+      UI.summary.classList.remove("show");
+      syncEmbedHeight();
+    });
+    UI.summary.addEventListener("click", (event) => {
+      if (event.target === UI.summary || event.target === UI.summaryClose) {
+        UI.summary.classList.remove("show");
+        syncEmbedHeight();
+      }
+    });
+    window.addEventListener("resize", () => {
+      if (!state) return;
+      drawStage(state);
+      renderTrend(state);
+      syncEmbedHeight();
+    });
+  }
+
+  function frame(now) {
+    const realDt = Math.min(0.08, Math.max(0.001, (now - lastFrame) / 1000));
+    lastFrame = now;
+
+    if (state) {
+      if (state.running && !state.paused) {
+        const simAdvance = Math.min(60, realDt * currentParams.playbackSpeed);
+        state.accumulator += simAdvance;
+        let safety = 0;
+        while (state.running && !state.paused && state.accumulator >= CFG.dt && safety < 240) {
+          stepSimulation(state);
+          state.accumulator -= CFG.dt;
+          safety += 1;
+        }
+        if (!state.running) state.accumulator = 0;
+        moveVisuals(state, simAdvance);
+      }
+      updateUi(state);
+      drawStage(state);
+      renderTrend(state);
+    }
+
+    rafId = window.requestAnimationFrame(frame);
+  }
+
+  syncControls();
+  bindControls();
+  restartSimulation();
+  rafId = window.requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

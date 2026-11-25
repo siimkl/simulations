@@ -1,0 +1,1697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Product Traceability Impact Simulator</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+:root{
+  --bg1:#F7FBFF;--bg2:#EDF5FD;--ink:#0A2540;--soft:rgba(10,37,64,.68);--line:rgba(10,37,64,.10);
+  --card:#F4F9FF;--card2:#FFFFFF;--shadow:none;
+  --clean:#1E96EC;--contam:#FF7F22;--recall:#8FA7BF;--trace:#1E96EC;--full:#FF7F22;--warn:#FFB066;
+}
+*{box-sizing:border-box} html,body{margin:0;padding:0;min-height:100%}
+html.embedMode,body.embedMode{height:auto;min-height:0}
+body{
+  color:var(--ink);font-family:"Poppins",sans-serif;
+  background:#fff;
+}
+#app{width:min(1380px,100%);margin:0 auto;padding:18px;display:grid;gap:14px}
+body.embedMode{background:transparent;min-height:0;overflow:hidden}
+body.embedMode #app{width:100%;margin:0;max-width:none}
+.card{
+  position:relative;overflow:hidden;border:1px solid var(--line);border-radius:28px;
+  background:linear-gradient(180deg,var(--card2),var(--card));box-shadow:var(--shadow);backdrop-filter:none
+}
+.hero{padding:24px;display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(30,150,236,.14), transparent 28%),
+    radial-gradient(circle at 88% 18%, rgba(255,127,34,.12), transparent 26%),
+    linear-gradient(135deg, rgba(30,150,236,.06), transparent 42%);
+  pointer-events:none
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:rgba(30,150,236,.08);border:1px solid rgba(30,150,236,.18);
+  color:var(--soft);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:none;max-width:100%;line-height:1.25
+}
+.eyebrow::before{
+  content:"";width:9px;height:9px;border-radius:50%;background:var(--contam)
+}
+h1{margin:12px 0 8px;font-size:clamp(1.8rem,1.28rem + 2vw,3.2rem);line-height:1;letter-spacing:-.04em}
+.hero p{margin:0;max-width:760px;color:var(--soft);font-size:1rem}
+.statusRail{min-width:min(380px,100%);display:grid;gap:10px}
+.chipRow{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px}
+.chip{
+  display:inline-flex;align-items:center;gap:9px;padding:10px 14px;border-radius:16px;border:1px solid rgba(10,37,64,.10);
+  background:rgba(255,255,255,.92);color:var(--ink);font-size:13px;font-weight:700;box-shadow:none
+}
+.chip strong,.mono{font-family:"Poppins",sans-serif}
+.chip.live{background:linear-gradient(135deg, rgba(255,127,34,.16), rgba(30,150,236,.08) 82%)}
+.chip.live .dot{
+  width:9px;height:9px;border-radius:50%;background:var(--contam);
+  animation:pulse 1.2s ease-in-out infinite alternate
+}
+@keyframes pulse{from{transform:scale(.9);opacity:.8}to{transform:scale(1.15);opacity:1}}
+.narrative{
+  padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.94);border:1px solid rgba(10,37,64,.08);
+  color:var(--ink);font-size:14px;line-height:1.45
+}
+.narrative strong{display:block;margin-top:6px;font-size:1rem;letter-spacing:-.02em}
+.narrative p{margin:7px 0 0;color:var(--soft);font-size:13px;line-height:1.45}
+.demoProgress{
+  margin-top:14px;padding:12px 12px 10px;border-radius:16px;
+  background:linear-gradient(180deg, rgba(248,251,255,.98), rgba(239,247,255,.94));
+  border:1px solid rgba(10,37,64,.08)
+}
+.demoProgressHead{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:9px
+}
+.demoProgressHead span{
+  display:block;color:var(--soft);font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase
+}
+.demoProgressHead strong{
+  display:block;font:700 11px "Poppins", sans-serif;color:var(--ink);letter-spacing:.02em
+}
+.demoProgressTrack{
+  position:relative;height:14px;border-radius:999px;overflow:hidden;
+  background:rgba(10,37,64,.06);border:1px solid rgba(10,37,64,.08)
+}
+.demoProgressFill{
+  position:absolute;inset:0 auto 0 0;width:0%;border-radius:inherit;
+  background:linear-gradient(90deg, #1E96EC 0%, #4BAEFF 52%, #FF7F22 100%);
+  box-shadow:0 0 18px rgba(30,150,236,.16);transition:width .12s linear
+}
+.demoProgressFill::before,.demoProgressFill::after{content:none}
+@keyframes progressSweep{from{transform:translateX(-18px)}to{transform:translateX(18px)}}
+.controls{padding:14px 14px 16px}
+.panelHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:12px}
+.panelHead h3{margin:0;font-size:1.02rem;letter-spacing:-.02em}
+.panelHead span{color:var(--soft);font-size:13px}
+.controlsGrid{display:grid;grid-template-columns:1fr;gap:10px}
+.controlCol{
+  display:grid;gap:10px;padding:12px 14px;border-radius:20px;background:rgba(255,255,255,.96);border:1px solid rgba(10,37,64,.08)
+}
+.hasTip{position:relative}
+.controlRow{display:grid;gap:8px}
+.controlRow label{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;font-weight:700}
+.controlRow span{color:var(--soft)}
+.labelWithInfo{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.tip{
+  display:none;margin-top:4px;padding:8px 10px;border-radius:12px;border:1px solid rgba(10,37,64,.10);
+  background:#fff;color:var(--soft);font-size:12px;line-height:1.38;position:relative;z-index:4
+}
+.tip::before{
+  content:"";position:absolute;top:-7px;left:14px;width:30px;height:12px;border-radius:999px;
+  background:#fff;border:1px solid rgba(10,37,64,.10)
+}
+.hasTipOpen .tip{display:block}
+.infoBtn{
+  appearance:none;position:relative;width:20px;height:20px;border-radius:999px;border:1px solid rgba(30,150,236,.24);
+  background:rgba(30,150,236,.08);
+  color:#0D3156;display:inline-flex;align-items:center;justify-content:center;font:800 11px/1 "Poppins", sans-serif;
+  cursor:pointer;flex:0 0 auto;padding:0;overflow:hidden;text-shadow:none;
+  box-shadow:none;transition:transform .14s ease, border-color .14s ease, background .14s ease, color .14s ease
+}
+.infoBtn::before{
+  content:"";position:absolute;inset:2px;border-radius:inherit;border:1px solid rgba(255,255,255,.5);pointer-events:none
+}
+.infoBtn::after{content:none}
+.infoBtn:hover{transform:translateY(-1px);border-color:rgba(30,150,236,.42);background:rgba(30,150,236,.14)}
+.hasTipOpen .infoBtn{
+  background:rgba(255,127,34,.12);color:#9A4B10;border-color:rgba(255,127,34,.34);text-shadow:none
+}
+.hasTipOpen .infoBtn::before{border-color:rgba(255,255,255,.4)}
+input[type="range"]{width:100%;margin:0;accent-color:var(--contam)}
+input[type="number"]{
+  width:100%;padding:12px 14px;border:1px solid rgba(10,37,64,.10);border-radius:16px;
+  font:700 13px "Poppins",sans-serif;color:var(--ink);
+  background:#fff;
+  box-shadow:none
+}
+.segmented{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sizeButton{
+  appearance:none;border:1px solid rgba(10,37,64,.1);border-radius:14px;padding:11px 10px;background:#fff;
+  color:var(--ink);font:700 12px "Poppins",sans-serif;cursor:pointer;transition:transform .14s ease, border-color .14s ease, background .14s ease
+}
+.sizeButton:hover{transform:translateY(-1px);border-color:rgba(30,150,236,.4)}
+.sizeButton.active{background:linear-gradient(135deg, rgba(30,150,236,.16), rgba(30,150,236,.05));border-color:rgba(30,150,236,.44);color:#0A2540}
+.toggle{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border-radius:18px;
+  border:1px solid rgba(10,37,64,.08);background:#fff
+}
+.toggleText strong{display:block;font-size:13px}
+.toggleText span{display:block;margin-top:3px;color:var(--soft);font-size:12px}
+.toggle input{width:18px;height:18px;accent-color:var(--trace)}
+.controlActions{display:grid}
+.buttonRow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+button{
+  appearance:none;border:1px solid rgba(10,37,64,.1);border-radius:16px;padding:12px 14px;font:700 13px "Poppins",sans-serif;
+  color:var(--ink);background:#fff;
+  box-shadow:none;cursor:pointer;transition:transform .14s ease, border-color .14s ease, filter .14s ease, background .14s ease
+}
+button:hover{transform:translateY(-1px);border-color:rgba(30,150,236,.34);filter:none;background:#fff}
+button:active{transform:translateY(0)} button.primary{background:linear-gradient(135deg, rgba(255,127,34,.98), rgba(255,145,60,.94));color:#0A2540;border-color:rgba(255,127,34,.72)}
+.mainGrid{display:grid;grid-template-columns:minmax(0,1.94fr) minmax(280px,360px);gap:14px;align-items:start}
+.stage{min-height:760px;padding:0} #simCanvas{display:block;width:100%;height:760px}
+.stageOverlay{position:absolute;inset:0;pointer-events:none}
+.stageLegend{
+  position:absolute;left:50%;transform:translateX(-50%);width:max-content;padding:10px 14px;border-radius:18px;background:rgba(255,255,255,.94);
+  border:1px solid rgba(10,37,64,.08);backdrop-filter:blur(14px);box-shadow:none;justify-content:flex-start;max-width:none;pointer-events:auto
+}
+.stageLegend{bottom:56px;display:flex;flex-wrap:nowrap;gap:10px 12px;font-size:11px;color:var(--soft)}
+.stageLegend::-webkit-scrollbar{display:none}
+.legendItem{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.legendSwatch{width:11px;height:11px;border-radius:50%;display:inline-block}
+.summary{
+  position:absolute;inset:0;display:grid;place-items:center;padding:24px;background:rgba(10,37,64,.18);
+  opacity:0;visibility:hidden;transition:opacity .18s ease, visibility .18s ease
+}
+.summary.show{opacity:1;visibility:visible}
+.summary{pointer-events:auto}
+.summaryCard{
+  position:relative;width:min(640px,100%);padding:24px 24px 22px;border-radius:26px;background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(244,249,255,.98));
+  border:1px solid rgba(10,37,64,.10);box-shadow:none
+}
+.summaryClose{
+  position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:999px;padding:0;border:1px solid rgba(10,37,64,.08);
+  display:grid;place-items:center;font:700 18px "Poppins",sans-serif;background:#fff;color:var(--ink);
+  box-shadow:none
+}
+.summaryClose:hover{filter:none;transform:translateY(-1px)}
+.summaryCard h2{margin:0 0 8px;font-size:1.45rem;letter-spacing:-.03em}
+.summaryCard p{margin:0;color:var(--soft);line-height:1.45}
+.summaryHero{margin-top:16px;padding:14px 16px;border-radius:20px;background:linear-gradient(135deg, rgba(30,150,236,.10), rgba(255,255,255,.9));border:1px solid rgba(10,37,64,.08)}
+.summaryHero span,.fact span,.metricTile span,.scenarioTag{
+  display:block;color:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.08em
+}
+.summaryHeroHead,.summaryLabel{display:flex;align-items:center;gap:6px;justify-content:space-between}
+.summaryHeroHead{color:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.summaryLabel{color:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.08em;line-height:1.3}
+.summaryHero .labelWithInfo{display:inline-flex;align-items:center}
+.summaryHero .tip,.summaryTile .tip{margin-top:10px}
+.summaryHero strong{display:block;margin-top:5px;font-size:1.9rem;letter-spacing:-.04em}
+.summaryHero p{margin:8px 0 0;color:var(--soft);font-size:13px;line-height:1.45}
+.summaryGrid,.metricGrid,.factGrid{display:grid;gap:10px}
+.summaryGrid,.metricGrid,.factGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.summaryTile,.metricTile,.fact{
+  padding:12px 14px;border-radius:18px;background:#fff;border:1px solid rgba(10,37,64,.08)
+}
+.summaryTile strong,.fact strong{display:block;margin-top:6px;font-size:1.05rem}
+.summaryFacts{margin-top:10px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.summaryNote{margin-top:10px;padding:12px 14px;border-radius:18px;background:#fff;border:1px solid rgba(10,37,64,.08);color:var(--soft);font-size:13px;line-height:1.45}
+.side{display:grid;gap:14px;align-content:start}
+.scenarioCard{padding:16px}
+.scenarioHead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;margin-bottom:12px}
+.scenarioTag{
+  display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(30,150,236,.08);border:1px solid rgba(30,150,236,.14);font-size:11px;font-weight:700
+}
+.scenarioHead h3{margin:0;font-size:.94rem;letter-spacing:-.02em;line-height:1.1}
+.scenarioIntro{display:grid;grid-template-columns:1fr;gap:4px;align-items:center;min-width:0}
+.scenarioHint{display:grid;gap:0;min-width:0}
+.scenarioHint .labelWithInfo{white-space:nowrap}
+.scenarioHint .tip{margin-top:8px}
+.scenarioCard.full .scenarioHint .tip::before,
+.scenarioCard.trace .scenarioHint .tip::before{background:#fff;border-color:rgba(10,37,64,.10)}
+.scenarioCard .metricGrid{grid-template-columns:1fr;gap:8px}
+.scenarioCard .metricTile{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"label value" "meta meta";gap:4px 10px;align-items:end;
+  padding:10px 12px
+}
+.scenarioCard .metricTile span,
+.scenarioCard .metricTile strong,
+.scenarioCard .metricTile small{margin:0}
+.scenarioCard .metricTile span{grid-area:label;white-space:nowrap}
+.scenarioCard .metricTile strong{grid-area:value;font-size:1.18rem;line-height:1;white-space:nowrap;justify-self:end}
+.scenarioCard .metricTile small{grid-area:meta;color:var(--soft);font-size:12px;line-height:1.25;text-align:left;white-space:normal;overflow:visible;text-overflow:clip}
+.scenarioStatus{
+  padding:7px 9px;border-radius:14px;background:#fff;border:1px solid rgba(10,37,64,.08);font-size:11px;white-space:nowrap;justify-self:end
+}
+.scenarioCard.full .scenarioStatus{color:#B85D17} .scenarioCard.trace .scenarioStatus{color:#136FBD}
+@media (max-width:1220px){.buttonRow{min-width:0}}
+@media (max-width:1080px){
+  .hero{flex-direction:column}.statusRail{min-width:0;width:100%}.chipRow{justify-content:flex-end}
+  .mainGrid{grid-template-columns:1fr}.stage{min-height:0}#simCanvas{height:720px}
+}
+@media (max-width:720px){
+  #app{padding:10px;gap:12px}
+  .card{border-radius:24px}
+  .hero{padding:16px;gap:14px}
+  .eyebrow{padding:6px 10px;font-size:10px;letter-spacing:.06em;white-space:normal}
+  h1{margin:10px 0 8px;font-size:clamp(1.55rem,1.18rem + 1.8vw,2.15rem)}
+  .hero p{font-size:.94rem}
+  .statusRail{gap:8px}
+  .chip{padding:9px 12px;font-size:12px}
+  .narrative{padding:12px 13px}
+  .narrative strong{font-size:.96rem}
+  .narrative p{font-size:12px}
+  .demoProgress{margin-top:12px;padding:10px}
+  .demoProgressHead{margin-bottom:8px}
+  .demoProgressHead span,.demoProgressHead strong{font-size:10px}
+  .mainGrid{gap:12px}
+  .controls,.scenarioCard{padding:14px}
+  .controlCol{padding:11px 12px}
+  .controlRow label{font-size:12px}
+  .segmented{gap:6px}
+  .sizeButton{padding:10px 8px;font-size:11px}
+  .buttonRow,.factGrid,.summaryFacts{grid-template-columns:1fr}
+  .scenarioHead{grid-template-columns:1fr;gap:10px}
+  .scenarioIntro{grid-template-columns:1fr;gap:6px}
+  .scenarioStatus{justify-self:start}
+  .scenarioCard .metricTile{grid-template-columns:1fr;gap:4px}
+  .scenarioCard .metricTile small{text-align:left;white-space:normal;overflow:visible}
+  .summary{padding:16px}
+  .summaryCard{width:min(100%,560px);padding:18px 18px 16px;border-radius:22px}
+  .summaryCard h2{font-size:1.2rem}
+  .summaryHero{margin-top:14px;padding:12px 14px}
+  .summaryHero strong{font-size:1.65rem}
+  .summaryNote{padding:11px 12px;font-size:12px}
+  .stageLegend{max-width:calc(100% - 24px);padding:9px 12px;gap:8px 10px;font-size:10px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  #simCanvas{height:760px}
+}
+@media (max-width:560px){
+  .metricGrid,.summaryGrid{grid-template-columns:1fr}
+  .eyebrow{font-size:9px}
+  .chipRow{justify-content:flex-end}
+  .summaryCard{padding:16px 16px 14px}
+  .summaryHero strong{font-size:1.5rem}
+  #simCanvas{height:820px}
+  .stageLegend{left:50%;right:auto;bottom:48px;max-width:calc(100% - 20px)}
+}
+</style>
+</head>
+<body>
+<div id="app" class="widgetCard">
+  <section class="hero card">
+    <div>
+      <div class="eyebrow">Product Recall: No Traceability vs Traceability</div>
+      <h1>Product Traceability Impact Simulator</h1>
+      <p>A single defect enters a production network in both panels. The left side has no lot traceability, so recall scope explodes. The right side isolates only traced batches and contains the blast radius.</p>
+    </div>
+    <div class="statusRail">
+      <div class="chipRow">
+        <div class="chip live"><span class="dot"></span><span>Defect demo</span></div>
+      </div>
+      <div class="narrative">
+        <strong id="badgeHeadline">Traceability contains the defect recall.</strong>
+        <p id="badgeText">Both panels are aligned to the same defect path. Watch the demo unfold until callback scope and cost split the outcome.</p>
+        <div class="demoProgress">
+          <div class="demoProgressHead">
+            <span>Demo progress</span>
+            <strong id="demoProgressLabel">Standby</strong>
+          </div>
+          <div class="demoProgressTrack">
+            <div id="demoProgressFill" class="demoProgressFill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="mainGrid">
+    <section class="stage card">
+      <canvas id="simCanvas"></canvas>
+      <div class="stageOverlay">
+        <div class="stageLegend">
+          <span class="legendItem"><i class="legendSwatch" style="background:var(--clean)"></i>Clean node</span>
+          <span class="legendItem"><i class="legendSwatch" style="background:var(--contam)"></i>Affected node</span>
+          <span class="legendItem"><i class="legendSwatch" style="background:var(--recall)"></i>Recalled node</span>
+          <span class="legendItem"><i class="legendSwatch" style="background:var(--warn)"></i>Active defect pulse</span>
+        </div>
+        <div id="summary" class="summary">
+          <div class="summaryCard">
+            <button id="summaryClose" class="summaryClose" type="button" aria-label="Close final snapshot">X</button>
+            <h2>Full recall vs Targeted recall</h2>
+            <p id="summaryText">Traceability cuts the blast radius by isolating only the affected batches instead of sweeping the entire network.</p>
+            <div class="summaryHero hasTip">
+              <div class="summaryHeroHead">
+                <span class="labelWithInfo">Saved with traceability<button class="infoBtn" type="button" data-tip="tipSummarySaved" aria-label="Saved with traceability info">i</button></span>
+              </div>
+              <strong id="summarySaved">USD 0</strong>
+              <p id="deltaText">Awaiting detection. Both panels are still sharing the same defect build-up.</p>
+              <div class="tip" id="tipSummarySaved">Difference between full recall cost and targeted recall cost, using the current average batch price for each recalled lot.</div>
+            </div>
+            <div id="compareNote" class="summaryNote">Targeted recall becomes visible only after detection: only defect-linked batch lineage turns grey while clean lots remain blue.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="controls card">
+        <div class="controlsGrid">
+          <div class="controlCol">
+            <div class="controlRow hasTip">
+              <label for="averageBatchPrice"><span class="labelWithInfo">Avg batch price<button class="infoBtn" type="button" data-tip="tipAverageBatchPrice" aria-label="Average batch price info">i</button></span><strong id="averageBatchPriceValue">USD 8,000</strong></label>
+              <input id="averageBatchPrice" type="number" min="1000" max="100000" step="500" value="8000" inputmode="numeric" />
+              <div class="tip" id="tipAverageBatchPrice">Average cost assigned to each recalled batch lot when the simulation compares full recall against targeted recall.</div>
+            </div>
+          </div>
+          <div class="controlCol">
+            <div class="controlRow hasTip">
+              <label><span class="labelWithInfo">Network size<button class="infoBtn" type="button" data-tip="tipNetworkSize" aria-label="Network size info">i</button></span></label>
+              <div class="segmented">
+                <button class="sizeButton" type="button" data-size="small">Small</button>
+                <button class="sizeButton active" type="button" data-size="medium">Medium</button>
+                <button class="sizeButton" type="button" data-size="large">Large</button>
+              </div>
+              <div class="tip" id="tipNetworkSize">Changes how many process and batch nodes exist in the network, which changes how wide the callback can spread.</div>
+            </div>
+          </div>
+          <div class="controlActions">
+            <div class="buttonRow">
+              <button id="runAgain" class="primary" type="button">Run again</button>
+              <button id="reset" type="button">Reset</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scenarioCard full card">
+        <div class="scenarioHead">
+          <div class="scenarioIntro">
+            <div class="scenarioHint hasTip">
+              <h3><span class="labelWithInfo">No Traceability<button class="infoBtn" type="button" data-tip="tipLeftPanel" aria-label="Left panel logic info">i</button></span></h3>
+              <div class="tip" id="tipLeftPanel">No lot traceability means the callback spreads across every batch layer once a defect is confirmed.</div>
+            </div>
+          </div>
+          <strong id="leftStatus" class="scenarioStatus">Monitoring</strong>
+        </div>
+        <div class="metricGrid">
+          <article class="metricTile"><span>Recalled</span><strong id="leftRecalled">0%</strong><small id="leftRecalledMeta">0 / 0 lots</small></article>
+          <article class="metricTile"><span>Estimated loss</span><strong id="leftLoss">USD 0</strong><small id="leftLossMeta">Baseline incident cost</small></article>
+        </div>
+      </section>
+
+      <section class="scenarioCard trace card">
+        <div class="scenarioHead">
+          <div class="scenarioIntro">
+            <div class="scenarioHint hasTip">
+              <h3><span class="labelWithInfo">With Traceability<button class="infoBtn" type="button" data-tip="tipRightPanel" aria-label="Right panel logic info">i</button></span></h3>
+              <div class="tip" id="tipRightPanel">Lot lineage isolates the affected path and keeps clean batches out of the callback.</div>
+            </div>
+          </div>
+          <strong id="rightStatus" class="scenarioStatus">Monitoring</strong>
+        </div>
+        <div class="metricGrid">
+          <article class="metricTile"><span>Recalled</span><strong id="rightRecalled">0%</strong><small id="rightRecalledMeta">0 / 0 lots</small></article>
+          <article class="metricTile"><span>Estimated loss</span><strong id="rightLoss">USD 0</strong><small id="rightLossMeta">Baseline incident cost</small></article>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+<script>
+(() => {
+  "use strict";
+
+  const URL_PARAMS = new URLSearchParams(window.location.search);
+  const IS_EMBEDDED = window.parent !== window || URL_PARAMS.get("embedMode") === "1" || URL_PARAMS.get("embed") === "1";
+  const EMBED_WIDGET_ID = "sim9-product-recall";
+  if (IS_EMBEDDED) {
+    document.documentElement.classList.add("embedMode");
+    document.body.classList.add("embedMode");
+  }
+
+  const CFG = {
+    animationDurationSec: 14,
+    defaults: { averageBatchPrice: 8000, size: "medium" }
+  };
+  const DEFAULTS = { ...CFG.defaults };
+  const INTERNAL_SPREAD_PROBABILITY = 0.75;
+  const SIZE_PRESETS = {
+    small: { process: 3, batchA: 4, batchB: 4, batchC: 4, batchD: 3 },
+    medium: { process: 4, batchA: 5, batchB: 6, batchC: 6, batchD: 5 },
+    large: { process: 5, batchA: 7, batchB: 8, batchC: 8, batchD: 6 }
+  };
+  const GOAL_BATCHES = { small: [3, 6], medium: [6, 10], large: [8, 13] };
+  const COSTS = { fixedIncident: 20000 };
+  const COLORS = {
+    clean: "#1E96EC",
+    contaminated: "#FF7F22",
+    recall: "#8FA7BF",
+    trace: "#1E96EC",
+    full: "#FF7F22",
+    warn: "#FFB066",
+    ink: "#0A2540",
+    soft: "rgba(10,37,64,.62)"
+  };
+  const TYPE_LABELS = { PROCESS: "Processing", BATCH: "Batches" };
+  const COLUMN_LABELS = { PROCESS: "Processing", BATCH_A: "Batches A", BATCH_B: "Batches B", BATCH_C: "Batches C", BATCH_D: "Batches D" };
+
+  const UI = {
+    badgeHeadline: document.getElementById("badgeHeadline"),
+    badgeText: document.getElementById("badgeText"),
+    demoProgressLabel: document.getElementById("demoProgressLabel"),
+    demoProgressFill: document.getElementById("demoProgressFill"),
+    averageBatchPrice: document.getElementById("averageBatchPrice"),
+    averageBatchPriceValue: document.getElementById("averageBatchPriceValue"),
+    sizeButtons: Array.from(document.querySelectorAll(".sizeButton")),
+    runAgain: document.getElementById("runAgain"),
+    reset: document.getElementById("reset"),
+    stage: document.querySelector(".stage"),
+    side: document.querySelector(".side"),
+    simCanvas: document.getElementById("simCanvas"),
+    summary: document.getElementById("summary"),
+    summaryClose: document.getElementById("summaryClose"),
+    summaryText: document.getElementById("summaryText"),
+    summarySaved: document.getElementById("summarySaved"),
+    deltaText: document.getElementById("deltaText"),
+    compareNote: document.getElementById("compareNote"),
+    leftStatus: document.getElementById("leftStatus"),
+    leftRecalled: document.getElementById("leftRecalled"),
+    leftRecalledMeta: document.getElementById("leftRecalledMeta"),
+    leftLoss: document.getElementById("leftLoss"),
+    leftLossMeta: document.getElementById("leftLossMeta"),
+    rightStatus: document.getElementById("rightStatus"),
+    rightRecalled: document.getElementById("rightRecalled"),
+    rightRecalledMeta: document.getElementById("rightRecalledMeta"),
+    rightLoss: document.getElementById("rightLoss"),
+    rightLossMeta: document.getElementById("rightLossMeta")
+  };
+
+  const ctx = UI.simCanvas.getContext("2d", { alpha: true });
+  const app = { params: { ...DEFAULTS }, run: null, rafId: 0 };
+  let lastFrame = performance.now();
+  let requestEmbedHeightSync = () => {};
+
+  function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function easeOutCubic(t) { return 1 - Math.pow(1 - clamp(t, 0, 1), 3); }
+  function easeInOutCubic(t) {
+    const value = clamp(t, 0, 1);
+    return value < 0.5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2;
+  }
+  function timingFor(duration) {
+    return {
+      start: 0,
+      inject: 2,
+      detect: 8,
+      end: duration
+    };
+  }
+  function edgeKey(fromId, toId) { return `${fromId}->${toId}`; }
+  function createRng() {
+    return {
+      float() { return Math.random(); },
+      range(min, max) { return min + Math.random() * (max - min); },
+      int(min, max) { return min + Math.floor(Math.random() * (max - min + 1)); }
+    };
+  }
+
+  function hexToRgb(hex) {
+    const value = hex.replace("#", "");
+    return { r: parseInt(value.slice(0, 2), 16), g: parseInt(value.slice(2, 4), 16), b: parseInt(value.slice(4, 6), 16) };
+  }
+
+  function withAlpha(hex, alpha) {
+    const rgb = hexToRgb(hex);
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+  }
+
+  function mixHex(a, b, t) {
+    const from = hexToRgb(a);
+    const to = hexToRgb(b);
+    const blend = clamp(t, 0, 1);
+    return `rgb(${Math.round(lerp(from.r, to.r, blend))}, ${Math.round(lerp(from.g, to.g, blend))}, ${Math.round(lerp(from.b, to.b, blend))})`;
+  }
+
+  function roundRectPath(context, x, y, w, h, r) {
+    const radius = Math.max(0, Math.min(r, w / 2, h / 2));
+    context.beginPath();
+    context.moveTo(x + radius, y);
+    context.arcTo(x + w, y, x + w, y + h, radius);
+    context.arcTo(x + w, y + h, x, y + h, radius);
+    context.arcTo(x, y + h, x, y, radius);
+    context.arcTo(x, y, x + w, y, radius);
+    context.closePath();
+  }
+
+  function setupEmbedAutoHeight() {
+    if (!IS_EMBEDDED) return;
+    let rafId = 0;
+    let lastHeight = 0;
+    const rootEl = document.querySelector(".widgetCard");
+    const measureHeight = () => {
+      const body = document.body;
+      const html = document.documentElement;
+      const docHeight = Math.ceil(Math.max(
+        html ? html.scrollHeight : 0,
+        html ? html.offsetHeight : 0,
+        body ? body.scrollHeight : 0,
+        body ? body.offsetHeight : 0
+      ));
+      let appHeight = 0;
+      if (rootEl) {
+        const rectHeight = rootEl.getBoundingClientRect().height;
+        const styles = getComputedStyle(rootEl);
+        const marginTop = parseFloat(styles.marginTop) || 0;
+        const marginBottom = parseFloat(styles.marginBottom) || 0;
+        appHeight = Math.ceil(rectHeight + marginTop + marginBottom);
+      }
+      return appHeight > 0 ? appHeight : docHeight;
+    };
+    const pushHeight = () => {
+      rafId = 0;
+      const height = measureHeight();
+      if (Math.abs(height - lastHeight) < 1) return;
+      lastHeight = height;
+      document.documentElement.style.minHeight = `${height}px`;
+      document.body.style.minHeight = `${height}px`;
+      try {
+        const frame = window.frameElement;
+        if (frame) {
+          frame.style.height = `${height}px`;
+          frame.setAttribute("height", String(height));
+        }
+      } catch (_) {}
+      try {
+        window.parent?.postMessage({ type: "widget:resize", widget: EMBED_WIDGET_ID, height }, "*");
+        window.parent?.postMessage({ type: `${EMBED_WIDGET_ID}:height`, height }, "*");
+        window.parent?.postMessage({ type: "simfluence-widget:resize", widget: EMBED_WIDGET_ID, height, mode: "default" }, "*");
+      } catch (_) {}
+    };
+    const schedule = () => {
+      if (!rafId) rafId = requestAnimationFrame(pushHeight);
+    };
+    requestEmbedHeightSync = schedule;
+    schedule();
+    setTimeout(schedule, 60);
+    setTimeout(schedule, 240);
+    setTimeout(schedule, 900);
+    window.addEventListener("message", (event) => {
+      const data = event.data;
+      if (!data || typeof data !== "object") return;
+      if (
+        data.type === "widget:request-height" ||
+        data.type === `${EMBED_WIDGET_ID}:request-height` ||
+        data.type === "simfluence-widget:request-height"
+      ) schedule();
+    }, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("load", schedule);
+    if ("ResizeObserver" in window) {
+      const observer = new ResizeObserver(schedule);
+      if (rootEl) observer.observe(rootEl);
+    }
+  }
+
+  function setCanvasSize() {
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.floor(UI.simCanvas.clientWidth * dpr));
+    const height = Math.max(1, Math.floor(UI.simCanvas.clientHeight * dpr));
+    if (UI.simCanvas.width !== width || UI.simCanvas.height !== height) {
+      UI.simCanvas.width = width;
+      UI.simCanvas.height = height;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, UI.simCanvas.clientWidth, UI.simCanvas.clientHeight);
+  }
+
+  function weightedPick(items, weights, rng) {
+    let total = 0;
+    for (let i = 0; i < weights.length; i += 1) total += weights[i];
+    const roll = rng.float() * total;
+    let cursor = 0;
+    for (let i = 0; i < items.length; i += 1) {
+      cursor += weights[i];
+      if (roll <= cursor) return items[i];
+    }
+    return items[items.length - 1];
+  }
+
+  function sampleUnique(items, count, rng) {
+    const pool = items.slice();
+    const picked = [];
+    while (picked.length < Math.min(count, pool.length) && pool.length) {
+      picked.push(pool.splice(rng.int(0, pool.length - 1), 1)[0]);
+    }
+    return picked;
+  }
+
+  function sampleWeightedUnique(items, weights, count, rng) {
+    const pool = items.slice();
+    const poolWeights = weights.slice();
+    const picked = [];
+    while (picked.length < Math.min(count, pool.length)) {
+      const choice = weightedPick(pool, poolWeights, rng);
+      const index = pool.indexOf(choice);
+      picked.push(choice);
+      pool.splice(index, 1);
+      poolWeights.splice(index, 1);
+    }
+    return picked;
+  }
+
+  function buildGraph(sizeKey) {
+    const counts = SIZE_PRESETS[sizeKey];
+    const rng = createRng();
+    const nodes = [];
+    const nodeById = new Map();
+    const edges = [];
+    const edgeSet = new Set();
+    const layers = [
+      { layerKey: "PROCESS", type: "PROCESS", prefix: "P", count: counts.process, x: 0.08 },
+      { layerKey: "BATCH_A", type: "BATCH", prefix: "A", count: counts.batchA, x: 0.28 },
+      { layerKey: "BATCH_B", type: "BATCH", prefix: "B", count: counts.batchB, x: 0.48 },
+      { layerKey: "BATCH_C", type: "BATCH", prefix: "C", count: counts.batchC, x: 0.68 },
+      { layerKey: "BATCH_D", type: "BATCH", prefix: "D", count: counts.batchD, x: 0.88 }
+    ];
+
+    layers.forEach((layer) => {
+      for (let i = 0; i < layer.count; i += 1) {
+        const spread = layer.count === 1 ? 0.5 : i / (layer.count - 1);
+        const y = clamp(0.14 + spread * 0.72 + rng.range(-0.04, 0.04), 0.08, 0.92);
+        const node = {
+          id: `${layer.prefix}${i + 1}`,
+          shortId: `${layer.prefix}${i + 1}`,
+          type: layer.type,
+          layerKey: layer.layerKey,
+          x: layer.x,
+          y,
+          upstream: [],
+          downstream: []
+        };
+        nodes.push(node);
+        nodeById.set(node.id, node);
+      }
+    });
+
+    const processNodes = nodes.filter((node) => node.type === "PROCESS");
+    const batchANodes = nodes.filter((node) => node.layerKey === "BATCH_A");
+    const batchBNodes = nodes.filter((node) => node.layerKey === "BATCH_B");
+    const batchCNodes = nodes.filter((node) => node.layerKey === "BATCH_C");
+    const batchDNodes = nodes.filter((node) => node.layerKey === "BATCH_D");
+    const batchNodes = nodes.filter((node) => node.type === "BATCH");
+
+    function addEdge(fromId, toId) {
+      const key = edgeKey(fromId, toId);
+      if (edgeSet.has(key)) return;
+      edgeSet.add(key);
+      nodeById.get(fromId).downstream.push(toId);
+      nodeById.get(toId).upstream.push(fromId);
+      edges.push({ fromId, toId, key });
+    }
+
+    const processWeights = processNodes.map(() => rng.range(0.82, 1.18));
+    processWeights[rng.int(0, processWeights.length - 1)] += 0.85;
+
+    batchANodes.forEach((batch) => {
+      const primary = weightedPick(processNodes, processWeights, rng);
+      addEdge(primary.id, batch.id);
+      if (processNodes.length > 1 && rng.float() < (sizeKey === "large" ? 0.42 : 0.34)) {
+        let secondary = weightedPick(processNodes, processWeights, rng);
+        let guard = 0;
+        while (secondary.id === primary.id && guard < 8) {
+          secondary = weightedPick(processNodes, processWeights, rng);
+          guard += 1;
+        }
+        if (secondary.id !== primary.id) addEdge(secondary.id, batch.id);
+      }
+    });
+
+    const batchAWeights = batchANodes.map(() => rng.range(0.9, 1.15));
+    batchAWeights[rng.int(0, batchAWeights.length - 1)] += 0.55;
+    batchBNodes.forEach((batch) => {
+      const count = batchANodes.length === 1 ? 1 : (rng.float() < (sizeKey === "small" ? 0.38 : 0.52) ? 2 : 1);
+      sampleWeightedUnique(batchANodes, batchAWeights, count, rng).forEach((upstreamBatch) => addEdge(upstreamBatch.id, batch.id));
+    });
+
+    const batchBWeights = batchBNodes.map(() => rng.range(0.9, 1.12));
+    batchBWeights[rng.int(0, batchBWeights.length - 1)] += 0.4;
+    batchCNodes.forEach((batch) => {
+      const count = batchBNodes.length === 1 ? 1 : (rng.float() < (sizeKey === "small" ? 0.34 : 0.44) ? 2 : 1);
+      sampleWeightedUnique(batchBNodes, batchBWeights, count, rng).forEach((upstreamBatch) => addEdge(upstreamBatch.id, batch.id));
+    });
+
+    const batchCWeights = batchCNodes.map(() => rng.range(0.9, 1.12));
+    batchCWeights[rng.int(0, batchCWeights.length - 1)] += 0.4;
+    batchDNodes.forEach((batch) => {
+      const count = batchCNodes.length === 1 ? 1 : (rng.float() < (sizeKey === "small" ? 0.30 : 0.42) ? 2 : 1);
+      sampleWeightedUnique(batchCNodes, batchCWeights, count, rng).forEach((upstreamBatch) => addEdge(upstreamBatch.id, batch.id));
+    });
+
+    processNodes.forEach((node) => {
+      if (!node.downstream.length) addEdge(node.id, batchANodes[rng.int(0, batchANodes.length - 1)].id);
+    });
+    batchANodes.forEach((node) => {
+      if (!node.upstream.length) addEdge(processNodes[rng.int(0, processNodes.length - 1)].id, node.id);
+      if (!node.downstream.length) addEdge(node.id, batchBNodes[rng.int(0, batchBNodes.length - 1)].id);
+    });
+    batchBNodes.forEach((node) => {
+      if (!node.upstream.length) addEdge(batchANodes[rng.int(0, batchANodes.length - 1)].id, node.id);
+      if (!node.downstream.length) addEdge(node.id, batchCNodes[rng.int(0, batchCNodes.length - 1)].id);
+    });
+    batchCNodes.forEach((node) => {
+      if (!node.upstream.length) addEdge(batchBNodes[rng.int(0, batchBNodes.length - 1)].id, node.id);
+      if (!node.downstream.length) addEdge(node.id, batchDNodes[rng.int(0, batchDNodes.length - 1)].id);
+    });
+    batchDNodes.forEach((node) => { if (!node.upstream.length) addEdge(batchCNodes[rng.int(0, batchCNodes.length - 1)].id, node.id); });
+
+    nodes.forEach((node) => { node.upstream.sort(); node.downstream.sort(); });
+
+    const memo = new Map();
+    function countReachableBatches(nodeId) {
+      if (memo.has(nodeId)) return memo.get(nodeId);
+      const node = nodeById.get(nodeId);
+      const set = new Set();
+      if (node.type === "BATCH") set.add(nodeId);
+      node.downstream.forEach((nextId) => countReachableBatches(nextId).forEach((batchId) => set.add(batchId)));
+      memo.set(nodeId, set);
+      return set;
+    }
+
+    const reachableBatchesByNode = {};
+    nodes.forEach((node) => { reachableBatchesByNode[node.id] = countReachableBatches(node.id).size; });
+
+    return {
+      counts, nodes, nodeById, edges, reachableBatchesByNode,
+      nodesByType: { PROCESS: processNodes, BATCH: batchNodes },
+      nodesByLayer: { PROCESS: processNodes, BATCH_A: batchANodes, BATCH_B: batchBNodes, BATCH_C: batchCNodes, BATCH_D: batchDNodes },
+      columnOrder: ["PROCESS", "BATCH_A", "BATCH_B", "BATCH_C", "BATCH_D"]
+    };
+  }
+
+  function pickSource(graph, rng, attempt) {
+    const processNodes = graph.nodesByType.PROCESS.slice().sort((a, b) => graph.reachableBatchesByNode[b.id] - graph.reachableBatchesByNode[a.id]);
+    return processNodes[rng.int(0, Math.max(0, Math.ceil(processNodes.length * (attempt >= 4 ? 0.5 : 0.75)) - 1))].id;
+  }
+
+  function spreadFactor(fromNode, toNode) {
+    if (fromNode.layerKey === "PROCESS" && toNode.layerKey === "BATCH_A") return 0.82;
+    if (fromNode.layerKey === "BATCH_A" && toNode.layerKey === "BATCH_B") return 0.76;
+    if (fromNode.layerKey === "BATCH_B" && toNode.layerKey === "BATCH_C") return 0.70;
+    if (fromNode.layerKey === "BATCH_C" && toNode.layerKey === "BATCH_D") return 0.66;
+    return 0.55;
+  }
+
+  function simulateContamination(graph, params, timing, attempt) {
+    const rng = createRng();
+    const contaminatedAt = new Map(graph.nodes.map((node) => [node.id, null]));
+    const attempted = new Set();
+    const sourceId = pickSource(graph, rng, attempt);
+    const cadence = clamp((timing.detect - timing.inject) / (params.size === "large" ? 9.5 : 8.2), 0.30, 0.72);
+    const probabilityBase = clamp(INTERNAL_SPREAD_PROBABILITY + attempt * 0.02, 0.2, 0.93);
+    const events = [];
+    const frontier = [sourceId];
+    contaminatedAt.set(sourceId, timing.inject);
+
+    while (frontier.length) {
+      frontier.sort((a, b) => contaminatedAt.get(a) - contaminatedAt.get(b));
+      const nodeId = frontier.shift();
+      const node = graph.nodeById.get(nodeId);
+      const nodeTime = contaminatedAt.get(nodeId);
+      node.downstream.forEach((toId) => {
+        const key = edgeKey(nodeId, toId);
+        if (attempted.has(key) || contaminatedAt.get(toId) !== null) return;
+        attempted.add(key);
+        const attemptTime = nodeTime + rng.range(cadence * 0.72, cadence * 1.28);
+        if (attemptTime > timing.detect - 0.04) return;
+        const toNode = graph.nodeById.get(toId);
+        const chance = clamp(probabilityBase * spreadFactor(node, toNode), 0.05, 0.92);
+        if (rng.float() <= chance) {
+          contaminatedAt.set(toId, attemptTime);
+          events.push({ t: attemptTime, fromId: nodeId, toId, key });
+          frontier.push(toId);
+        }
+      });
+    }
+
+    const contaminatedBatches = graph.nodesByType.BATCH.filter((node) => contaminatedAt.get(node.id) !== null && contaminatedAt.get(node.id) <= timing.detect).length;
+    const contaminatedBatchD = graph.nodesByLayer.BATCH_D.filter((node) => contaminatedAt.get(node.id) !== null && contaminatedAt.get(node.id) <= timing.detect).length;
+    const [goalMin, goalMax] = GOAL_BATCHES[params.size];
+    const midpoint = (goalMin + goalMax) / 2;
+    let score = Math.abs(contaminatedBatches - midpoint);
+    if (contaminatedBatches === 0) score += 6;
+    if (contaminatedBatches < goalMin) score += (goalMin - contaminatedBatches) * 1.8;
+    if (contaminatedBatches > goalMax) score += (contaminatedBatches - goalMax) * 1.4;
+    if (contaminatedBatches >= graph.nodesByType.BATCH.length) score += 10;
+    if (contaminatedBatchD === 0) score += 0.8;
+
+    return {
+      sourceId, contaminatedAt, events: events.sort((a, b) => a.t - b.t),
+      contaminatedBatches, contaminatedBatchD, score,
+      ok: contaminatedBatches >= goalMin && contaminatedBatches <= goalMax && contaminatedBatches < graph.nodesByType.BATCH.length
+    };
+  }
+
+  function createBaseSimulation(graph, params, timing) {
+    let best = null;
+    for (let attempt = 0; attempt < 14; attempt += 1) {
+      const candidate = simulateContamination(graph, params, timing, attempt);
+      if (!best || candidate.score < best.score) best = candidate;
+      if (candidate.ok) break;
+    }
+    return {
+      sourceId: best.sourceId,
+      contaminatedAt: best.contaminatedAt,
+      events: best.events,
+      eventByEdge: new Map(best.events.map((event) => [event.key, event])),
+      contaminatedBatches: best.contaminatedBatches,
+      contaminatedBatchD: best.contaminatedBatchD
+    };
+  }
+
+  function computeMetrics(graph, recalledBatches, params) {
+    const totalLots = graph.nodesByType.BATCH.length;
+    const recalledLots = recalledBatches;
+    const recalledPct = totalLots ? (recalledLots / totalLots) * 100 : 0;
+    const loss = COSTS.fixedIncident + recalledLots * params.averageBatchPrice;
+    return { totalLots, recalledBatches, recalledLots, recalledPct, loss };
+  }
+
+  function applyDetectionAndRecall(graph, base, mode, timing, params) {
+    const recallAt = new Map();
+    const recalledBatches = new Set();
+    const isContaminatedByDetect = (node) => {
+      const contaminated = base.contaminatedAt.get(node.id);
+      return contaminated !== null && contaminated <= timing.detect;
+    };
+
+    const recalledBatchNodes = mode === "full"
+      ? graph.nodesByType.BATCH.slice()
+      : graph.nodesByType.BATCH.filter(isContaminatedByDetect);
+
+    recalledBatchNodes.sort((a, b) => a.y - b.y).forEach((node, index) => {
+      recalledBatches.add(node.id);
+      recallAt.set(node.id, timing.detect + 0.06 + index * (mode === "full" ? 0.035 : 0.045));
+    });
+
+    return {
+      mode,
+      label: mode === "full" ? "No Traceability" : "With Traceability",
+      headline: mode === "full" ? "FULL RECALL" : "TARGETED RECALL",
+      accent: mode === "full" ? COLORS.full : COLORS.trace,
+      recallAt,
+      metrics: computeMetrics(graph, recalledBatches.size, params)
+    };
+  }
+
+  function buildRun(params) {
+    const timing = timingFor(CFG.animationDurationSec);
+    const graph = buildGraph(params.size);
+    const base = createBaseSimulation(graph, params, timing);
+    return {
+      params,
+      timing,
+      graph,
+      base,
+      panels: {
+        left: applyDetectionAndRecall(graph, base, "full", timing, params),
+        right: applyDetectionAndRecall(graph, base, "targeted", timing, params)
+      },
+      animationTime: 0,
+      summaryDismissed: false,
+      finished: false
+    };
+  }
+
+  function formatMoney(value) {
+    if (value >= 1000000) return `USD ${(value / 1000000).toFixed(2)}m`;
+    if (value >= 1000) return `USD ${Math.round(value / 1000)}k`;
+    return `USD ${Math.round(value)}`;
+  }
+
+  function formatPct(value) { return `${Math.round(value)}%`; }
+  function visualWindow(seconds) { return seconds; }
+  function pulse(now, duration, phase = 0) {
+    return 0.5 + 0.5 * Math.sin((now / Math.max(1, duration)) * Math.PI * 2 + phase);
+  }
+
+  function nodeLabel(node) {
+    if (!node) return "Unknown";
+    const label = (COLUMN_LABELS[node.layerKey] || TYPE_LABELS[node.type]).replace("Processing", "Process");
+    return `${label} ${node.shortId}`;
+  }
+
+  function livePanelStats(run, panel, now) {
+    const inspectTime = Math.min(now, run.timing.detect);
+    const contaminatedNodes = run.graph.nodes.filter((node) => {
+      const contaminated = run.base.contaminatedAt.get(node.id);
+      return contaminated !== null && contaminated <= inspectTime;
+    });
+    const contaminatedBatches = contaminatedNodes.filter((node) => node.type === "BATCH").length;
+    const recalledBatches = run.graph.nodesByType.BATCH.filter((node) => {
+      const recalled = panel.recallAt.get(node.id);
+      return recalled !== undefined && now >= recalled;
+    }).length;
+    const recalledLots = recalledBatches;
+    const recalledPct = panel.metrics.totalLots ? (recalledLots / panel.metrics.totalLots) * 100 : 0;
+    const liveLoss = now < run.timing.detect
+      ? COSTS.fixedIncident + contaminatedBatches * run.params.averageBatchPrice
+      : COSTS.fixedIncident + recalledLots * run.params.averageBatchPrice;
+    let status = "Monitoring";
+    if (now >= run.timing.inject && now < run.timing.detect) status = "Cascade spreading";
+    if (now >= run.timing.detect) status = panel.mode === "full" ? "Full recall active" : "Targeted recall active";
+    if (now >= run.timing.end) status = panel.mode === "full" ? "Full recall complete" : "Targeted recall complete";
+    return { status, contaminatedNodes: contaminatedNodes.length, contaminatedBatches, recalledBatches, recalledLots, recalledPct, liveLoss };
+  }
+
+  function nodeVisualState(run, panel, node, now) {
+    const contaminatedAt = run.base.contaminatedAt.get(node.id);
+    const recalledAt = panel.recallAt.get(node.id);
+    if (recalledAt !== undefined && now >= recalledAt) {
+      return { state: "RECALLED", color: mixHex(COLORS.contaminated, COLORS.recall, easeOutCubic((now - recalledAt) / visualWindow(0.26))) };
+    }
+    if (contaminatedAt !== null && now >= contaminatedAt) return { state: "CONTAMINATED", color: COLORS.contaminated };
+    return { state: "CLEAN", color: COLORS.clean };
+  }
+
+  function narrativeFor(run, now) {
+    const sourceNode = run.graph.nodeById.get(run.base.sourceId);
+    if (now < run.timing.inject) {
+      return {
+        headline: "Traceability contains the defect recall.",
+        detail: "Both panels share the same network and defect path. All nodes stay clean until the defect is introduced."
+      };
+    }
+    if (now < run.timing.detect) {
+      return {
+        headline: `${nodeLabel(sourceNode)} introduced the defect.`,
+        detail: "Red pulses move through the shared graph before detection. Both panels stay identical during this phase."
+      };
+    }
+    if (now < run.timing.end) {
+      return {
+        headline: "Detection splits the outcome.",
+        detail: "The left panel recalls every batch. The right panel keeps clean batches blue and isolates only traced exposure."
+      };
+    }
+    const saved = run.panels.left.metrics.loss - run.panels.right.metrics.loss;
+    return {
+      headline: "Targeted recall contains the damage.",
+      detail: `Traceability preserves clean inventory and saves ${formatMoney(saved)} versus a full-batch recall.`
+    };
+  }
+
+  function progressStateFor(run, now) {
+    const progress = clamp(now / Math.max(0.001, run.timing.end), 0, 1);
+    let label = "Standby";
+    if (now >= run.timing.inject && now < run.timing.detect) label = "Incident spreading";
+    if (now >= run.timing.detect && now < run.timing.end) label = "Callback active";
+    if (now >= run.timing.end) label = "Demo complete";
+    return { progress, label };
+  }
+
+  function compactCanvasLayout() {
+    return window.innerWidth <= 720 || UI.simCanvas.clientWidth <= 760;
+  }
+
+  function panelPoint(rect, node) {
+    return {
+      x: rect.x + 26 + node.x * (rect.w - 52),
+      y: rect.y + 104 + node.y * (rect.h - 290)
+    };
+  }
+
+  function drawBackground(width, height) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, "#F7FBFF");
+    gradient.addColorStop(1, "#EAF3FC");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "rgba(30,150,236,.10)";
+    ctx.beginPath();
+    ctx.arc(width * 0.16, height * 0.12, width * 0.18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,127,34,.08)";
+    ctx.beginPath();
+    ctx.arc(width * 0.84, height * 0.16, width * 0.15, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function layerBandRect(rect, nodes) {
+    const points = nodes.map((node) => panelPoint(rect, node));
+    const xs = points.map((point) => point.x);
+    const ys = points.map((point) => point.y);
+    return {
+      x: Math.min(...xs) - 30,
+      y: Math.min(...ys) - 36,
+      w: Math.max(...xs) - Math.min(...xs) + 60,
+      h: Math.max(...ys) - Math.min(...ys) + 72
+    };
+  }
+
+  function callbackDockRect(rect) {
+    const compact = compactCanvasLayout();
+    return { x: rect.x + 30, y: rect.y + rect.h - (compact ? 192 : 168), w: rect.w - 60, h: compact ? 48 : 50 };
+  }
+
+  function callbackLayout(run, panel, rect) {
+    const recalledNodes = run.graph.nodes
+      .filter((node) => node.type === "BATCH" && panel.recallAt.has(node.id))
+      .sort((a, b) => {
+        const recallDelta = panel.recallAt.get(a.id) - panel.recallAt.get(b.id);
+        if (Math.abs(recallDelta) > 0.0001) return recallDelta;
+        if (a.layerKey !== b.layerKey) return a.x - b.x;
+        return a.y - b.y;
+      });
+    const dock = callbackDockRect(rect);
+    const rows = recalledNodes.length > 12 ? 2 : 1;
+    const cols = Math.max(1, Math.ceil(recalledNodes.length / rows));
+    const stepX = dock.w / (cols + 1);
+    const rowY = rows === 1 ? [dock.y + dock.h / 2] : [dock.y + 17, dock.y + 34];
+    const slots = new Map();
+    recalledNodes.forEach((node, index) => {
+      const row = rows === 1 ? 0 : Math.floor(index / cols);
+      const col = rows === 1 ? index : index % cols;
+      slots.set(node.id, { x: dock.x + stepX * (col + 1), y: rowY[row], order: index });
+    });
+    return { dock, recalledNodes, rows, cols, slots };
+  }
+
+  function callbackLotSize(layout) {
+    if (layout.recalledNodes.length >= 22) return 8.5;
+    if (layout.recalledNodes.length >= 16) return 9.5;
+    return 11.25;
+  }
+
+  function callbackMotion(run, panel, node, rect, now, layout) {
+    const basePoint = panelPoint(rect, node);
+    const recalledAt = panel.recallAt.get(node.id);
+    if (node.type !== "BATCH" || recalledAt === undefined || now < recalledAt) {
+      return { basePoint, point: basePoint, targetPoint: basePoint, progress: 0, pulled: false, slotIndex: -1 };
+    }
+    const slot = layout.slots.get(node.id) || { x: basePoint.x, y: basePoint.y, order: -1 };
+    const progress = easeInOutCubic((now - recalledAt) / visualWindow(0.9));
+    const arcLift = Math.sin(progress * Math.PI) * 16;
+    const settle = progress >= 0.999 ? Math.sin((now - recalledAt) * 7 + node.y * 12) * 1.5 : 0;
+    return {
+      basePoint,
+      targetPoint: slot,
+      point: {
+        x: lerp(basePoint.x, slot.x, progress),
+        y: lerp(basePoint.y, slot.y, progress) - arcLift + settle
+      },
+      progress,
+      pulled: progress > 0,
+      slotIndex: slot.order
+    };
+  }
+
+  function drawCallbackProcess(run, panel, rect, now, layout, motionByNode) {
+    if (now < run.timing.detect) return;
+    const compact = compactCanvasLayout();
+    const dock = layout.dock;
+    const activeCount = layout.recalledNodes.filter((node) => {
+      const recalledAt = panel.recallAt.get(node.id);
+      return recalledAt !== undefined && now >= recalledAt;
+    }).length;
+    const accent = panel.mode === "full" ? COLORS.full : COLORS.trace;
+    const glow = pulse(now + dock.x * 0.01, visualWindow(0.8), dock.w * 0.003);
+    const caption = panel.mode === "full" ? "ALL BATCH LAYERS SUSPECT" : "ONLY CONTAMINATED LOTS HELD";
+
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,.96)";
+    roundRectPath(ctx, dock.x, dock.y, dock.w, dock.h, 18);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(accent, 0.28 + glow * 0.18);
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.save();
+    roundRectPath(ctx, dock.x, dock.y, dock.w, dock.h, 18);
+    ctx.clip();
+    const stripeGap = 30;
+    const sweep = ((now - run.timing.detect) / visualWindow(1.1)) * stripeGap * 4;
+    for (let offset = -dock.h; offset < dock.w + dock.h; offset += stripeGap) {
+      ctx.strokeStyle = withAlpha(accent, 0.06 + pulse(now, visualWindow(0.5), offset * 0.04) * 0.12);
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(dock.x + offset + sweep, dock.y);
+      ctx.lineTo(dock.x + offset - dock.h + sweep, dock.y + dock.h);
+      ctx.stroke();
+    }
+    ctx.restore();
+    const countText = activeCount ? `${activeCount} lots pulled` : "standby";
+    const labelY = dock.y + dock.h + 16;
+    ctx.font = "700 10px Poppins, sans-serif";
+    if (compact) {
+      const centerX = dock.x + dock.w / 2;
+      ctx.fillStyle = COLORS.soft;
+      const flowWidth = ctx.measureText("CALLBACK FLOW").width;
+      ctx.fillText("CALLBACK FLOW", centerX - flowWidth / 2, labelY);
+      ctx.fillStyle = panel.accent;
+      const captionWidth = ctx.measureText(caption).width;
+      ctx.fillText(caption, centerX - captionWidth / 2, labelY + 13);
+      const countWidth = ctx.measureText(countText).width;
+      ctx.fillText(countText, centerX - countWidth / 2, labelY + 26);
+    } else {
+      ctx.fillStyle = COLORS.soft;
+      ctx.fillText("CALLBACK FLOW", dock.x + 4, labelY);
+      const captionWidth = ctx.measureText(caption).width;
+      ctx.fillStyle = panel.accent;
+      ctx.fillText(caption, dock.x + dock.w / 2 - captionWidth / 2, labelY);
+      const countWidth = ctx.measureText(countText).width;
+      ctx.fillText(countText, dock.x + dock.w - countWidth - 4, labelY);
+    }
+
+    if (activeCount) {
+      for (let i = 0; i < 3; i += 1) {
+        const arrowX = dock.x + 24 + (((now - run.timing.detect) * 62) + i * 34) % Math.max(40, dock.w - 80);
+        const arrowY = dock.y + dock.h / 2;
+        ctx.strokeStyle = withAlpha(accent, 0.25 + glow * 0.18);
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(arrowX - 8, arrowY - 6);
+        ctx.lineTo(arrowX, arrowY);
+        ctx.lineTo(arrowX - 8, arrowY + 6);
+        ctx.stroke();
+      }
+    }
+
+    layout.recalledNodes.forEach((node) => {
+      const motion = motionByNode.get(node.id);
+      if (!motion || motion.progress <= 0.02) return;
+      const gradient = ctx.createLinearGradient(motion.basePoint.x, motion.basePoint.y, motion.point.x, motion.point.y);
+      gradient.addColorStop(0, withAlpha(accent, 0.02));
+      gradient.addColorStop(0.55, withAlpha(accent, 0.14));
+      gradient.addColorStop(1, withAlpha(accent, 0.32));
+      ctx.save();
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 1.4 + motion.progress * 1.4;
+      ctx.setLineDash([6, 5]);
+      ctx.lineDashOffset = -now * 22 - motion.slotIndex * 2;
+      ctx.shadowColor = withAlpha(accent, 0.14);
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(motion.basePoint.x, motion.basePoint.y);
+      ctx.lineTo(motion.point.x, motion.point.y);
+      ctx.stroke();
+      ctx.restore();
+
+      const beamTravel = ((now - (panel.recallAt.get(node.id) || now)) / visualWindow(0.34)) % 1;
+      const beamX = lerp(motion.basePoint.x, motion.point.x, beamTravel);
+      const beamY = lerp(motion.basePoint.y, motion.point.y, beamTravel);
+      const beam = ctx.createRadialGradient(beamX, beamY, 1, beamX, beamY, 9);
+      beam.addColorStop(0, withAlpha(COLORS.warn, 0.92));
+      beam.addColorStop(0.45, withAlpha(accent, 0.42));
+      beam.addColorStop(1, withAlpha(accent, 0));
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = beam;
+      ctx.beginPath();
+      ctx.arc(beamX, beamY, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+    ctx.restore();
+  }
+
+  function drawBatchColumnEffects(run, panel, rect, now, layerKey) {
+    if (now < run.timing.detect) return;
+    const band = layerBandRect(rect, run.graph.nodesByLayer[layerKey]);
+    const reveal = clamp((now - run.timing.detect) / visualWindow(0.9), 0, 1);
+
+    if (panel.mode === "full") {
+      ctx.fillStyle = withAlpha(COLORS.full, 0.08 + pulse(now, visualWindow(0.5)) * 0.08);
+      roundRectPath(ctx, band.x, band.y, band.w, band.h, 22);
+      ctx.fill();
+      ctx.save();
+      roundRectPath(ctx, band.x, band.y, band.w, band.h, 22);
+      ctx.clip();
+      const stripeGap = 28;
+      const sweep = ((now - run.timing.detect) / visualWindow(1.2)) * stripeGap * 6;
+      for (let offset = -band.h; offset < band.w + band.h; offset += stripeGap) {
+        ctx.strokeStyle = withAlpha(COLORS.full, 0.12 + pulse(now, visualWindow(0.45), offset * 0.04) * 0.15);
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(band.x + offset + sweep, band.y);
+        ctx.lineTo(band.x + offset - band.h + sweep, band.y + band.h);
+        ctx.stroke();
+      }
+      ctx.restore();
+    } else {
+      ctx.strokeStyle = withAlpha(COLORS.trace, 0.22 + reveal * 0.18);
+      ctx.lineWidth = 2;
+      roundRectPath(ctx, band.x, band.y, band.w, band.h, 22);
+      ctx.stroke();
+      ctx.fillStyle = withAlpha(COLORS.trace, 0.04 + pulse(now, visualWindow(0.8)) * 0.04);
+      roundRectPath(ctx, band.x, band.y, band.w, band.h, 22);
+      ctx.fill();
+    }
+  }
+
+  function drawRecallNodeEffects(run, panel, node, motion, visual, now, size) {
+    if (node.type !== "BATCH" || now < run.timing.detect) return;
+    const recalledAt = panel.recallAt.get(node.id);
+    const point = motion.point;
+
+    if (recalledAt !== undefined && now >= recalledAt) {
+      const age = now - recalledAt;
+      const burstWindow = visualWindow(0.8);
+      const burst = clamp(age / burstWindow, 0, 1);
+      const alphaBase = panel.mode === "full" ? 0.24 : 0.18;
+      const ringColor = panel.mode === "full" ? COLORS.full : COLORS.trace;
+      for (let ring = 0; ring < 2; ring += 1) {
+        const ringProgress = (burst + ring * 0.24) % 1;
+        ctx.strokeStyle = withAlpha(ringColor, Math.max(0, alphaBase - ringProgress * alphaBase));
+        ctx.lineWidth = ring === 0 ? 3 : 2;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, size + 7 + ringProgress * 20, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.save();
+      ctx.translate(point.x, point.y);
+      ctx.rotate(Math.PI / 4);
+      ctx.strokeStyle = withAlpha(panel.mode === "full" ? COLORS.full : COLORS.trace, 0.7 - burst * 0.4);
+      ctx.lineWidth = 2.8;
+      ctx.beginPath();
+      ctx.moveTo(-8, 0);
+      ctx.lineTo(8, 0);
+      ctx.moveTo(0, -8);
+      ctx.lineTo(0, 8);
+      ctx.stroke();
+      ctx.restore();
+      if (motion.progress >= 0.98) {
+        const trayPulse = pulse(now + motion.slotIndex * 120, visualWindow(0.7));
+        ctx.fillStyle = withAlpha(panel.accent, 0.10 + trayPulse * 0.10);
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, size + 5 + trayPulse * 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return;
+    }
+
+    if (panel.mode === "targeted" && visual.state === "CLEAN" && node.type === "BATCH") {
+      const aura = pulse(now + node.y * 8000, visualWindow(0.9));
+      ctx.strokeStyle = withAlpha(COLORS.trace, 0.18 + aura * 0.22);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, size + 5 + aura * 4, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = withAlpha(COLORS.trace, 0.05 + aura * 0.05);
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, size + 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawPanel(run, panel, rect, now) {
+    const compact = compactCanvasLayout();
+    roundRectPath(ctx, rect.x, rect.y, rect.w, rect.h, 28);
+    const panelFill = ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.h);
+    panelFill.addColorStop(0, panel.mode === "full" ? "rgba(255,250,246,.98)" : "rgba(247,251,255,.98)");
+    panelFill.addColorStop(1, panel.mode === "full" ? "rgba(248,242,236,.98)" : "rgba(237,245,253,.98)");
+    ctx.fillStyle = panelFill;
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(panel.accent, 0.22);
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.save();
+    roundRectPath(ctx, rect.x, rect.y, rect.w, rect.h, 28);
+    ctx.clip();
+
+    for (let i = 0; i < 10; i += 1) {
+      ctx.strokeStyle = `rgba(10,37,64,${i % 2 === 0 ? 0.06 : 0.03})`;
+      ctx.lineWidth = 1;
+      const y = rect.y + 48 + i * ((rect.h - 96) / 9);
+      ctx.beginPath();
+      ctx.moveTo(rect.x + 24, y);
+      ctx.lineTo(rect.x + rect.w - 24, y);
+      ctx.stroke();
+    }
+
+    const titleMaxWidth = rect.w - (compact ? 18 : 56);
+    let titleFontSize = compact ? 18 : 22;
+    ctx.fillStyle = COLORS.ink;
+    while (true) {
+      ctx.font = `700 ${titleFontSize}px Poppins, sans-serif`;
+      if (!compact || ctx.measureText(panel.label).width <= titleMaxWidth || titleFontSize <= 12) break;
+      titleFontSize -= 1;
+    }
+    const titleWidth = ctx.measureText(panel.label).width;
+    const titleX = compact ? rect.x + (rect.w - titleWidth) / 2 : rect.x + 24;
+    const headerCenterY = compact ? rect.y + 34 : rect.y + 31;
+    ctx.fillStyle = COLORS.ink;
+    ctx.textBaseline = "middle";
+    ctx.fillText(panel.label, titleX, headerCenterY);
+
+    let headlineFontSize = compact ? 11 : 12;
+    const headlineMaxWidth = rect.w - (compact ? 20 : 48);
+    while (true) {
+      ctx.font = `700 ${headlineFontSize}px Poppins, sans-serif`;
+      const measured = ctx.measureText(panel.headline).width + (compact ? 24 : 30);
+      if (!compact || measured <= headlineMaxWidth || headlineFontSize <= 9) break;
+      headlineFontSize -= 1;
+    }
+    const headlineWidth = ctx.measureText(panel.headline).width;
+    const headlinePillWidth = headlineWidth + (compact ? 24 : 30);
+    const headlinePillHeight = compact ? 28 : 30;
+    const headlinePillX = compact
+      ? rect.x + Math.max(10, (rect.w - headlinePillWidth) / 2)
+      : rect.x + rect.w - headlinePillWidth - 24;
+    const headlineCenterY = compact ? rect.y + 59 : headerCenterY;
+    const headlinePillY = headlineCenterY - headlinePillHeight / 2;
+    ctx.fillStyle = panel.mode === "full" ? "rgba(255,127,34,.08)" : "rgba(30,150,236,.08)";
+    roundRectPath(ctx, headlinePillX, headlinePillY, headlinePillWidth, headlinePillHeight, 15);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(panel.accent, 0.34);
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.fillStyle = panel.accent;
+    ctx.fillText(panel.headline, headlinePillX + (headlinePillWidth - headlineWidth) / 2, headlineCenterY);
+    ctx.textBaseline = "alphabetic";
+
+    if (!compact) {
+      ctx.fillStyle = COLORS.soft;
+      ctx.font = "700 11px Poppins, sans-serif";
+      run.graph.columnOrder.forEach((layerKey) => {
+        const sample = run.graph.nodesByLayer[layerKey][0];
+        const point = panelPoint(rect, sample);
+        const label = COLUMN_LABELS[layerKey];
+        ctx.fillText(label, point.x - ctx.measureText(label).width / 2, rect.y + 88);
+      });
+    }
+
+    drawBatchColumnEffects(run, panel, rect, now, "BATCH_A");
+    drawBatchColumnEffects(run, panel, rect, now, "BATCH_B");
+    drawBatchColumnEffects(run, panel, rect, now, "BATCH_C");
+    drawBatchColumnEffects(run, panel, rect, now, "BATCH_D");
+    const callback = callbackLayout(run, panel, rect);
+    const motionByNode = new Map(run.graph.nodes.map((node) => [node.id, callbackMotion(run, panel, node, rect, now, callback)]));
+    drawCallbackProcess(run, panel, rect, now, callback, motionByNode);
+
+    run.graph.edges.forEach((edge) => {
+      const fromNode = run.graph.nodeById.get(edge.fromId);
+      const toNode = run.graph.nodeById.get(edge.toId);
+      const fromPoint = motionByNode.get(fromNode.id).point;
+      const toPoint = motionByNode.get(toNode.id).point;
+      const event = run.base.eventByEdge.get(edge.key);
+      const passed = Boolean(event && now >= event.t);
+      const flashAge = event ? now - event.t : Infinity;
+      const flashWindow = visualWindow(0.24);
+      const travelWindow = visualWindow(0.72);
+      const flashActive = flashAge >= 0 && flashAge <= flashWindow;
+
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = passed ? withAlpha(COLORS.contaminated, 0.24) : "rgba(10,37,64,.14)";
+      ctx.beginPath();
+      ctx.moveTo(fromPoint.x, fromPoint.y);
+      ctx.lineTo(toPoint.x, toPoint.y);
+      ctx.stroke();
+
+      if (passed) {
+        const glow = pulse(now + fromNode.y * 4000, visualWindow(0.5), toNode.y * 2.4);
+        const gradient = ctx.createLinearGradient(fromPoint.x, fromPoint.y, toPoint.x, toPoint.y);
+        gradient.addColorStop(0, withAlpha(COLORS.contaminated, 0.24));
+        gradient.addColorStop(0.45, withAlpha(COLORS.warn, 0.45 + glow * 0.20));
+        gradient.addColorStop(1, withAlpha(COLORS.contaminated, 0.28));
+        ctx.save();
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = flashActive ? 4.6 : 2.4 + glow * 1.4;
+        ctx.shadowColor = withAlpha(COLORS.contaminated, 0.26 + glow * 0.18);
+        ctx.shadowBlur = flashActive ? 22 : 14;
+        ctx.beginPath();
+        ctx.moveTo(fromPoint.x, fromPoint.y);
+        ctx.lineTo(toPoint.x, toPoint.y);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      if (passed) {
+        const elapsed = Math.max(0, now - event.t);
+        const travelBase = (elapsed / travelWindow) % 1;
+        [0, 0.42].forEach((offset, index) => {
+          const travel = (travelBase + offset) % 1;
+          const pulseX = lerp(fromPoint.x, toPoint.x, travel);
+          const pulseY = lerp(fromPoint.y, toPoint.y, travel);
+          const gradient = ctx.createRadialGradient(pulseX, pulseY, 1, pulseX, pulseY, index === 0 ? 13 : 10);
+          gradient.addColorStop(0, withAlpha(COLORS.warn, index === 0 ? 0.98 : 0.78));
+          gradient.addColorStop(0.35, withAlpha(COLORS.contaminated, index === 0 ? 0.72 : 0.48));
+          gradient.addColorStop(1, withAlpha(COLORS.contaminated, 0));
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(pulseX, pulseY, index === 0 ? 13 : 10, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+      }
+    });
+
+    run.graph.nodes.forEach((node) => {
+      const motion = motionByNode.get(node.id);
+      const point = motion.point;
+      const visual = nodeVisualState(run, panel, node, now);
+      const isSource = node.id === run.base.sourceId && now >= run.timing.inject;
+      const size = node.type === "PROCESS" ? 18 : lerp(14, callbackLotSize(callback), motion.progress);
+      if (isSource) {
+        ctx.fillStyle = withAlpha(COLORS.contaminated, 0.16);
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, size + 12, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.save();
+      ctx.shadowColor = visual.state === "CONTAMINATED" ? withAlpha(COLORS.contaminated, 0.42) : "transparent";
+      ctx.shadowBlur = visual.state === "CONTAMINATED" ? 14 : 0;
+      ctx.fillStyle = visual.color;
+      ctx.strokeStyle = isSource ? COLORS.contaminated : withAlpha(COLORS.ink, 0.22);
+      ctx.lineWidth = isSource ? 3 : 1.4;
+      if (node.type === "PROCESS") {
+        roundRectPath(ctx, point.x - size, point.y - 12, size * 2, 24, 8);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+      drawRecallNodeEffects(run, panel, node, motion, visual, now, size);
+      const labelFont = size < 10.4 ? 8 : 10;
+      ctx.fillStyle = "#ffffff";
+      ctx.font = `700 ${labelFont}px Poppins, sans-serif`;
+      const labelWidth = ctx.measureText(node.shortId).width;
+      ctx.fillText(node.shortId, point.x - labelWidth / 2, point.y + (labelFont < 9 ? 2.8 : 3.5));
+    });
+
+    ctx.restore();
+  }
+
+  function render(now) {
+    setCanvasSize();
+    const width = UI.simCanvas.clientWidth;
+    const height = UI.simCanvas.clientHeight;
+    drawBackground(width, height);
+    if (!app.run) return;
+    const padding = 22;
+    const gap = 18;
+    const panelWidth = (width - padding * 2 - gap) / 2;
+    const panelHeight = height - padding * 2;
+    drawPanel(app.run, app.run.panels.left, { x: padding, y: padding, w: panelWidth, h: panelHeight }, now);
+    drawPanel(app.run, app.run.panels.right, { x: padding + panelWidth + gap, y: padding, w: panelWidth, h: panelHeight }, now);
+    ctx.fillStyle = "rgba(10,37,64,.08)";
+    roundRectPath(ctx, width / 2 - 4, 70, 8, height - 140, 4);
+    ctx.fill();
+  }
+
+  function updateScenarioCard(side, panel, stats, now) {
+    const isLeft = side === "left";
+    const statusEl = isLeft ? UI.leftStatus : UI.rightStatus;
+    const recalledEl = isLeft ? UI.leftRecalled : UI.rightRecalled;
+    const recalledMetaEl = isLeft ? UI.leftRecalledMeta : UI.rightRecalledMeta;
+    const lossEl = isLeft ? UI.leftLoss : UI.rightLoss;
+    const lossMetaEl = isLeft ? UI.leftLossMeta : UI.rightLossMeta;
+
+    statusEl.textContent = stats.status;
+    recalledEl.textContent = formatPct(stats.recalledPct);
+    recalledMetaEl.textContent = `${stats.recalledLots} / ${panel.metrics.totalLots} lots`;
+    lossEl.textContent = formatMoney(stats.liveLoss);
+    lossMetaEl.textContent = now < app.run.timing.detect ? "Potential loss before recall" : "Estimated recall cost";
+  }
+
+  function updateSummary(run) {
+    const saved = run.panels.left.metrics.loss - run.panels.right.metrics.loss;
+    const lotsSaved = run.panels.left.metrics.recalledLots - run.panels.right.metrics.recalledLots;
+    UI.summarySaved.textContent = formatMoney(saved);
+    UI.summaryText.textContent = `Traceability held ${lotsSaved} clean batch lots out of the callback while isolating the same defect source.`;
+  }
+
+  function updateUi(now) {
+    const run = app.run;
+    const leftStats = livePanelStats(run, run.panels.left, now);
+    const rightStats = livePanelStats(run, run.panels.right, now);
+    const narrative = narrativeFor(run, now);
+    const progressState = progressStateFor(run, now);
+    UI.badgeHeadline.textContent = narrative.headline;
+    UI.badgeText.textContent = narrative.detail;
+    UI.demoProgressLabel.textContent = progressState.label;
+    UI.demoProgressFill.style.width = `${Math.round(progressState.progress * 1000) / 10}%`;
+
+    if (now < run.timing.detect) {
+      UI.deltaText.textContent = "The defect is still propagating. Both panels are sharing the same defect path.";
+      UI.compareNote.textContent = "Once detection hits, the left panel recalls every batch layer while the right panel isolates only traced affected lots.";
+    } else if (now < run.timing.end) {
+      UI.deltaText.textContent = `Traceability is already preserving ${run.panels.left.metrics.recalledBatches - rightStats.recalledBatches} batches from recall compared with the full-sweep panel.`;
+      UI.compareNote.textContent = "Grey recall nodes are now diverging across batch layers. Clean blue and teal lots on the right show the value of targeted callback control.";
+    } else {
+      UI.deltaText.textContent = `Final outcome: traceability saves ${formatMoney(run.panels.left.metrics.loss - run.panels.right.metrics.loss)} while keeping callback scope far tighter.`;
+      UI.compareNote.textContent = "The defect path was identical. Only recall logic changed how many batch-layer lots were shut down.";
+    }
+
+    updateScenarioCard("left", run.panels.left, leftStats, now);
+    updateScenarioCard("right", run.panels.right, rightStats, now);
+    updateSummary(run);
+    UI.summary.classList.toggle("show", now >= run.timing.end && !run.summaryDismissed);
+  }
+
+  function frame(timestamp) {
+    const realDt = Math.min(0.08, Math.max(0.001, (timestamp - lastFrame) / 1000));
+    lastFrame = timestamp;
+
+    if (app.run) {
+      if (!app.run.finished) {
+        app.run.animationTime = Math.min(CFG.animationDurationSec, app.run.animationTime + realDt);
+        if (app.run.animationTime >= CFG.animationDurationSec) {
+          app.run.animationTime = CFG.animationDurationSec;
+          app.run.finished = true;
+        }
+      }
+      updateUi(app.run.animationTime);
+      syncStageHeight();
+      render(app.run.animationTime);
+    }
+    app.rafId = requestAnimationFrame(frame);
+  }
+
+  function readParams() {
+    return {
+      averageBatchPrice: Number(UI.averageBatchPrice.value),
+      size: app.params.size
+    };
+  }
+
+  function syncControlLabels() {
+    UI.averageBatchPriceValue.textContent = `USD ${Number(UI.averageBatchPrice.value).toLocaleString("en-US")}`;
+    UI.sizeButtons.forEach((button) => button.classList.toggle("active", button.dataset.size === app.params.size));
+  }
+
+  function closeInfoTips() {
+    document.querySelectorAll(".hasTipOpen").forEach((node) => node.classList.remove("hasTipOpen"));
+    document.querySelectorAll(".infoBtn[aria-expanded='true']").forEach((button) => button.setAttribute("aria-expanded", "false"));
+    syncStageHeight();
+    requestEmbedHeightSync();
+  }
+
+  function syncStageHeight() {
+    if (!UI.stage || !UI.side) return;
+    if (window.innerWidth <= 1080) {
+      const hadInlineHeight = Boolean(UI.stage.style.height || UI.stage.style.minHeight || UI.simCanvas.style.height);
+      UI.stage.style.height = "";
+      UI.stage.style.minHeight = "";
+      UI.simCanvas.style.height = "";
+      if (hadInlineHeight) requestEmbedHeightSync();
+      return;
+    }
+    const sideHeight = Math.max(
+      1,
+      Math.ceil(UI.side.getBoundingClientRect().height),
+      UI.side.offsetHeight,
+      UI.side.scrollHeight
+    );
+    const nextHeight = `${sideHeight}px`;
+    if (UI.stage.style.height === nextHeight && UI.stage.style.minHeight === nextHeight && UI.simCanvas.style.height === nextHeight) return;
+    UI.stage.style.height = `${sideHeight}px`;
+    UI.stage.style.minHeight = `${sideHeight}px`;
+    UI.simCanvas.style.height = `${sideHeight}px`;
+    requestEmbedHeightSync();
+  }
+
+  function startRun() {
+    const params = readParams();
+    app.params = { ...params };
+    syncControlLabels();
+    closeInfoTips();
+    app.run = buildRun(params);
+    app.run.finished = false;
+    app.run.summaryDismissed = false;
+    UI.summary.classList.remove("show");
+    lastFrame = performance.now();
+    updateUi(0);
+    syncStageHeight();
+    render(0);
+    requestEmbedHeightSync();
+    if (!app.rafId) app.rafId = requestAnimationFrame(frame);
+  }
+
+  function resetControls() {
+    app.params = { ...DEFAULTS };
+    UI.averageBatchPrice.value = String(DEFAULTS.averageBatchPrice);
+    app.params.size = DEFAULTS.size;
+    syncControlLabels();
+    closeInfoTips();
+    startRun();
+  }
+
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest(".infoBtn");
+    if (!button) {
+      closeInfoTips();
+      return;
+    }
+    const host = button.closest(".controlRow") || button.closest(".summaryHero") || button.closest(".summaryTile") || button.closest(".scenarioHint");
+    if (!host) return;
+    const shouldOpen = !host.classList.contains("hasTipOpen");
+    closeInfoTips();
+    host.classList.toggle("hasTipOpen", shouldOpen);
+    button.setAttribute("aria-expanded", String(shouldOpen));
+    syncStageHeight();
+    event.preventDefault();
+    event.stopPropagation();
+  });
+  UI.averageBatchPrice.addEventListener("input", () => {
+    syncControlLabels();
+  });
+  UI.averageBatchPrice.addEventListener("change", () => {
+    startRun();
+  });
+  UI.sizeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (app.params.size === button.dataset.size) return;
+      app.params.size = button.dataset.size;
+      syncControlLabels();
+      startRun();
+    });
+  });
+  UI.runAgain.addEventListener("click", () => startRun());
+  UI.reset.addEventListener("click", resetControls);
+  UI.summaryClose.addEventListener("click", () => {
+    if (!app.run) return;
+    app.run.summaryDismissed = true;
+    closeInfoTips();
+    UI.summary.classList.remove("show");
+  });
+  UI.summary.addEventListener("click", (event) => {
+    if (!app.run) return;
+    if (event.target === UI.summary) {
+      app.run.summaryDismissed = true;
+      closeInfoTips();
+      UI.summary.classList.remove("show");
+    }
+  });
+  window.addEventListener("resize", () => {
+    syncStageHeight();
+    if (!app.run) return;
+    render(app.run.animationTime);
+    requestEmbedHeightSync();
+  });
+
+  function init() {
+    UI.averageBatchPrice.value = String(DEFAULTS.averageBatchPrice);
+    syncControlLabels();
+    syncStageHeight();
+    startRun();
+    setupEmbedAutoHeight();
+    requestEmbedHeightSync();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

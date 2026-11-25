@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How AI May Change Work</title>
+<style>
+:root{--bg:#f4fbfd;--bg2:#e5f1f4;--panel:rgba(255,255,255,.84);--stroke:rgba(109,147,154,.18);--text:#18373e;--muted:#617c82;--blue:#4da6ff;--red:#ff856d;--teal:#22c4af;--amber:#ffb34d;--shadow:0 26px 52px rgba(86,117,128,.16);--font:"Bahnschrift","Trebuchet MS","Segoe UI",sans-serif;--display:"Aptos Display","Bahnschrift","Trebuchet MS",sans-serif}
+*{box-sizing:border-box} html,body{min-height:100%;width:100%}
+body{margin:0;font-family:var(--font);color:var(--text);background:radial-gradient(980px 620px at 10% 0%,rgba(34,196,175,.14),transparent 60%),radial-gradient(760px 520px at 100% 8%,rgba(255,133,109,.16),transparent 60%),linear-gradient(160deg,var(--bg),var(--bg2))}
+html.embedMode,body.embedMode,body.embed{height:auto;min-height:0}
+body.embedMode,body.embed{background:transparent;overflow:hidden}
+.shell{width:min(1260px,100%);margin:0 auto;padding:18px}
+body.embedMode .shell,body.embed .shell{width:100%;max-width:none;margin:0;padding:10px}
+.app{position:relative;overflow:hidden;border:1px solid var(--stroke);border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.62)),radial-gradient(720px 380px at 78% 8%,rgba(255,133,109,.1),transparent 62%),linear-gradient(180deg,rgba(249,252,253,.98),rgba(235,244,247,.98));box-shadow:var(--shadow)}
+.app:before,.app:after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.app:before{width:420px;height:420px;left:-80px;top:-120px;background:radial-gradient(circle,rgba(34,196,175,.14),transparent 70%)}
+.app:after{width:520px;height:520px;right:-120px;bottom:-180px;background:radial-gradient(circle,rgba(77,166,255,.12),transparent 72%)}
+.hero,.grid,.story{position:relative;z-index:1}
+.hero{padding:26px 26px 14px}
+.hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.eyebrow{display:inline-flex;gap:10px;align-items:center;padding:8px 12px;border-radius:999px;border:1px solid rgba(34,196,175,.2);background:rgba(34,196,175,.1);color:#1f6861;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 6px rgba(34,196,175,.12)}
+.sim-toggle{position:relative;display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border:1px solid rgba(34,196,175,.24);border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(236,248,245,.96));color:#18464d;font:800 12px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 16px 34px rgba(34,196,175,.16);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease}
+.sim-toggle:before{content:"";width:10px;height:10px;border-radius:50%;background:linear-gradient(180deg,#22c4af,#149887);box-shadow:0 0 0 6px rgba(34,196,175,.12)}
+.sim-toggle:hover{transform:translateY(-1px);box-shadow:0 20px 40px rgba(34,196,175,.2)}
+.sim-toggle:focus-visible{outline:2px solid rgba(77,166,255,.6);outline-offset:3px}
+.sim-toggle.paused{border-color:rgba(255,133,109,.28);background:linear-gradient(180deg,rgba(255,250,247,.98),rgba(255,240,235,.98));box-shadow:0 16px 34px rgba(255,133,109,.16)}
+.sim-toggle.paused:before{background:linear-gradient(180deg,#ff8a72,#f06a4b);box-shadow:0 0 0 6px rgba(255,133,109,.12)}
+h1{margin:16px 0 0;font-family:var(--display);font-size:clamp(34px,4.6vw,52px);line-height:.95;letter-spacing:-.03em}
+.hero p{max-width:860px;margin:12px 0 0;color:#406066;font-size:15px;line-height:1.54}
+.hero-progress{display:grid;gap:10px;width:100%;margin-top:18px;padding:14px 16px;border:1px solid rgba(106,144,152,.16);border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.84),rgba(247,251,252,.9));box-shadow:0 14px 32px rgba(105,140,148,.09)}
+.progress-meta{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.progress-meta span{color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.progress-meta strong{font-size:13px;font-weight:900;color:#21464e}
+.grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(360px,.98fr);gap:18px;padding:0 26px 18px;align-items:start}
+.left-stack{display:grid;gap:18px;min-width:0}
+.side{display:grid;gap:16px;min-width:0}
+.panel-wide{grid-column:1 / -1}
+.panel,.story{border:1px solid var(--stroke);border-radius:24px;background:var(--panel);backdrop-filter:blur(10px)}
+.panel{padding:16px}
+.head,.story-head,.chart-head,.mini-head,.cohort-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.kicker,.badge span,.metric span,.legend span,.mini-kicker,.cohort span,.timeline-card span{display:block;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.title{margin:6px 0 0;font-size:24px;font-weight:900;line-height:1.08}
+.copy{margin:9px 0 0;color:#49676d;font-size:13px;line-height:1.48}
+.badge,.metric,.mini,.placeholder,.cohort-box,.timeline-card,.pill,.occ li{border:1px solid rgba(106,144,152,.14);border-radius:18px;background:rgba(255,255,255,.72)}
+.badge{position:relative;min-width:132px;padding:14px 16px 15px;overflow:hidden;border-color:rgba(77,166,255,.18);background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(243,249,251,.9));box-shadow:0 16px 32px rgba(105,140,148,.1)}
+.badge:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,rgba(34,196,175,.92),rgba(77,166,255,.8))}
+.badge:after{content:"";position:absolute;right:-14px;top:-16px;width:72px;height:72px;border-radius:50%;background:radial-gradient(circle,rgba(77,166,255,.12),transparent 68%)}
+.badge strong,.metric strong,.mini strong,.placeholder strong{display:block;margin-top:7px;font-size:21px;font-weight:900;letter-spacing:-.02em}
+.badge em{display:block;margin-top:8px;color:#5f7f84;font-style:normal;font-size:12px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.metric{padding:14px}.metric strong{font-size:24px}.metric small{display:block;margin-top:8px;color:#5c7a80;font-size:12px;line-height:1.4}
+.chart{margin-top:14px;padding:12px;border:1px solid rgba(106,144,152,.12);border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(247,251,252,.9)),linear-gradient(180deg,rgba(233,242,246,.9),rgba(245,250,252,.95))}
+.legend-row,.pills,.story-summary{display:flex;flex-wrap:wrap;gap:10px}
+.legend{display:flex;align-items:center;gap:8px}.legend i{width:12px;height:12px;border-radius:999px;display:inline-block}.legend .b{background:var(--blue)}.legend .r{background:var(--red)}.legend .g{background:rgba(255,191,102,.86)}
+.note{color:#5d7b81;font-size:12px}.axis{display:flex;justify-content:space-between;gap:10px;margin-top:10px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+svg{width:100%;height:auto;display:block} svg text{font-family:var(--font)}
+.occ{display:grid;gap:8px;margin:14px 0 0;padding:0;list-style:none}.occ li{padding:12px;overflow:hidden;transition:opacity .35s ease,transform .35s ease,box-shadow .35s ease,filter .35s ease}.occ li.dim{opacity:.48;transform:translateX(4px)}.occ li:first-child{border-color:rgba(255,133,109,.34);background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,241,236,.94));box-shadow:0 16px 34px rgba(255,133,109,.16);animation:spotlight 1.25s ease-in-out infinite alternate}
+.occ-top,.occ-foot{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.occ-name{font-size:13px;font-weight:800}.occ-value{font-size:12px;color:#34545c}
+.track,.meter{position:relative;overflow:hidden;border-radius:999px;background:rgba(109,147,154,.14)} .track{height:10px;margin-top:8px}.meter{height:8px;margin-top:12px}
+.cap,.fill,.mark,.meter-fill,.cohort-fill,.progress-fill,.progress-mark{position:absolute;inset:0 auto 0 0;border-radius:999px}
+.cap{background:linear-gradient(90deg,rgba(77,166,255,.5),rgba(77,166,255,.18))}.fill{background:linear-gradient(90deg,rgba(255,133,109,.98),rgba(255,192,102,.92));box-shadow:0 0 20px rgba(255,133,109,.36)}.mark{top:-3px;bottom:-3px;width:2px;background:rgba(24,55,62,.28)}
+.occ li:first-child .track{height:12px;background:rgba(255,133,109,.14)}
+.occ li:first-child .fill{background:linear-gradient(90deg,#ff6d56 0%,#ff9253 48%,#ffd48b 100%);box-shadow:0 0 0 1px rgba(255,133,109,.2),0 0 26px rgba(255,133,109,.48),0 0 42px rgba(255,192,102,.26);animation:programmerFlash .85s ease-in-out infinite alternate}
+.occ li:first-child .occ-name,.occ li:first-child .occ-value{color:#8c3d2e}
+.occ-foot{margin-top:12px;color:#516d73;font-size:12px}
+.cohort-box{margin-top:14px;padding:14px;background:radial-gradient(240px 140px at 100% 0%,rgba(34,196,175,.08),transparent 70%),rgba(255,250,247,.82)}
+.cohort-box p{margin:9px 0 0;color:#547177;font-size:12px;line-height:1.45}
+.cohorts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}.cohort strong{display:block;margin-top:6px;font-size:15px;font-weight:900}.cohort-track{position:relative;height:12px;border-radius:999px;background:rgba(109,147,154,.14);overflow:hidden}.cohort-fill{background:linear-gradient(90deg,rgba(34,196,175,.92),rgba(77,166,255,.84))}.cohort-fill.entry{background:linear-gradient(90deg,rgba(255,133,109,.98),rgba(255,192,102,.9))}
+.mini-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}.mini,.placeholder{padding:14px}.mini strong{font-size:24px}.mini p{margin:10px 0 0;color:#58767c;font-size:12px;line-height:1.42}
+.signals-panel .mini-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.signals-panel .head{align-items:center}
+.placeholders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.placeholder strong{font-size:20px}.meter-fill{background:linear-gradient(90deg,rgba(34,196,175,.94),rgba(77,166,255,.86))}.meter-fill.warm{background:linear-gradient(90deg,rgba(255,133,109,.98),rgba(255,192,102,.86))}
+.story{margin:0;padding:16px 16px 14px}.story-head{display:grid;grid-template-columns:minmax(0,1.24fr) minmax(200px,.62fr);gap:14px;align-items:start}.story-lead{min-width:0}.story-title{margin:6px 0 0;font-size:24px;font-weight:900;line-height:1.04}.story-copy{max-width:none;margin:10px 0 0;color:#47656b;font-size:13px;line-height:1.5}.story-measure{position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;z-index:-1}
+.timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.timeline-card{padding:12px;opacity:.6;transition:opacity .35s ease,transform .35s ease,border-color .35s ease,background .35s ease}.timeline-card strong{display:block;margin-top:8px;font-size:13px;font-weight:900;line-height:1.22}.timeline-card.active{opacity:1;transform:translateY(-2px);border-color:rgba(34,196,175,.28);background:linear-gradient(180deg,rgba(34,196,175,.1),rgba(255,255,255,.4))}
+.story-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.pill{padding:12px 14px;border-radius:18px;color:#33535a;font-size:12px}.progress{position:relative;height:12px;border-radius:999px;overflow:hidden;background:rgba(109,147,154,.15)}.progress-fill{background:linear-gradient(90deg,rgba(34,196,175,.96),rgba(77,166,255,.88));box-shadow:0 0 24px rgba(34,196,175,.22)}.progress-mark{top:-3px;bottom:-3px;width:2px;background:rgba(24,55,62,.34);opacity:0;transition:left .18s linear,opacity .12s ease}.small{margin-top:10px;color:#688289;font-size:11px;line-height:1.4}
+.panel-progress{margin-top:12px}
+.source-note{margin-top:12px;padding:12px 14px;border:1px solid rgba(106,144,152,.14);border-radius:18px;background:rgba(255,255,255,.72);color:#47656b;font-size:11px;line-height:1.55}
+.source-note strong{color:#21464e}
+.source-note a{color:#146fbd;text-decoration:none;font-weight:800}
+.source-note a:hover{text-decoration:underline}
+@keyframes spotlight{0%{box-shadow:0 16px 34px rgba(255,133,109,.16);filter:saturate(1)}100%{box-shadow:0 22px 42px rgba(255,133,109,.24);filter:saturate(1.08)}}
+@keyframes programmerFlash{0%{filter:saturate(1) brightness(1);opacity:.88}100%{filter:saturate(1.16) brightness(1.12);opacity:1}}
+@media (max-width:1080px){.grid{grid-template-columns:1fr}.story-head{grid-template-columns:1fr}.metrics,.story-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.timeline{grid-template-columns:repeat(3,minmax(0,1fr))}.cohorts{grid-template-columns:1fr}.signals-panel .mini-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.shell{padding:10px}.hero,.grid,.story{padding-left:14px;padding-right:14px}.hero{padding-top:18px}.grid{padding-bottom:14px}.story{margin:0 14px 14px}.metrics,.mini-grid,.signals-panel .mini-grid,.placeholders,.timeline,.story-summary,.cohorts{grid-template-columns:1fr}.head,.story-head,.chart-head,.mini-head,.cohort-head,.progress-meta,.hero-top{flex-direction:column}.badge,.sim-toggle{width:100%}}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <main class="app" aria-label="Simple five-year simulation showing how AI use may change work and hiring">
+    <header class="hero">
+      <div class="hero-top">
+        <div class="eyebrow">Auto Run | 20 Seconds | 5 Years</div>
+        <button id="simToggle" class="sim-toggle" type="button" aria-pressed="false">Pause Simulation</button>
+      </div>
+      <h1>How AI may change work</h1>
+      <p>This widget shows one simple idea: AI may be able to do many tasks, but companies adopt it slowly. As the sim runs, you can see how that delay may affect some jobs, new hiring, and other work signals. It is a simple demo, not a prediction.</p>
+      <div class="hero-progress">
+        <div class="progress-meta"><span>5-Year Progress</span><strong id="heroClock">Year 1 of 5</strong></div>
+        <div class="progress"><div id="progFill" class="progress-fill"></div><div id="progMark" class="progress-mark"></div></div>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div class="left-stack">
+        <section class="panel">
+          <div class="head">
+            <div>
+              <div class="kicker">Panel 1 | AI Use Gap</div>
+              <h2 class="title">What AI can do is ahead of what companies use</h2>
+              <p class="copy">The blue level starts high at about 94%. The red level starts much lower at about 33% and rises slowly over the 60-month sim.</p>
+            </div>
+            <div class="badge"><span>Simulated Year</span><strong id="year">Year 1</strong><em id="month">Month 0 of 60</em></div>
+          </div>
+          <div class="metrics">
+            <article class="metric"><span>What AI Could Do</span><strong id="capVal">94%</strong><small>Top level from report [1] for work that AI can affect the most.</small></article>
+            <article class="metric"><span>What Companies Use</span><strong id="adoptVal">33%</strong><small>Real use starts lower and grows slowly over time.</small></article>
+            <article class="metric"><span>Gap Left</span><strong id="gapVal">61 points</strong><small>This is the space between AI ability and real company use.</small></article>
+            <article class="metric"><span>AI Task Mix</span><strong id="autoVal">82.5</strong><small>This mixes tasks AI can fully do, partly help with, or not do.</small></article>
+          </div>
+          <div class="chart">
+            <div class="chart-head">
+              <div class="legend-row">
+                <div class="legend"><i class="b"></i><span>AI could do</span></div>
+                <div class="legend"><i class="r"></i><span>companies use</span></div>
+                <div class="legend"><i class="g"></i><span>gap</span></div>
+              </div>
+              <div class="note" id="gapNote">Gap closed so far: 0%</div>
+            </div>
+            <svg viewBox="0 0 720 360" role="img" aria-label="Chart showing what AI could do versus what companies use over five simulated years">
+              <defs>
+                <linearGradient id="capFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="rgba(114,193,255,.46)"/><stop offset="100%" stop-color="rgba(114,193,255,.05)"/></linearGradient>
+                <linearGradient id="adoptFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="rgba(255,132,114,.62)"/><stop offset="100%" stop-color="rgba(255,132,114,.06)"/></linearGradient>
+                <linearGradient id="gapFill" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgba(255,191,102,.16)"/><stop offset="100%" stop-color="rgba(255,191,102,.34)"/></linearGradient>
+              </defs>
+              <g id="mainGrid"></g><path id="capArea" fill="url(#capFill)"></path><path id="gapArea" fill="url(#gapFill)"></path><path id="adoptArea" fill="url(#adoptFill)"></path><path id="capLine" fill="none" stroke="rgba(77,166,255,.92)" stroke-width="3"></path><path id="adoptLine" fill="none" stroke="rgba(255,133,109,.96)" stroke-width="3"></path><line id="nowLine" x1="0" y1="18" x2="0" y2="316" stroke="rgba(24,55,62,.44)" stroke-width="2" stroke-dasharray="4 6"></line><text id="nowLabel" x="12" y="24" fill="rgba(24,55,62,.88)" font-size="12" font-weight="800">NOW</text>
+            </svg>
+            <div class="axis"><span>Year 1</span><span>Year 2</span><span>Year 3</span><span>Year 4</span><span>Year 5</span></div>
+          </div>
+        </section>
+
+        <section class="story" aria-live="polite">
+          <div class="story-head">
+            <div id="storyLead" class="story-lead"><div class="kicker">What Is Happening</div><h2 class="story-title" id="storyTitle">At first, AI ability is ahead of real use</h2><p class="story-copy" id="storyCopy">This sim begins with a gap: AI may be able to do many tasks, but companies are not using it everywhere yet.</p></div>
+            <div class="badge"><span>Time Span</span><strong>5 Years</strong><em id="motionNote">Years 1 to 5 | 60 months total</em></div>
+          </div>
+          <div class="timeline" id="timeline"></div>
+        </section>
+      </div>
+
+      <aside class="side">
+        <section class="panel">
+          <div class="head">
+            <div>
+              <div class="kicker">Panel 2 | Jobs Most Affected</div>
+              <h2 class="title">Some jobs feel the change first</h2>
+              <p class="copy">Blue bars show the full possible impact from report [1]. Warm bars show how much of that impact is happening right now as AI use grows.</p>
+            </div>
+            <div class="badge"><span>Now</span><strong id="sceneBadge">Start</strong></div>
+          </div>
+          <ul class="occ" id="occ"></ul>
+          <div class="occ-foot"><span id="occNote">Real AI use is still rising in these jobs.</span><span id="coverage">Used / possible: 35%</span></div>
+          <section class="cohort-box">
+            <div class="cohort-head">
+              <div><div class="kicker">Scene 4 | Worker Groups</div><h3 class="title" style="font-size:20px">New workers get squeezed first</h3></div>
+              <div class="badge"><span>Simple View</span><strong>Estimate Only</strong></div>
+            </div>
+            <p>Report [1] gives a clearer signal for hiring than for age groups, so these bars are a simple example. Entry-level jobs shrink first because many beginner tasks are easier to help with or automate.</p>
+            <div class="cohorts">
+              <div class="cohort"><span>Entry-level openings</span><strong id="entryTxt">100%</strong><div class="cohort-track"><div id="entryFill" class="cohort-fill entry"></div></div></div>
+              <div class="cohort"><span>Mid-career openings</span><strong id="midTxt">100%</strong><div class="cohort-track"><div id="midFill" class="cohort-fill"></div></div></div>
+              <div class="cohort"><span>Senior openings</span><strong id="seniorTxt">100%</strong><div class="cohort-track"><div id="seniorFill" class="cohort-fill"></div></div></div>
+            </div>
+          </section>
+        </section>
+      </aside>
+
+      <section class="panel panel-wide signals-panel">
+        <div class="head">
+          <div>
+            <div class="kicker">Panel 3 | Work Signals</div>
+            <h2 class="title">Hiring may slow before unemployment rises a lot</h2>
+            <p class="copy">The unemployment line stays small and bumpy. Entry-level hiring trends down as AI use rises. These are warning signs, not a full forecast.</p>
+          </div>
+          <div class="badge"><span>Sim Year</span><strong id="clock">Year 1</strong><em>Current point in the 5-year sim</em></div>
+        </div>
+        <div class="mini-grid">
+          <article class="mini"><div class="mini-head"><div><span class="mini-kicker">Unemployment Change</span><strong id="uVal">+0.20 points</strong></div><div class="badge"><span>Start</span><strong>+0.20 points</strong></div></div><svg viewBox="0 0 320 140" role="img" aria-label="Small chart showing unemployment change over time"><defs><linearGradient id="warm" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="rgba(255,132,114,.42)"/><stop offset="100%" stop-color="rgba(255,132,114,.02)"/></linearGradient></defs><g id="uGrid"></g><path id="uArea" fill="url(#warm)"></path><path id="uLine" fill="none" stroke="rgba(255,132,114,.94)" stroke-width="3"></path></svg><p>This line stays in a small range. In this sim, that means unemployment changes only a little.</p></article>
+          <article class="mini"><div class="mini-head"><div><span class="mini-kicker">Entry-Level Hiring</span><strong id="hVal">2.00%</strong></div><div class="badge"><span>Start</span><strong>2.00%</strong></div></div><svg viewBox="0 0 320 140" role="img" aria-label="Small chart showing entry-level hiring over time"><defs><linearGradient id="cool" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="rgba(118,228,214,.42)"/><stop offset="100%" stop-color="rgba(118,228,214,.02)"/></linearGradient></defs><g id="hGrid"></g><path id="hArea" fill="url(#cool)"></path><path id="hLine" fill="none" stroke="rgba(118,228,214,.96)" stroke-width="3"></path></svg><p>Hiring starts at 2.0% a month and slowly falls as AI use rises. It does not drop all at once.</p></article>
+        </div>
+        <div class="placeholders">
+          <article class="placeholder"><span>Job Loss Risk</span><strong id="dVal">0.0%</strong><div class="meter"><div id="dFill" class="meter-fill warm"></div></div></article>
+          <article class="placeholder"><span>Pay Pressure</span><strong id="wVal">0.0 / 20</strong><div class="meter"><div id="wFill" class="meter-fill"></div></div></article>
+          <article class="placeholder"><span>New Job Growth</span><strong id="jVal">0.0 / 20</strong><div class="meter"><div id="jFill" class="meter-fill"></div></div></article>
+        </div>
+        <div class="hero-progress panel-progress">
+          <div class="progress-meta"><span>5-Year Progress</span><strong id="bottomClock">Year 1 of 5</strong></div>
+          <div class="progress"><div id="bottomProgFill" class="progress-fill"></div><div id="bottomProgMark" class="progress-mark"></div></div>
+        </div>
+        <div class="source-note"><strong>Source [1]</strong> Massenkoff, Maxim, and Peter McCrory. "Labor market impacts of AI: A new measure and early evidence." Anthropic, March 5, 2026. <a href="https://www.anthropic.com/research/labor-market-impacts" target="_blank" rel="noreferrer noopener">anthropic.com/research/labor-market-impacts</a></div>
+      </section>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const URL_PARAMS = new URLSearchParams(window.location.search);
+  const IS_EMBEDDED = window.parent !== window || URL_PARAMS.get("embedMode") === "1" || URL_PARAMS.get("embed") === "1";
+  if (IS_EMBEDDED) {
+    document.documentElement.classList.add("embedMode");
+    document.body.classList.add("embedMode");
+    document.body.classList.add("embed");
+  }
+
+  const LOOP=20000, SECS=20, MONTHS=60, CAP=.94, A0=.33, RATE=.005, BASE=.02, AUTO=.68 + .29 * .5;
+  const jobs=[["Programmers",.745],["Customer Service",.701],["Data Entry",.671],["Medical Records",.667],["Market Research",.648],["Sales Reps",.628],["Financial Analysts",.572],["QA Analysts",.519],["InfoSec Analysts",.486],["User Support",.468]];
+  const scenes=[
+    {id:"intro",s:0,e:2,label:"Start",title:"At first, AI ability is ahead of real use",body:"This sim begins with a gap: AI may be able to do many tasks, but companies are not using it everywhere yet."},
+    {id:"gap",s:2,e:4,label:"Year 1",title:"AI can do a lot, but company use is still low",body:"The chart starts with AI ability near 94%, while real use starts near 33%. The gap stays wide because companies need time, money, trust, and rule changes."},
+    {id:"occupations",s:4,e:8,label:"Years 1-2",title:"A few job groups stand out first",body:"Programming, customer service, data entry, and research show the clearest early effect. The warm bars grow inside the bigger blue bars, showing that real use still trails what AI may do."},
+    {id:"cohorts",s:8,e:12,label:"Years 2-3",title:"New workers feel pressure first",body:"Entry-level roles feel the squeeze sooner because many beginner tasks are more routine. This worker-group view is a simple example, not measured data."},
+    {id:"unemployment",s:12,e:16,label:"Years 3-4",title:"Unemployment stays mostly flat",body:"The unemployment line moves a little, but not by much. In this sim, that means the signal is weak and uncertain."},
+    {id:"hiring",s:16,e:20,label:"Years 4-5",title:"Hiring slows before job losses become obvious",body:"By the end, hiring for new workers is clearly lower even though unemployment still has not jumped much. The clearest change is a smaller path into work."}
+  ];
+  const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+  const rootEl = $(".shell");
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)");
+  function setupEmbedAutoResize(node){
+    if(!IS_EMBEDDED || !node) return ()=>{};
+    let rafId=0,lastHeight=0;
+    const measureHeight=()=>{
+      const doc=document.documentElement, body=document.body;
+      const docHeight=Math.ceil(Math.max(
+        doc ? doc.scrollHeight : 0,
+        doc ? doc.offsetHeight : 0,
+        body ? body.scrollHeight : 0,
+        body ? body.offsetHeight : 0
+      ));
+      const rect=node.getBoundingClientRect();
+      const styles=getComputedStyle(node);
+      const marginTop=parseFloat(styles.marginTop)||0;
+      const marginBottom=parseFloat(styles.marginBottom)||0;
+      const nodeHeight=Math.ceil(rect.height + marginTop + marginBottom);
+      return nodeHeight > 0 ? nodeHeight : docHeight;
+    };
+    const pushHeight=()=>{
+      rafId=0;
+      const height=measureHeight();
+      if(Math.abs(height-lastHeight)<1) return;
+      lastHeight=height;
+      document.documentElement.style.minHeight=`${height}px`;
+      document.body.style.minHeight=`${height}px`;
+      try{
+        const frame=window.frameElement;
+        if(frame){
+          frame.style.height=`${height}px`;
+          frame.setAttribute("height", String(height));
+        }
+      }catch(_){}
+      try{
+        window.parent?.postMessage({ type:"widget:resize", widget:"sim13-labor-market-prediction", height }, "*");
+        window.parent?.postMessage({ type:"sim13-labor-market-prediction:height", height }, "*");
+        window.parent?.postMessage({ type:"simfluence-widget:resize", widget:"sim13-labor-market-prediction", height, mode:"default" }, "*");
+      }catch(_){}
+    };
+    const schedule=()=>{
+      if(!rafId) rafId=window.requestAnimationFrame(pushHeight);
+    };
+    schedule();
+    window.setTimeout(schedule, 60);
+    window.setTimeout(schedule, 240);
+    window.setTimeout(schedule, 900);
+    window.addEventListener("message", event=>{
+      const data=event.data;
+      if(!data || typeof data !== "object") return;
+      if(
+        data.type==="widget:request-height" ||
+        data.type==="sim13-labor-market-prediction:request-height" ||
+        data.type==="simfluence-widget:request-height"
+      ){
+        schedule();
+      }
+    }, { passive:true });
+    window.addEventListener("resize", schedule, { passive:true });
+    window.addEventListener("load", schedule);
+    if("ResizeObserver" in window){
+      const observer=new ResizeObserver(schedule);
+      observer.observe(node);
+    }
+    return schedule;
+  }
+  const scheduleEmbedHeight=setupEmbedAutoResize(rootEl);
+
+  const ui={year:$("#year"),month:$("#month"),capVal:$("#capVal"),adoptVal:$("#adoptVal"),gapVal:$("#gapVal"),autoVal:$("#autoVal"),gapNote:$("#gapNote"),sceneBadge:$("#sceneBadge"),occ:$("#occ"),occNote:$("#occNote"),coverage:$("#coverage"),entryTxt:$("#entryTxt"),midTxt:$("#midTxt"),seniorTxt:$("#seniorTxt"),entryFill:$("#entryFill"),midFill:$("#midFill"),seniorFill:$("#seniorFill"),clock:$("#clock"),heroClock:$("#heroClock"),bottomClock:$("#bottomClock"),simToggle:$("#simToggle"),uVal:$("#uVal"),hVal:$("#hVal"),dVal:$("#dVal"),wVal:$("#wVal"),jVal:$("#jVal"),dFill:$("#dFill"),wFill:$("#wFill"),jFill:$("#jFill"),storyLead:$("#storyLead"),storyTitle:$("#storyTitle"),storyCopy:$("#storyCopy"),motionNote:$("#motionNote"),progFill:$("#progFill"),progMark:$("#progMark"),bottomProgFill:$("#bottomProgFill"),bottomProgMark:$("#bottomProgMark"),timeline:$("#timeline"),mainGrid:$("#mainGrid"),capArea:$("#capArea"),gapArea:$("#gapArea"),adoptArea:$("#adoptArea"),capLine:$("#capLine"),adoptLine:$("#adoptLine"),nowLine:$("#nowLine"),nowLabel:$("#nowLabel"),uGrid:$("#uGrid"),uArea:$("#uArea"),uLine:$("#uLine"),hGrid:$("#hGrid"),hArea:$("#hArea"),hLine:$("#hLine")};
+  const pct=(v,d=0)=>(v*100).toFixed(d)+"%";
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const clock=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(Math.floor(s%60)).padStart(2,"0");
+  const sceneRange=s=>({intro:"Start of Year 1",gap:"Year 1",occupations:"Years 1-2",cohorts:"Years 2-3",unemployment:"Years 3-4",hiring:"Years 4-5"}[s.id] || s.label);
+  const ease=(v,a,b)=>clamp((v-a)/(b-a),0,1);
+  const adopt=m=>CAP - (CAP - A0) * Math.pow(1 - RATE,m);
+  const unemp=m=>clamp(.002 + Math.sin(m/60*Math.PI*3.8)*.00135 + Math.cos(m/60*Math.PI*2.2+.7)*.00078 + Math.sin(m/60*Math.PI*9.1+.4)*.00034,-.002,.006);
+  const hire=m=>BASE * (1 - adopt(m));
+  const sceneAt=s=>scenes.find(x=>s>=x.s && s<x.e) || scenes[scenes.length-1];
+  const placeholders=m=>{const p=m/MONTHS;return{d:clamp(.008+p*.03+Math.sin(p*Math.PI*2.1)*.004,0,.05),w:clamp(6+p*8.5+Math.sin(p*Math.PI*2.7+.4)*1.5,0,20),j:clamp(4+p*9.5+Math.cos(p*Math.PI*2.2+.8)*1.2,0,20)}};
+  const series=(limit,n,fn)=>Array.from({length:n},(_,i)=>{const r=n===1?1:i/(n-1),m=r*limit;return{x:m,y:fn(m)}});
+  const line=(pts,w,h,xMax,yMin,yMax)=>pts.map((p,i)=>`${i?"L":"M"}${(48+p.x/xMax*w).toFixed(2)} ${(18+(yMax-p.y)/(yMax-yMin)*h).toFixed(2)}`).join(" ");
+  const area=(pts,w,h,xMax,yMin,yMax,base)=>{if(!pts.length) return ""; const f=48+pts[0].x/xMax*w,l=48+pts[pts.length-1].x/xMax*w,b=18+(yMax-base)/(yMax-yMin)*h; return `${line(pts,w,h,xMax,yMin,yMax)} L${l.toFixed(2)} ${b.toFixed(2)} L${f.toFixed(2)} ${b.toFixed(2)} Z`;};
+  const band=(top,bottom,w,h,xMax,yMin,yMax)=>{if(!top.length||!bottom.length) return ""; const a=top.map((p,i)=>`${i?"L":"M"}${(48+p.x/xMax*w).toFixed(2)} ${(18+(yMax-p.y)/(yMax-yMin)*h).toFixed(2)}`).join(" "); const b=bottom.slice().reverse().map(p=>`L${(48+p.x/xMax*w).toFixed(2)} ${(18+(yMax-p.y)/(yMax-yMin)*h).toFixed(2)}`).join(" "); return `${a} ${b} Z`;};
+  let storySizeFrame=0;
+  function sizeStoryLead(){
+    if(!ui.storyLead) return;
+    ui.storyLead.style.minHeight="";
+    const width=Math.round(ui.storyLead.getBoundingClientRect().width);
+    if(!width) return;
+    const probe=document.createElement("div");
+    probe.className="story-lead story-measure";
+    probe.style.width=`${width}px`;
+    probe.innerHTML='<div class="kicker">What Is Happening</div><h2 class="story-title"></h2><p class="story-copy"></p>';
+    document.body.appendChild(probe);
+    const title=probe.querySelector(".story-title");
+    const copy=probe.querySelector(".story-copy");
+    let max=0;
+    scenes.forEach(scene=>{
+      title.textContent=scene.title;
+      copy.textContent=scene.body;
+      max=Math.max(max,Math.ceil(probe.getBoundingClientRect().height));
+    });
+    probe.remove();
+    ui.storyLead.style.minHeight=`${max}px`;
+    scheduleEmbedHeight();
+  }
+  function queueStoryLeadSize(){
+    cancelAnimationFrame(storySizeFrame);
+    storySizeFrame=requestAnimationFrame(sizeStoryLead);
+  }
+  function grid(node,w,h,yTicks,xTicks,yMin,yMax){let out=""; yTicks.forEach(t=>{const y=18+(yMax-t.v)/(yMax-yMin)*h; out+=`<line x1="48" x2="${48+w}" y1="${y.toFixed(2)}" y2="${y.toFixed(2)}" stroke="rgba(98,127,135,.16)" stroke-width="1"></line><text x="0" y="${(y+4).toFixed(2)}" fill="rgba(97,124,130,.92)" font-size="11" font-weight="700">${t.l}</text>`}); xTicks.forEach(t=>{const x=48+t.v/MONTHS*w; const a=t.v===MONTHS?"end":t.v===0?"start":"middle"; out+=`<line x1="${x.toFixed(2)}" x2="${x.toFixed(2)}" y1="18" y2="${18+h}" stroke="rgba(98,127,135,.1)" stroke-width="1"></line><text x="${x.toFixed(2)}" y="${18+h+20}" fill="rgba(97,124,130,.92)" font-size="11" font-weight="700" text-anchor="${a}">${t.l}</text>`}); node.innerHTML=out;}
+  ui.occ.innerHTML=jobs.map((j,i)=>`<li data-i="${i}"><div class="occ-top"><div class="occ-name">${j[0]}</div><div class="occ-value" id="ov${i}">0%</div></div><div class="track"><div class="cap" id="oc${i}"></div><div class="fill" id="of${i}"></div><div class="mark" id="om${i}"></div></div></li>`).join("");
+  ui.timeline.innerHTML=scenes.map(s=>`<article class="timeline-card" data-scene="${s.id}"><span>${sceneRange(s)}</span><strong>${s.title}</strong></article>`).join("");
+  function state(p){const secs=p*SECS, months=p*MONTHS, adoption=adopt(months), gap=CAP-adoption, close=clamp((adoption-A0)/(CAP-A0),0,1), cover=adoption/CAP, ph=placeholders(months), s=sceneAt(secs), cohortEase=ease(secs,8,12); return{p,secs,months,adoption,gap,close,cover,unemployment:unemp(months),hiring:hire(months),scene:s,ph,entry:clamp(1-close*.42-cohortEase*.08,.42,1),mid:clamp(1-close*.18,.65,1),senior:clamp(1-close*.08,.78,1),occEase:ease(secs,4,8),introEase:ease(secs,0,2)}}
+  function drawMain(st){const w=624,h=298; grid(ui.mainGrid,w,h,[{v:0,l:"0%"},{v:.25,l:"25%"},{v:.5,l:"50%"},{v:.75,l:"75%"},{v:1,l:"100%"}],[{v:0,l:"Start"},{v:12,l:"Y1"},{v:24,l:"Y2"},{v:36,l:"Y3"},{v:48,l:"Y4"},{v:60,l:"Y5"}],0,1); const cap=series(MONTHS,48,()=>CAP), live=Math.max(st.months,.25), ad=series(live,72,adopt), capLive=series(live,72,()=>CAP); ui.capArea.setAttribute("d",area(cap,w,h,MONTHS,0,1,0)); ui.capLine.setAttribute("d",line(cap,w,h,MONTHS,0,1)); ui.adoptArea.setAttribute("d",area(ad,w,h,MONTHS,0,1,0)); ui.adoptLine.setAttribute("d",line(ad,w,h,MONTHS,0,1)); ui.gapArea.setAttribute("d",band(capLive,ad,w,h,MONTHS,0,1)); const x=48+st.months/MONTHS*w; ui.nowLine.setAttribute("x1",x.toFixed(2)); ui.nowLine.setAttribute("x2",x.toFixed(2)); ui.nowLabel.setAttribute("x",clamp(x+8,56,640).toFixed(2));}
+  function spark(kind,st){const cfg=kind==="u"?{g:ui.uGrid,a:ui.uArea,l:ui.uLine,min:-.002,max:.006,base:-.002,fn:unemp,ys:[{v:-.002,l:"-0.2"},{v:.002,l:"+0.2"},{v:.006,l:"+0.6"}]}:{g:ui.hGrid,a:ui.hArea,l:ui.hLine,min:.009,max:.022,base:.009,fn:hire,ys:[{v:.01,l:"1.0%"},{v:.015,l:"1.5%"},{v:.02,l:"2.0%"}]}; const w=252,h=96; grid(cfg.g,w,h,cfg.ys,[{v:0,l:"Y1"},{v:30,l:"Y3"},{v:60,l:"Y5"}],cfg.min,cfg.max); const pts=series(Math.max(st.months,.25),52,cfg.fn); cfg.a.setAttribute("d",area(pts,w,h,MONTHS,cfg.min,cfg.max,cfg.base)); cfg.l.setAttribute("d",line(pts,w,h,MONTHS,cfg.min,cfg.max));}
+  function render(st){
+    const m=Math.floor(st.months), y=Math.min(5,Math.floor(m/12)+1);
+    ui.year.textContent=`Year ${y}`; ui.month.textContent=`Month ${m} of 60`; ui.capVal.textContent=pct(CAP,0); ui.adoptVal.textContent=pct(st.adoption,1); ui.gapVal.textContent=`${(st.gap*100).toFixed(1)} points`; ui.autoVal.textContent=(AUTO*100).toFixed(1); ui.gapNote.textContent=`Gap closed so far: ${pct(st.close,0)}`;
+    drawMain(st);
+    jobs.forEach((j,i)=>{const cap=j[1]*100, boost=i===0?.04:.012, shown=clamp(j[1]*(st.cover + (i===0?.2:.1)*Math.pow(st.occEase,.58)) + boost,0,j[1]), fill=clamp(shown*100*(i===0?1.34 + st.occEase*.34:1.05 + st.occEase*.2),0,cap), row=$(`[data-i="${i}"]`); row.classList.toggle("dim",!(st.secs>=4+i*.28)&&st.secs<8); row.style.opacity=st.secs>=4?1:.5+st.introEase*.2; row.style.transform=""; $(`#oc${i}`).style.width=`${cap.toFixed(1)}%`; $(`#of${i}`).style.width=`${fill.toFixed(1)}%`; $(`#om${i}`).style.left=`calc(${cap.toFixed(1)}% - 1px)`; $(`#ov${i}`).textContent=pct(shown,0);});
+    ui.coverage.textContent=`Used / possible: ${pct(st.cover,0)}`;
+    ui.occNote.textContent=st.scene.id==="occupations"?"Possible impact is high, but real use is still filling in slowly.":st.scene.id==="cohorts"?"These job bars show where pressure starts. Hiring and career paths show the next effect.":"Real AI use is still rising in these jobs.";
+    ui.entryTxt.textContent=pct(st.entry,0); ui.midTxt.textContent=pct(st.mid,0); ui.seniorTxt.textContent=pct(st.senior,0); ui.entryFill.style.width=pct(st.entry,1); ui.midFill.style.width=pct(st.mid,1); ui.seniorFill.style.width=pct(st.senior,1);
+    const yearLabel=`Year ${y}`;
+    ui.sceneBadge.textContent=st.scene.label; ui.clock.textContent=yearLabel; ui.heroClock.textContent=`${yearLabel} of 5`; if(ui.bottomClock) ui.bottomClock.textContent=`${yearLabel} of 5`; ui.uVal.textContent=`${st.unemployment>=0?"+":""}${(st.unemployment*100).toFixed(2)} points`; ui.hVal.textContent=pct(st.hiring,2); spark("u",st); spark("h",st);
+    ui.dVal.textContent=pct(st.ph.d,1); ui.wVal.textContent=`${st.ph.w.toFixed(1)} / 20`; ui.jVal.textContent=`${st.ph.j.toFixed(1)} / 20`; ui.dFill.style.width=pct(st.ph.d/.05,1); ui.wFill.style.width=pct(st.ph.w/20,1); ui.jFill.style.width=pct(st.ph.j/20,1);
+    const progressPct=pct(st.p,2), progressMarker=clamp(st.p,.012,.988), markOpacity=st.p>.002 && st.p<.998 ? "1" : "0";
+    ui.storyTitle.textContent=st.scene.title; ui.storyCopy.textContent=st.scene.body; ui.motionNote.textContent=reduce.matches?"5 years total | Year 5 snapshot":"Years 1 to 5 | 60 months total"; ui.progFill.style.width=progressPct; ui.progMark.style.left=`calc(${pct(progressMarker,2)} - 1px)`; ui.progMark.style.opacity=markOpacity; if(ui.bottomProgFill) ui.bottomProgFill.style.width=progressPct; if(ui.bottomProgMark){ui.bottomProgMark.style.left=`calc(${pct(progressMarker,2)} - 1px)`; ui.bottomProgMark.style.opacity=markOpacity;} $$(".timeline-card").forEach(c=>c.classList.toggle("active",c.dataset.scene===st.scene.id));
+  }
+  let start=0,id=0,paused=false,pausedProgress=0;
+  function setToggle(){ui.simToggle.textContent=paused?"Run Simulation":"Pause Simulation"; ui.simToggle.classList.toggle("paused",paused); ui.simToggle.setAttribute("aria-pressed",paused?"true":"false");}
+  function tick(ts){if(!start) start=ts - pausedProgress*LOOP; const progress=((ts-start)%LOOP)/LOOP; pausedProgress=progress; render(state(progress)); id=requestAnimationFrame(tick)}
+  function boot(){cancelAnimationFrame(id); start=0; queueStoryLeadSize(); scheduleEmbedHeight(); if(reduce.matches){paused=true; pausedProgress=1; setToggle(); render(state(1)); return;} if(paused){setToggle(); render(state(pausedProgress)); return;} setToggle(); id=requestAnimationFrame(tick)}
+  ui.simToggle.addEventListener("click",()=>{if(reduce.matches && paused){paused=false; pausedProgress=0;} else {paused=!paused;} start=0; boot();});
+  if(window.addEventListener) window.addEventListener("resize",queueStoryLeadSize);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(queueStoryLeadSize);
+  if(reduce.addEventListener) reduce.addEventListener("change",boot); else if(reduce.addListener) reduce.addListener(boot); boot();
+})();
+</script>
+</body>
+</html>
+

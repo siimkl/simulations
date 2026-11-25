@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marketplace Coordination Demo: How Platforms Reduce Idle Time</title>
+  <meta
+    name="description"
+    content="Autorun ride-platform simulation comparing stand waiting with coordinated dispatch on identical demand."
+  />
+  <script>
+    (function () {
+      var path = window.location.pathname || "";
+      var segments = path.split("/").filter(Boolean);
+      var lastSegment = segments.length ? segments[segments.length - 1] : "";
+      var baseHref = "./";
+
+      if (path && !path.endsWith("/") && lastSegment && !lastSegment.includes(".")) {
+        baseHref = lastSegment + "/";
+      }
+
+      var base = document.createElement("base");
+      base.href = baseHref;
+      document.head.appendChild(base);
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <main class="widget" id="widgetRoot">
+      <header class="panel hero" id="hero">
+        <div class="hero-top">
+          <div class="hero-copy-block">
+            <p class="eyebrow">Scenario Comparison | 8-Hour Workday | Single Canvas</p>
+            <h1>Marketplace Coordination Demo: How Platforms Reduce Idle Time</h1>
+            <p class="hero-copy">
+              One city and one 10-driver pool, two operating models. The left panel shows customers facing expensive,
+              less certain street-style service while drivers burn time waiting at stands. The right panel coordinates
+              matching, ordering, and payment so more customers can afford to take trips and drivers can either finish
+              sooner for the same pay or stay out and earn more.
+            </p>
+          </div>
+          <div class="hero-side">
+            <div class="runtime-chip">
+              <span>Autorun mode</span>
+            </div>
+            <label class="hero-speed-control" for="heroSpeedSelect">
+              <select class="hero-speed-select" id="heroSpeedSelect" aria-label="Simulation speed">
+                <option value="1" selected>Speed 1x</option>
+                <option value="2">Speed 2x</option>
+                <option value="3">Speed 3x</option>
+                <option value="4">Speed 4x</option>
+                <option value="6">Speed 6x</option>
+                <option value="12">Speed 12x</option>
+              </select>
+            </label>
+            <button class="hero-control-button" id="heroRunButton" type="button" aria-pressed="true">
+              Pause
+            </button>
+          </div>
+        </div>
+        <div class="hero-progress" aria-hidden="true">
+          <div class="hero-progress-fill" id="heroProgressFill"></div>
+        </div>
+      </header>
+
+      <section class="main-grid">
+        <section class="panel stage-panel" id="stagePanel" aria-labelledby="stageTitle">
+            <div class="section-head">
+              <div class="panel-copy-stack">
+                <p class="section-kicker">Live Stage</p>
+              <h2 id="stageTitle">Same city, same drivers, very different value created</h2>
+              <p class="section-copy" id="outcomeText">
+                Morning demand is building. The coordinated side is already making rides feel easier to buy.
+              </p>
+              </div>
+            <div class="stage-status">
+              <div class="status-chip">
+                <span>Workday clock</span>
+                <strong id="clockLabel">08:00 / 16:00</strong>
+              </div>
+              <div class="status-chip">
+                <span>Demand</span>
+                <strong id="demandWindowLabel">Morning open</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="canvas-frame">
+            <canvas
+              id="simCanvas"
+              role="img"
+              aria-label="Single canvas split into two panels comparing stand waiting with coordinated dispatch"
+            ></canvas>
+            <div class="summary-overlay" id="summaryOverlay" hidden>
+              <div class="summary-card" role="dialog" aria-modal="false" aria-labelledby="summaryOverlayTitle">
+                <button
+                  class="summary-close"
+                  id="summaryCloseButton"
+                  type="button"
+                  aria-label="Close end-of-run summary and pause autorun"
+                >
+                  X
+                </button>
+                <div class="summary-head">
+                  <p class="summary-kicker">End of Run</p>
+                  <h3 id="summaryOverlayTitle">Coordination turned the same drivers into a customer-and-driver win-win.</h3>
+                  <p class="summary-lead" id="summaryOverlayLead">
+                    Lower customer cost, better availability, and easier ordering pulled in more trips while giving drivers
+                    a shorter path to the same pay or more income if they keep driving.
+                  </p>
+                </div>
+                <div class="summary-compare">
+                  <article class="summary-side-card summary-side-a">
+                    <span class="summary-side-tag">A | Stand Wait</span>
+                    <strong class="summary-side-title">Customers buy fewer, pricier trips and drivers wait around</strong>
+                    <div class="summary-side-grid">
+                      <div class="summary-stat">
+                        <span>Rides</span>
+                        <strong id="overlayRidesA">0</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>Ride cost</span>
+                        <strong id="overlayCostA">$0.00</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>Availability</span>
+                        <strong id="overlayAvailabilityA">0.0 / 5</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>Convenience</span>
+                        <strong id="overlayConvenienceA">0.0 / 5</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>Idle wait</span>
+                        <strong id="overlayIdleHoursA">0m</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>8h take-home</span>
+                        <strong id="overlayIncomeA">$0</strong>
+                      </div>
+                    </div>
+                  </article>
+                  <div class="summary-delta-stack">
+                    <div class="summary-delta-pill" id="overlayDeltaRides">0 rides</div>
+                    <div class="summary-delta-pill" id="overlayDeltaCost">$0.00 cost</div>
+                    <div class="summary-delta-pill" id="overlayDeltaAvailability">0.0 pts availability</div>
+                    <div class="summary-delta-pill" id="overlayDeltaConvenience">0.0 pts convenience</div>
+                    <div class="summary-delta-pill" id="overlayDeltaIdle">0m idle</div>
+                    <div class="summary-delta-pill" id="overlayDeltaIncome">$0 take-home</div>
+                  </div>
+                  <article class="summary-side-card summary-side-b">
+                    <span class="summary-side-tag">B | Dispatch</span>
+                    <strong class="summary-side-title">Customers get better value and drivers turn saved time into upside</strong>
+                    <div class="summary-side-grid">
+                      <div class="summary-stat">
+                        <span>Rides</span>
+                        <strong id="overlayRidesB">0</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>Ride cost</span>
+                        <strong id="overlayCostB">$0.00</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>Availability</span>
+                        <strong id="overlayAvailabilityB">0.0 / 5</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>Convenience</span>
+                        <strong id="overlayConvenienceB">0.0 / 5</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>Idle wait</span>
+                        <strong id="overlayIdleHoursB">0m</strong>
+                      </div>
+                      <div class="summary-stat">
+                        <span>8h take-home</span>
+                        <strong id="overlayIncomeB">$0</strong>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+                <p class="summary-foot" id="summaryOverlayFoot">
+                  Close this card, then press Run to replay the same workday.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="legend-row">
+            <span class="legend-item">
+              <i class="legend-icon legend-driver idle" aria-hidden="true">
+                <span class="legend-driver-body"></span>
+                <span class="legend-driver-passenger"></span>
+              </i>
+              Idle / waiting
+            </span>
+            <span class="legend-item">
+              <i class="legend-icon legend-driver assigned" aria-hidden="true">
+                <span class="legend-driver-body"></span>
+                <span class="legend-driver-passenger"></span>
+              </i>
+              Heading to pickup
+            </span>
+            <span class="legend-item">
+              <i class="legend-icon legend-driver ontrip" aria-hidden="true">
+                <span class="legend-driver-body"></span>
+                <span class="legend-driver-passenger"></span>
+              </i>
+              Passenger onboard
+            </span>
+            <span class="legend-item">
+              <i class="legend-icon legend-request" aria-hidden="true"></i>
+              Customer requests
+            </span>
+            <span class="legend-item">
+              <i class="legend-icon legend-match" aria-hidden="true"></i>
+              Dispatch match (B only)
+            </span>
+            <span class="legend-item">
+              <i class="legend-icon legend-stand" aria-hidden="true"></i>
+              Taxi stand (A only)
+            </span>
+          </div>
+        </section>
+
+        <div class="comparison-layout">
+          <section class="panel metrics-panel">
+            <div class="section-head">
+              <div class="panel-copy-stack">
+                <p class="section-kicker">Comparison Scoreboard</p>
+                <h2>How B creates more value with the same drivers</h2>
+                <p class="section-copy">
+                  Lower customer cost, higher availability, and cleaner ordering on the coordinated side pull more rides
+                  into the market. The same operational improvement then shows up as less wasted driver time and better
+                  income options.
+                </p>
+              </div>
+            </div>
+
+            <div class="metrics-table" role="table" aria-label="Scenario comparison metrics">
+              <div class="metric-header" role="row">
+                <span role="columnheader">Metric</span>
+                <span role="columnheader">A</span>
+                <span role="columnheader">B</span>
+                <span role="columnheader">Change</span>
+              </div>
+
+              <div class="metric-group" role="row">
+                <span>Customer gains</span>
+              </div>
+
+              <div class="metric-row" role="row">
+                <span class="metric-name">Rides completed</span>
+                <strong id="ridesA">0</strong>
+                <strong id="ridesB">0</strong>
+                <strong id="ridesDelta">0</strong>
+              </div>
+
+              <div class="metric-row" role="row">
+                <span class="metric-name">Average ride cost</span>
+                <strong id="costA">$0.00</strong>
+                <strong id="costB">$0.00</strong>
+                <strong id="costDelta">$0.00</strong>
+              </div>
+
+              <div class="metric-row" role="row">
+                <span class="metric-name">Availability score</span>
+                <strong id="availabilityA">0.0 / 5</strong>
+                <strong id="availabilityB">0.0 / 5</strong>
+                <strong id="availabilityDelta">0.0 pts</strong>
+              </div>
+
+              <div class="metric-row" role="row">
+                <span class="metric-name">Order + pay convenience</span>
+                <strong id="convenienceA">0.0 / 5</strong>
+                <strong id="convenienceB">0.0 / 5</strong>
+                <strong id="convenienceDelta">0.0 pts</strong>
+              </div>
+
+              <div class="metric-group" role="row">
+                <span>Driver gains</span>
+              </div>
+
+              <div class="metric-row" role="row">
+                <span class="metric-name">Idle / wasted wait per driver</span>
+                <strong id="idleWaitA">0m</strong>
+                <strong id="idleWaitB">0m</strong>
+                <strong id="idleWaitDelta">0m</strong>
+              </div>
+
+              <div class="metric-row" role="row">
+                <span class="metric-name">Hours to hit same pay target</span>
+                <strong id="targetHoursA">0.0 h</strong>
+                <strong id="targetHoursB">0.0 h</strong>
+                <strong id="targetHoursDelta">0.0 h</strong>
+              </div>
+
+              <div class="metric-row" role="row">
+                <span class="metric-name">8h driver take-home</span>
+                <strong id="incomeA">$0</strong>
+                <strong id="incomeB">$0</strong>
+                <strong id="incomeDelta">$0</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel footer-panel">
+            <div class="takeaway-stack">
+              <div class="panel-copy-stack">
+                <p class="section-kicker">Takeaway</p>
+                <h2>Coordination makes the market better for both customers and drivers</h2>
+                <p id="summaryText">
+                  Better coordination lowers customer price, raises availability, and removes ordering friction. Those
+                  customer gains feed directly into less wasted driver time and better pay choices.
+                </p>
+              </div>
+              <div class="benefit-grid">
+                <article class="benefit-card rider-benefit">
+                  <span>Customer win</span>
+                  <strong>More affordable, more available rides</strong>
+                  <p id="riderValueText">
+                    When rides are easier to order and cheaper to buy, more customers choose to travel.
+                  </p>
+                </article>
+                <article class="benefit-card driver-benefit">
+                  <span>Driver win</span>
+                  <strong>Less wasted time, better pay options</strong>
+                  <p id="driverValueText">
+                    Saved idle time can become free personal time for the same pay or extra income if drivers stay out.
+                  </p>
+                </article>
+              </div>
+              <div class="footnote-card">
+                <span>Model note</span>
+                <strong>Illustrative, not operational data</strong>
+                <p>
+                  This widget uses a deterministic toy city, toy customer-pricing math, and simple availability /
+                  convenience scoring to show how dispatch coordination changes the economics of the same fleet.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <p class="visually-hidden" id="summaryLive" aria-live="polite"></p>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      if (window.parent === window) {
+        return;
+      }
+
+      var rafId = 0;
+      var lastHeight = 0;
+      var forceNext = false;
+
+      function measureHeight() {
+        var root = document.querySelector(".shell") || document.body;
+        var doc = document.documentElement;
+        var body = document.body;
+        var docHeight = Math.ceil(Math.max(
+          doc ? doc.scrollHeight : 0,
+          doc ? doc.offsetHeight : 0,
+          body ? body.scrollHeight : 0,
+          body ? body.offsetHeight : 0
+        ));
+
+        if (!root) {
+          return Math.max(docHeight, 1);
+        }
+
+        var rect = root.getBoundingClientRect();
+        var styles = window.getComputedStyle(root);
+        var marginTop = parseFloat(styles.marginTop) || 0;
+        var marginBottom = parseFloat(styles.marginBottom) || 0;
+        var rootHeight = Math.ceil(rect.height + marginTop + marginBottom);
+        return rootHeight > 0 ? rootHeight : Math.max(docHeight, 1);
+      }
+
+      function postHeight() {
+        rafId = 0;
+        var height = measureHeight();
+        if (!forceNext && Math.abs(height - lastHeight) < 1) {
+          return;
+        }
+
+        forceNext = false;
+        lastHeight = height;
+        document.documentElement.style.minHeight = height + "px";
+        document.body.style.minHeight = height + "px";
+
+        try {
+          if (window.frameElement) {
+            window.frameElement.style.height = height + "px";
+            window.frameElement.setAttribute("height", String(height));
+          }
+        } catch (_error) {}
+
+        try {
+          window.parent.postMessage({ type: "widget:resize", widget: "sim14-ride-platform", height: height }, "*");
+          window.parent.postMessage({ type: "sim14-ride-platform:height", height: height }, "*");
+          window.parent.postMessage(
+            { type: "simfluence-widget:resize", widget: "sim14-ride-platform", height: height, mode: "default" },
+            "*"
+          );
+        } catch (_error) {}
+      }
+
+      function schedule(force) {
+        if (force) {
+          forceNext = true;
+        }
+        if (!rafId) {
+          rafId = window.requestAnimationFrame(postHeight);
+        }
+      }
+
+      function boot() {
+        schedule(true);
+        window.setTimeout(function () { schedule(true); }, 60);
+        window.setTimeout(function () { schedule(true); }, 240);
+        window.setTimeout(function () { schedule(true); }, 900);
+        window.setTimeout(function () { schedule(true); }, 1800);
+        window.setTimeout(function () { schedule(true); }, 3200);
+
+        window.addEventListener("load", function () { schedule(true); });
+        window.addEventListener("pageshow", function () { schedule(true); });
+        window.addEventListener("resize", function () { schedule(true); }, { passive: true });
+        window.addEventListener("message", function (event) {
+          var data = event.data;
+          if (!data || typeof data !== "object") {
+            return;
+          }
+          if (
+            data.type === "widget:request-height" ||
+            data.type === "sim14-ride-platform:request-height" ||
+            data.type === "simfluence-widget:request-height"
+          ) {
+            schedule(true);
+          }
+        }, { passive: true });
+
+        if ("ResizeObserver" in window) {
+          var resizeObserver = new ResizeObserver(function () { schedule(true); });
+          var root = document.querySelector(".shell") || document.body;
+          if (root) {
+            resizeObserver.observe(root);
+          }
+        }
+
+        if ("MutationObserver" in window) {
+          var mutationObserver = new MutationObserver(function () { schedule(true); });
+          mutationObserver.observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+            attributes: true
+          });
+        }
+
+        if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === "function") {
+          document.fonts.ready.then(function () { schedule(true); }).catch(function () {});
+        }
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", boot, { once: true });
+      } else {
+        boot();
+      }
+    })();
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>

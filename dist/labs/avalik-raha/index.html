@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Government Budget: Who Gets Public Money? | Simfluence</title>
+  <meta
+    name="description"
+    content="An interactive civic explainer showing how taxes become public spending, why public services compete for limited money, and how democratic institutions create a government budget compromise."
+  >
+  <meta name="theme-color" content="#edf3f8">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Government Budget: Who Gets Public Money?">
+  <meta
+    property="og:description"
+    content="See how taxes, public spending, public services, and political compromise shape a realistic government budget."
+  >
+  <meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="budget-shell" id="budgetShell">
+    <section class="budget-widget" id="budgetWidget" aria-labelledby="widgetTitle">
+      <header class="widget-header">
+        <div class="title-block">
+          <p class="eyebrow">Civic budget explainer</p>
+          <h1 id="widgetTitle">Who Gets Public Money?</h1>
+          <p class="subtitle">A government budget explainer showing how taxes become public spending as healthcare, education, pensions, defense, and local services compete.</p>
+        </div>
+
+        <div class="playback" aria-label="Animation controls">
+          <div class="status-row" aria-live="polite">
+            <span id="statusLabel">Ready</span>
+            <time id="timeReadout" datetime="PT0S">00:00 / 00:20</time>
+          </div>
+          <div class="button-row">
+            <button class="control-button control-button--primary" id="playToggle" type="button" aria-pressed="false" aria-label="Start budget compromise animation">
+              <span class="button-icon button-icon--play" aria-hidden="true"></span>
+              <span id="playLabel">Start</span>
+            </button>
+            <button class="control-button" id="resetButton" type="button" aria-label="Reset budget compromise animation">
+              <span class="button-icon button-icon--reset" aria-hidden="true"></span>
+              <span>Reset</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div
+        class="progress-track"
+        id="progressTrack"
+        role="progressbar"
+        aria-label="20-second animation progress"
+        aria-valuemin="0"
+        aria-valuemax="20"
+        aria-valuenow="0"
+      >
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <section class="stage-section" aria-labelledby="sceneCaption">
+        <p class="scene-caption" id="sceneCaption" aria-live="polite">
+          Taxes create a shared public budget.
+        </p>
+
+        <section class="takeaway-band" aria-label="Budget compromise takeaway">
+          <p><span class="takeaway-mark" aria-hidden="true"></span><strong>Limited resources</strong> plus <strong>legitimate claims</strong> create political conflict.</p>
+          <p><span class="takeaway-mark" aria-hidden="true"></span><strong>Institutions</strong> turn that conflict into a compromise stable enough to hold.</p>
+        </section>
+
+        <div class="canvas-frame">
+          <canvas
+            id="budgetCanvas"
+            role="img"
+            aria-label="Animated civic explainer: public revenue flows into a central budget sphere, social groups make competing claims, democratic institutions process the conflict, and compromise allocation streams create temporary stability."
+          ></canvas>
+        </div>
+      </section>
+
+      <p class="sr-only">
+        This 20-second animation shows public revenue flowing into a limited budget, social groups making competing claims on that budget, democratic institutions processing the conflict, and a temporary compromise emerging where no group gets everything but shared priorities are funded.
+      </p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

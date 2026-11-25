@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predictive Policing Feedback Loop Simulator</title>
+  <meta
+    name="description"
+    content="Interactive Tartu district simulation showing how score-led patrol allocation can amplify detected incidents, false positives, and property stigma even when underlying offending begins nearly even."
+  >
+  <meta
+    name="keywords"
+    content="predictive policing simulator, crime hotspot feedback loop, Tartu district model, patrol allocation widget, surveillance bias explainer"
+  >
+  <meta name="theme-color" content="#0f2232">
+  <meta property="og:title" content="Predictive Policing Feedback Loop Simulator">
+  <meta
+    property="og:description"
+    content="Compare equal patrols, score-based policing, and social support to see how evidence concentration can be manufactured."
+  >
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Predictive Policing Feedback Loop Simulator">
+  <meta
+    name="twitter:description"
+    content="A stylized Tartu map simulator showing how policing strategy changes detections, watchlists, and neighborhood value."
+  >
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="crime-shell" id="crimeShell">
+    <section class="crime-widget" id="crimeWidget">
+      <header class="crime-header">
+        <div class="crime-copy">
+          <p class="crime-badge">Urban Systems Simulation</p>
+          <h1>Predictive Policing Feedback Loop Simulator</h1>
+          <p class="crime-subtitle">
+            A stylized Tartu district map showing how score-led patrols can manufacture evidence concentration and stigma,
+            even when underlying offending starts nearly even across the city.
+          </p>
+        </div>
+
+        <aside class="header-card" aria-label="Simulation overview">
+          <div class="header-card-head">
+            <p class="header-eyebrow">What to watch</p>
+            <p class="header-copy">
+              Scores steer patrols, patrols lift detections, and detections feed the next round of scores.
+            </p>
+          </div>
+
+          <div class="header-stage-list" aria-hidden="true">
+            <article class="header-stage">
+              <span>1</span>
+              <div>
+                <strong>Risk scores</strong>
+                <p>Historic flags and social spillover</p>
+              </div>
+            </article>
+
+            <article class="header-stage">
+              <span>2</span>
+              <div>
+                <strong>Patrol focus</strong>
+                <p>Blue units follow the model</p>
+              </div>
+            </article>
+
+            <article class="header-stage">
+              <span>3</span>
+              <div>
+                <strong>Neighborhood effect</strong>
+                <p>Heat rises while value falls</p>
+              </div>
+            </article>
+          </div>
+
+          <p class="header-note" id="headerNote">
+            Key question: did crime increase, or did surveillance increase?
+          </p>
+        </aside>
+      </header>
+
+      <div class="topbar">
+        <div class="status-cluster">
+          <div class="runtime-chip">
+            <span class="runtime-dot"></span>
+            <span id="runStateLabel">Running week 0 of 50</span>
+          </div>
+          <p class="strategy-headline" id="strategyHeadline">
+            Score-based policing pulls patrols toward districts that already look hot.
+          </p>
+        </div>
+
+        <div class="action-cluster">
+          <div class="speed-toggle" role="group" aria-label="Playback speed">
+            <button class="speed-btn is-active" type="button" data-speed="1">1x</button>
+            <button class="speed-btn" type="button" data-speed="2">2x</button>
+            <button class="speed-btn" type="button" data-speed="4">4x</button>
+          </div>
+
+          <div class="main-actions">
+            <button class="button button--ghost" type="button" id="playPauseButton" aria-pressed="true">Pause</button>
+            <button class="button button--primary" type="button" id="replayButton">Replay</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="season-progress" aria-label="Simulation progress">
+        <div class="season-progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="crime-layout">
+        <div class="left-column">
+          <section class="panel panel--stage" aria-labelledby="stageTitle">
+            <div class="panel-head panel-head--stage">
+              <div>
+                <p class="panel-kicker">Live stage</p>
+                <h2 id="stageTitle">Watch the city reclassify itself</h2>
+                <p class="panel-copy">
+                  Blue patrol icons show where attention is being sent. District shading tracks property value, red glow tracks risk score concentration,
+                  and the dots show residents carrying score histories and social links.
+                </p>
+              </div>
+
+              <div class="live-summary">
+                <p class="live-summary-label">Current hotspot</p>
+                <p class="live-summary-value" id="liveTargetDistrict">Balanced city</p>
+              </div>
+            </div>
+
+            <div class="stage-wrap" id="stageWrap">
+              <canvas
+                id="cityCanvas"
+                width="960"
+                height="620"
+                aria-label="Stylized Tartu district map with residents, patrol units, social links, risk glow, and property value shading"
+              ></canvas>
+            </div>
+
+            <div class="stage-reading" aria-live="polite">
+              <p class="stage-reading-label">Live reading</p>
+              <h3 id="insightTitle">Balanced start</h3>
+              <p id="insightCopy">
+                The city begins with similar baseline offending across districts, but the patrol model decides where evidence accumulates.
+              </p>
+            </div>
+
+            <div class="legend" aria-label="Stage legend">
+              <div class="legend-item">
+                <span class="legend-swatch legend-swatch--resident"></span>
+                <span>Residents</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-swatch legend-swatch--flagged"></span>
+                <span>Prior or detected residents</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-swatch legend-swatch--watch"></span>
+                <span>Watchlist spillover</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-swatch legend-swatch--patrol"></span>
+                <span>Patrol units</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-swatch legend-swatch--heat"></span>
+                <span>Risk score glow</span>
+              </div>
+            </div>
+          </section>
+
+          <div class="signals-grid">
+            <section class="panel panel--chart" aria-labelledby="chartTitle">
+              <div class="panel-head">
+                <div>
+                  <p class="panel-kicker">Hotspot drift</p>
+                  <h2 id="chartTitle">How concentrated the hotspot becomes</h2>
+                  <p class="panel-copy">
+                    Each line shows the biggest share held by any single district. If detected share rises faster than true share, the city is reading surveillance as proof.
+                  </p>
+                </div>
+              </div>
+
+              <div class="chart-head">
+                <div class="chart-legend">
+                  <span class="chart-key chart-key--detected">Detected share</span>
+                  <span class="chart-key chart-key--true">True share</span>
+                </div>
+                <p class="chart-caption" id="chartCaption">Hotspot share is still close to the underlying signal.</p>
+              </div>
+
+              <svg id="trendChart" class="trend-chart" viewBox="0 0 520 220" aria-label="Detected versus true hotspot share over time"></svg>
+            </section>
+
+            <section class="panel panel--loop" aria-labelledby="loopTitle">
+              <div class="panel-head">
+                <div>
+                  <p class="panel-kicker">Mechanism</p>
+                  <h2 id="loopTitle">Why the loop reinforces itself</h2>
+                  <p class="panel-copy">
+                    This widget separates the social mechanism from the visual result so the cause stays visible.
+                  </p>
+                </div>
+              </div>
+
+              <div class="loop-steps">
+                <article class="loop-step">
+                  <span>1</span>
+                  <div>
+                    <strong>Scores steer attention</strong>
+                    <p>Historic flags and linked contacts push patrols toward the same places again.</p>
+                  </div>
+                </article>
+
+                <article class="loop-step">
+                  <span>2</span>
+                  <div>
+                    <strong>Attention lifts detections</strong>
+                    <p>More stops and checks create more recorded incidents without needing a large jump in true offending.</p>
+                  </div>
+                </article>
+
+                <article class="loop-step">
+                  <span>3</span>
+                  <div>
+                    <strong>Recorded incidents harden stigma</strong>
+                    <p>Property value, watchlists, and neighborhood labels begin to move with the score, not just with the reality.</p>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <aside class="right-column">
+          <section class="panel panel--outputs" aria-labelledby="outputsTitle">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Key metrics</p>
+                <h2 id="outputsTitle">Feedback loop diagnostics</h2>
+                <p class="panel-copy">
+                  These signals track concentration, watchlist spillover, false positives, and property drag while the city runs.
+                </p>
+              </div>
+            </div>
+
+            <div class="metrics-grid">
+              <article class="metric-card">
+                <p class="metric-label">Detected vs true gap</p>
+                <p class="metric-value" id="metricGap">0 pts</p>
+                <p class="metric-note">Hotspot share difference</p>
+              </article>
+
+              <article class="metric-card">
+                <p class="metric-label">Residents under watch</p>
+                <p class="metric-value" id="metricWatch">10</p>
+                <p class="metric-note">People still carrying score weight</p>
+              </article>
+
+              <article class="metric-card">
+                <p class="metric-label">False positives flagged</p>
+                <p class="metric-value" id="metricFalsePositive">0</p>
+                <p class="metric-note">Watchlisted with no true incidents</p>
+              </article>
+
+              <article class="metric-card">
+                <p class="metric-label">Property value index</p>
+                <p class="metric-value" id="metricProperty">100</p>
+                <p class="metric-note">City average, base = 100</p>
+              </article>
+
+              <article class="metric-card">
+                <p class="metric-label">Score inequality</p>
+                <p class="metric-value" id="metricInequality">1.0x</p>
+                <p class="metric-note">Highest district signal vs lowest</p>
+              </article>
+
+              <article class="metric-card">
+                <p class="metric-label">Patrol concentration</p>
+                <p class="metric-value" id="metricConcentration">11%</p>
+                <p class="metric-note">Share sent to top district</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel panel--controls" aria-labelledby="controlsTitle">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Controls</p>
+                <h2 id="controlsTitle">Compare interventions</h2>
+                <p class="panel-copy">
+                  Any change below restarts the 50-week simulation so you can compare equal patrols, score-based policing, and a support-led response.
+                </p>
+              </div>
+            </div>
+
+            <div class="segmented" role="tablist" aria-label="Scenario mode">
+              <button class="mode-btn is-active" type="button" role="tab" aria-selected="true" data-mode="score">Score-based policing</button>
+              <button class="mode-btn" type="button" role="tab" aria-selected="false" data-mode="equal">Equal patrol baseline</button>
+              <button class="mode-btn" type="button" role="tab" aria-selected="false" data-mode="support">Social support response</button>
+            </div>
+
+            <div class="control-stack">
+              <label class="slider-field" for="patrolPressure">
+                <div class="slider-top">
+                  <span>Patrol fleet</span>
+                  <output id="patrolPressureValue">22 units</output>
+                </div>
+                <input id="patrolPressure" type="range" min="12" max="32" step="1" value="22">
+                <div class="slider-scale">
+                  <span>Light presence</span>
+                  <span>Heavy presence</span>
+                </div>
+              </label>
+
+              <label class="slider-field" for="socialAmplification">
+                <div class="slider-top">
+                  <span>Social spillover</span>
+                  <output id="socialAmplificationValue">62%</output>
+                </div>
+                <input id="socialAmplification" type="range" min="10" max="95" step="1" value="62">
+                <div class="slider-scale">
+                  <span>Weak contact signal</span>
+                  <span>Strong inherited suspicion</span>
+                </div>
+              </label>
+
+              <label class="slider-field" for="stigmaSensitivity">
+                <div class="slider-top">
+                  <span>Stigma sensitivity</span>
+                  <output id="stigmaSensitivityValue">58%</output>
+                </div>
+                <input id="stigmaSensitivity" type="range" min="15" max="90" step="1" value="58">
+                <div class="slider-scale">
+                  <span>Sticky value floor</span>
+                  <span>Fast reputational drag</span>
+                </div>
+              </label>
+            </div>
+
+            <p class="control-note" id="controlNote">
+              Score-led deployment rewards whichever district already looks hottest, so patrol visibility begins to compound.
+            </p>
+          </section>
+
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

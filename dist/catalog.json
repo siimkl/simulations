@@ -1,0 +1,432 @@
+[
+  {
+    "id": "api-1",
+    "title": "API 1 · Saada päring. Loe vastust.",
+    "description": "Koosta GET- ja POST-päring ning õpi API vastust lugema ja kontrollima.",
+    "topics": [
+      "Andmepädevus"
+    ],
+    "keywords": [],
+    "href": "https://siimkl.github.io/andmep/api1/",
+    "image": "./thumbs/api-1.webp"
+  },
+  {
+    "id": "ai-toimepidevus",
+    "title": "AI-võimestatud töötaja ja organisatsiooni toimepidevus",
+    "description": "Uuri, kuidas muutuvad töövõime ja kohustused, kui tehisaru tugi katkeb.",
+    "topics": [
+      "Tehisaru",
+      "Organisatsioonid"
+    ],
+    "keywords": [],
+    "href": "https://siimkl.github.io/sim32/",
+    "image": "./thumbs/ai-toimepidevus.webp"
+  },
+  {
+    "id": "avalik-raha",
+    "title": "Government Budget · Who Gets Public Money?",
+    "description": "Uuri, kuidas avaliku eelarve raha eri valdkondade vahel jaguneb.",
+    "topics": [
+      "Ühiskond",
+      "Majandus"
+    ],
+    "keywords": [],
+    "href": "./labs/avalik-raha/",
+    "image": "./thumbs/avalik-raha.webp"
+  },
+  {
+    "id": "api-2",
+    "title": "API 2 · Töötle API-andmeid R-is",
+    "description": "Küsi statistikaandmed, tee R-is arvutus ja tõlgenda joonist.",
+    "topics": [
+      "Andmepädevus"
+    ],
+    "keywords": [],
+    "href": "https://siimkl.github.io/andmep/api2/",
+    "image": "./thumbs/api-2.webp"
+  },
+  {
+    "id": "api-3",
+    "title": "API 3 · Ühenda tehisaru API oma rakendusega",
+    "description": "Vaata, kuidas R-is töödeldud statistika jõuab tõlgendamiseks keelemudelile.",
+    "topics": [
+      "Andmepädevus",
+      "Tehisaru"
+    ],
+    "keywords": [],
+    "href": "https://siimkl.github.io/andmep/api3/",
+    "image": "./thumbs/api-3.webp"
+  },
+  {
+    "id": "veebikraapimine",
+    "title": "Veebikraapimine R-is",
+    "description": "Leia HTML-ist korduvad kirjed ja koosta neist kontrollitud andmetabel.",
+    "topics": [
+      "Andmepädevus"
+    ],
+    "keywords": [],
+    "href": "https://siimkl.github.io/andmep/kraapimine/",
+    "image": "./thumbs/veebikraapimine.webp"
+  },
+  {
+    "id": "ai-andmetoo",
+    "title": "Kes õpetab tehisaru?",
+    "description": "Märgenda tööotsijate kirjed ja jälgi, kuidas valikud mõjutavad mudeli soovitusi.",
+    "topics": [
+      "Andmepädevus",
+      "Tehisaru"
+    ],
+    "keywords": [],
+    "href": "https://siimkl.github.io/andmep/ai-andmetoo/",
+    "image": "./thumbs/ai-andmetoo.webp"
+  },
+  {
+    "id": "ai-assistendid",
+    "title": "How AI Assistants Work",
+    "description": "Jälgi, kuidas tekst jagatakse tokeniteks ja kuidas assistent vastust koostab.",
+    "topics": [
+      "Tehisaru"
+    ],
+    "keywords": [],
+    "href": "./labs/ai-assistendid/",
+    "image": "./thumbs/ai-assistendid.webp"
+  },
+  {
+    "id": "keelemudeli-treenimine",
+    "title": "How an LLM Learns",
+    "description": "Uuri, kuidas treeningtekstid ja järgmise tokeni ennustamine mudelit kujundavad.",
+    "topics": [
+      "Tehisaru"
+    ],
+    "keywords": [],
+    "href": "./labs/keelemudeli-treenimine/",
+    "image": "./thumbs/keelemudeli-treenimine.webp"
+  },
+  {
+    "id": "ai-tooturg",
+    "title": "How AI May Change Work",
+    "description": "Katseta, kuidas tehisaru võib eri ametites tööülesandeid ja oskuste vajadust muuta.",
+    "topics": [
+      "Tehisaru",
+      "Majandus"
+    ],
+    "keywords": [],
+    "href": "./labs/ai-tooturg/",
+    "image": "./thumbs/ai-tooturg.webp"
+  },
+  {
+    "id": "generatiivne-ai",
+    "title": "Generative AI and the Mass Knowledge Society",
+    "description": "Uuri generatiivse tehisaru leviku mõju teadmiste loomisele ja kasutamisele.",
+    "topics": [
+      "Tehisaru",
+      "Ühiskond"
+    ],
+    "keywords": [],
+    "href": "./labs/generatiivne-ai/",
+    "image": "./thumbs/generatiivne-ai.webp"
+  },
+  {
+    "id": "ai-toovoog",
+    "title": "AI Workflow Automation Dashboard",
+    "description": "Vaata, kuidas AI-agendid muudavad ettevõtte töövoogu ja töömahtu.",
+    "topics": [
+      "Tehisaru",
+      "Tööprotsessid"
+    ],
+    "keywords": [],
+    "href": "./labs/ai-toovoog/",
+    "image": "./thumbs/ai-toovoog.webp"
+  },
+  {
+    "id": "ai-klienditugi",
+    "title": "AI Customer Support Automation",
+    "description": "Võrdle klienditoe automatiseerimist ja vabaneva tööaja kasutamist.",
+    "topics": [
+      "Tehisaru",
+      "Tööprotsessid",
+      "Majandus"
+    ],
+    "keywords": [],
+    "href": "./labs/ai-klienditugi/",
+    "image": "./thumbs/ai-klienditugi.webp"
+  },
+  {
+    "id": "ennustav-politseitoo",
+    "title": "Predictive Policing Feedback Loop",
+    "description": "Vaata, kuidas politseitöö valikud mõjutavad andmeid ja järgmisi prognoose.",
+    "topics": [
+      "Ühiskond",
+      "Andmepädevus"
+    ],
+    "keywords": [],
+    "href": "./labs/ennustav-politseitoo/",
+    "image": "./thumbs/ennustav-politseitoo.webp"
+  },
+  {
+    "id": "turvalisuse-prognoos",
+    "title": "Avaliku turvalisuse prognoosi näidis",
+    "description": "Tutvu Tartu avaliku turvalisuse prognoosi õppenäite ja andmete kasutamisega.",
+    "topics": [
+      "Ühiskond",
+      "Andmepädevus"
+    ],
+    "keywords": [],
+    "href": "https://siimkl.github.io/CDS_Crime_Prediction/",
+    "image": "./thumbs/turvalisuse-prognoos.webp"
+  },
+  {
+    "id": "tookulu",
+    "title": "Automated Workflow Time Cost Simulator",
+    "description": "Võrdle käsitsi ja automaatselt tehtava töö aja- ning kuluerinevusi.",
+    "topics": [
+      "Tööprotsessid",
+      "Majandus"
+    ],
+    "keywords": [],
+    "href": "./labs/tookulu/",
+    "image": "./thumbs/tookulu.webp"
+  },
+  {
+    "id": "vastavusrisk",
+    "title": "Compliance Drift Simulator",
+    "description": "Vaata, kuidas väikesed kontrollilüngad võivad ajas kuhjuda.",
+    "topics": [
+      "Organisatsioonid",
+      "Tööprotsessid"
+    ],
+    "keywords": [],
+    "href": "./labs/vastavusrisk/",
+    "image": "./thumbs/vastavusrisk.webp"
+  },
+  {
+    "id": "platvormide-tookorraldus",
+    "title": "Marketplace Coordination Demo",
+    "description": "Katseta, kuidas platvormi koordineerimine muudab ooteaega ja tühikäiku.",
+    "topics": [
+      "Tööprotsessid",
+      "Majandus"
+    ],
+    "keywords": [],
+    "href": "./labs/platvormide-tookorraldus/",
+    "image": "./thumbs/platvormide-tookorraldus.webp"
+  },
+  {
+    "id": "kliendivoog",
+    "title": "Customer Funnel Simulation",
+    "description": "Muuda klienditeekonna eeldusi ja leia koht, kus enim kliente kaob.",
+    "topics": [
+      "Majandus",
+      "Tööprotsessid"
+    ],
+    "keywords": [],
+    "href": "./labs/kliendivoog/",
+    "image": "./thumbs/kliendivoog.webp"
+  },
+  {
+    "id": "muugilehter",
+    "title": "Sales Funnel Demo",
+    "description": "Jälgi, kuidas müügivihjed läbivad müügilehtri etappe.",
+    "topics": [
+      "Majandus",
+      "Tööprotsessid"
+    ],
+    "keywords": [],
+    "href": "./labs/muugilehter/",
+    "image": "./thumbs/muugilehter.webp"
+  },
+  {
+    "id": "tulude-stabiilsus",
+    "title": "Revenue Stabilization Simulation",
+    "description": "Võrdle, kuidas töövoo ja kontrolli valikud mõjutavad tulude stabiilsust.",
+    "topics": [
+      "Majandus",
+      "Organisatsioonid"
+    ],
+    "keywords": [],
+    "href": "./labs/tulude-stabiilsus/",
+    "image": "./thumbs/tulude-stabiilsus.webp"
+  },
+  {
+    "id": "dockflow",
+    "title": "DockFlow · Yard & Dock Stability",
+    "description": "Uuri, kuidas laadimisala töökorraldus mõjutab järjekordi ja stabiilsust.",
+    "topics": [
+      "Tööprotsessid"
+    ],
+    "keywords": [],
+    "href": "./labs/dockflow/",
+    "image": "./thumbs/dockflow.webp"
+  },
+  {
+    "id": "strateegiline-joondumine",
+    "title": "Team Misalignment & Strategy Drift",
+    "description": "Jälgi, kuidas meeskonna erisuunalised otsused kujundavad strateegia tegelikku elluviimist.",
+    "topics": [
+      "Organisatsioonid"
+    ],
+    "keywords": [],
+    "href": "./labs/strateegiline-joondumine/",
+    "image": "./thumbs/strateegiline-joondumine.webp"
+  },
+  {
+    "id": "tehase-koordineerimine",
+    "title": "OpsSync AI Factory Coordination",
+    "description": "Võrdle, kuidas koordineerimine mõjutab tootmisvoogu ja kitsaskohti.",
+    "topics": [
+      "Tööprotsessid",
+      "Tehisaru"
+    ],
+    "keywords": [],
+    "href": "./labs/tehase-koordineerimine/",
+    "image": "./thumbs/tehase-koordineerimine.webp"
+  },
+  {
+    "id": "iseteenindus",
+    "title": "Retail Self-Service Simulation",
+    "description": "Katseta, kuidas teenindusvõimsus mõjutab poe järjekordi ja läbilaskevõimet.",
+    "topics": [
+      "Tööprotsessid"
+    ],
+    "keywords": [],
+    "href": "./labs/iseteenindus/",
+    "image": "./thumbs/iseteenindus.webp"
+  },
+  {
+    "id": "toote-tagastuskutse",
+    "title": "Product Traceability Impact Simulator",
+    "description": "Vaata, kuidas toote jälgitavus mõjutab tagasikutsumise ulatust.",
+    "topics": [
+      "Tööprotsessid",
+      "Organisatsioonid"
+    ],
+    "keywords": [],
+    "href": "./labs/toote-tagastuskutse/",
+    "image": "./thumbs/toote-tagastuskutse.webp"
+  },
+  {
+    "id": "turu-omaksvott",
+    "title": "Market Adoption Curve Simulator",
+    "description": "Uuri, kuidas uus lahendus jõuab esimeste kasutajate juurest laiemale turule.",
+    "topics": [
+      "Majandus"
+    ],
+    "keywords": [],
+    "href": "./labs/turu-omaksvott/",
+    "image": "./thumbs/turu-omaksvott.webp"
+  },
+  {
+    "id": "investeeringu-tasuvus",
+    "title": "Return on Investment Graphic",
+    "description": "Võrdle investeeringu kulusid ja tulusid ning leia tasuvuspunkt.",
+    "topics": [
+      "Majandus"
+    ],
+    "keywords": [],
+    "href": "./labs/investeeringu-tasuvus/",
+    "image": "./thumbs/investeeringu-tasuvus.webp"
+  },
+  {
+    "id": "aktsiainvesteering",
+    "title": "Stock Profit Calculator",
+    "description": "Arvuta aktsiainvesteeringu tulemus koos tehingutasude ja dividendidega.",
+    "topics": [
+      "Majandus"
+    ],
+    "keywords": [],
+    "href": "./labs/aktsiainvesteering/",
+    "image": "./thumbs/aktsiainvesteering.webp"
+  },
+  {
+    "id": "saagikus",
+    "title": "Plant Yield & Quality Simulator",
+    "description": "Katseta, kuidas kasvutingimused mõjutavad taimede saagikust ja kvaliteeti.",
+    "topics": [
+      "Keskkond"
+    ],
+    "keywords": [],
+    "href": "./labs/saagikus/",
+    "image": "./thumbs/saagikus.webp"
+  },
+  {
+    "id": "auto-kogukulu",
+    "title": "EV vs Hybrid vs Gas Car Cost Calculator",
+    "description": "Võrdle elektri-, hübriid- ja bensiiniauto kogukulu eri eeldustel.",
+    "topics": [
+      "Igapäevaelu",
+      "Majandus",
+      "Keskkond"
+    ],
+    "keywords": [],
+    "href": "./labs/auto-kogukulu/",
+    "image": "./thumbs/auto-kogukulu.webp"
+  },
+  {
+    "id": "ekraaniharjumused",
+    "title": "Real World vs Digital World Social Skills",
+    "description": "Vaata, kuidas ekraaniharjumused võivad muuta suhtlemist ja sotsiaalseid oskusi.",
+    "topics": [
+      "Igapäevaelu",
+      "Ühiskond"
+    ],
+    "keywords": [],
+    "href": "./labs/ekraaniharjumused/",
+    "image": "./thumbs/ekraaniharjumused.webp"
+  },
+  {
+    "id": "scrollimise-harjumus",
+    "title": "The Doomscrolling Effect",
+    "description": "Uuri, kuidas lõputu voog, tähelepanu ja korduvad valikud harjumust kujundavad.",
+    "topics": [
+      "Igapäevaelu"
+    ],
+    "keywords": [],
+    "href": "./labs/scrollimise-harjumus/",
+    "image": "./thumbs/scrollimise-harjumus.webp"
+  },
+  {
+    "id": "simfluence-adoption",
+    "title": "Simfluence · Market Adoption Hero",
+    "description": "Vaata lühikest visualiseeringut uue lahenduse levikust turul.",
+    "topics": [
+      "Majandus"
+    ],
+    "keywords": [],
+    "href": "./labs/simfluence-adoption/",
+    "image": "./thumbs/simfluence-adoption.webp"
+  },
+  {
+    "id": "simfluence-hero-loop",
+    "title": "Simfluence · Hero Loop",
+    "description": "Vaata Simfluence’i automatiseeritud sissejuhatavat visualiseeringut.",
+    "topics": [
+      "Organisatsioonid"
+    ],
+    "keywords": [],
+    "href": "./labs/simfluence-hero-loop/",
+    "image": "./thumbs/simfluence-hero-loop.webp"
+  },
+  {
+    "id": "agentide-suhtlus",
+    "title": "Simfluence · Agent Interaction Widget",
+    "description": "Vaata, kuidas osalejate omavaheline suhtlus kujundab süsteemi käitumist.",
+    "topics": [
+      "Organisatsioonid",
+      "Tehisaru"
+    ],
+    "keywords": [],
+    "href": "./labs/agentide-suhtlus/",
+    "image": "./thumbs/agentide-suhtlus.webp"
+  },
+  {
+    "id": "pausio",
+    "title": "Pausio · Lock distractions away",
+    "description": "Tutvu tähelepanu toetava toote interaktiivse veebieelvaatega.",
+    "topics": [
+      "Igapäevaelu"
+    ],
+    "keywords": [],
+    "href": "https://siimkl.github.io/pausio-preview/",
+    "image": "./thumbs/pausio.webp"
+  }
+]

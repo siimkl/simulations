@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Generative AI and the Rise of the Mass Knowledge Society</title>
+  <meta
+    name="description"
+    content="Interactive teaching widget showing how generative AI access and AI literacy may shift knowledge, speed, expertise, pseudo-expert risk, and platform dependency."
+  >
+  <meta name="theme-color" content="#eaf5ff">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="genai-shell" id="genaiShell">
+    <section class="genai-widget" id="genaiWidget">
+      <header class="hero">
+        <div class="hero-copy">
+          <div class="hero-title">
+            <p class="eyebrow">AI society teaching tool</p>
+            <h1>Generative AI and the Rise of the Mass Knowledge Society</h1>
+          </div>
+
+          <div class="hero-support">
+            <div class="society-meter" id="societyMeter" aria-live="polite">
+              <div class="society-meter__top">
+                <p>Transformation meter</p>
+                <output id="societyMeterValue">60 / 100</output>
+              </div>
+
+              <div
+                class="society-meter__track"
+                id="societyMeterTrack"
+                role="meter"
+                aria-label="Shift from Knowledge Society to Mass Knowledge Society"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="60"
+              >
+                <span class="society-meter__fill"></span>
+                <span class="society-meter__marker"></span>
+              </div>
+
+              <div class="society-meter__labels" aria-hidden="true">
+                <span>Knowledge Society</span>
+                <span>Mass Knowledge Society</span>
+              </div>
+
+              <p class="society-meter__status" id="societyMeterStatus">Mass knowledge is emerging</p>
+              <p class="society-meter__note" id="societyMeterNote">
+                AI is moving more knowledge work toward everyday users, but checking and platform power still shape
+                the outcome.
+              </p>
+              <p class="society-meter__shape" id="societyMeterShape">Social shape: wider access with mixed guardrails.</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="genai-layout">
+        <aside class="control-rail" aria-labelledby="controlsTitle">
+          <div class="section-head section-head--rail">
+            <p class="section-kicker">Assumption levers</p>
+            <h2 id="controlsTitle">Set the social conditions</h2>
+            <p>Each slider describes a condition around AI use. The map shows how those assumptions may push society.</p>
+          </div>
+
+          <form class="slider-stack" id="controlForm">
+            <label class="slider-field" for="aiAccessibility">
+              <span class="slider-top">
+                <span>AI accessibility</span>
+                <output id="aiAccessibilityValue" for="aiAccessibility">70 / 100</output>
+              </span>
+              <input id="aiAccessibility" name="aiAccessibility" type="range" min="0" max="100" step="1" value="70">
+              <span class="slider-scale">
+                <span>Restricted</span>
+                <span>Widespread</span>
+              </span>
+              <span class="slider-tip">
+                <strong>Meaning:</strong> Higher means AI tools are cheap, available, and easy enough for ordinary people.
+              </span>
+            </label>
+
+            <label class="slider-field" for="aiLiteracy">
+              <span class="slider-top">
+                <span>AI literacy</span>
+                <output id="aiLiteracyValue" for="aiLiteracy">50 / 100</output>
+              </span>
+              <input id="aiLiteracy" name="aiLiteracy" type="range" min="0" max="100" step="1" value="50">
+              <span class="slider-scale">
+                <span>Naive use</span>
+                <span>Skilled use</span>
+              </span>
+              <span class="slider-tip">
+                <strong>Meaning:</strong> Higher means people understand AI limits, ask better questions, and know when to double-check.
+              </span>
+            </label>
+
+            <label class="slider-field" for="validationDiscipline">
+              <span class="slider-top">
+                <span>Validation discipline</span>
+                <output id="validationDisciplineValue" for="validationDiscipline">45 / 100</output>
+              </span>
+              <input id="validationDiscipline" name="validationDiscipline" type="range" min="0" max="100" step="1" value="45">
+              <span class="slider-scale">
+                <span>Thin checks</span>
+                <span>Strong checks</span>
+              </span>
+              <span class="slider-tip">
+                <strong>Meaning:</strong> Higher means people check AI answers, sources, and consequences before acting.
+              </span>
+            </label>
+
+            <label class="slider-field" for="platformConcentration">
+              <span class="slider-top">
+                <span>Platform concentration</span>
+                <output id="platformConcentrationValue" for="platformConcentration">65 / 100</output>
+              </span>
+              <input id="platformConcentration" name="platformConcentration" type="range" min="0" max="100" step="1" value="65">
+              <span class="slider-scale">
+                <span>Distributed</span>
+                <span>Concentrated</span>
+              </span>
+              <span class="slider-tip">
+                <strong>Meaning:</strong> Higher means a few large companies control more access, rules, and infrastructure.
+              </span>
+            </label>
+
+            <label class="slider-field" for="workPacePressure">
+              <span class="slider-top">
+                <span>Work pace pressure</span>
+                <output id="workPacePressureValue" for="workPacePressure">60 / 100</output>
+              </span>
+              <input id="workPacePressure" name="workPacePressure" type="range" min="0" max="100" step="1" value="60">
+              <span class="slider-scale">
+                <span>Deliberate</span>
+                <span>Always faster</span>
+              </span>
+              <span class="slider-tip">
+                <strong>Meaning:</strong> Higher means schools, workplaces, and services expect faster output because AI exists.
+              </span>
+            </label>
+
+            <label class="slider-field" for="localModelMaturity">
+              <span class="slider-top">
+                <span>Local model maturity</span>
+                <output id="localModelMaturityValue" for="localModelMaturity">35 / 100</output>
+              </span>
+              <input id="localModelMaturity" name="localModelMaturity" type="range" min="0" max="100" step="1" value="35">
+              <span class="slider-scale">
+                <span>Early</span>
+                <span>Mature</span>
+              </span>
+              <span class="slider-tip">
+                <strong>Meaning:</strong> Higher means local, in-house, or community AI can do more without relying only on giants.
+              </span>
+            </label>
+          </form>
+        </aside>
+
+        <div class="stage-column">
+          <section class="scenario-card" aria-labelledby="scenarioTitle">
+            <div class="scenario-card__head">
+              <div class="section-head">
+                <p class="section-kicker">Custom scenarios</p>
+                <h2 id="scenarioTitle">Compare three slider setups</h2>
+                <p>Pick a slot, move the sliders, and that version is saved automatically.</p>
+              </div>
+
+              <p class="scenario-active" id="activeScenarioLabel">Editing Scenario 1</p>
+            </div>
+
+            <div class="scenario-switcher" aria-label="Custom scenario slots">
+              <button class="scenario-slot is-active" type="button" data-scenario-slot="0" aria-pressed="true">
+                <span>Scenario 1</span>
+                <strong>60 / 100</strong>
+                <small>Mass shift</small>
+              </button>
+              <button class="scenario-slot" type="button" data-scenario-slot="1" aria-pressed="false">
+                <span>Scenario 2</span>
+                <strong>60 / 100</strong>
+                <small>Mass shift</small>
+              </button>
+              <button class="scenario-slot" type="button" data-scenario-slot="2" aria-pressed="false">
+                <span>Scenario 3</span>
+                <strong>60 / 100</strong>
+                <small>Mass shift</small>
+              </button>
+            </div>
+          </section>
+
+          <section class="mechanism-stage" aria-labelledby="mapTitle">
+            <div class="stage-head">
+              <div class="section-head">
+                <p class="section-kicker">Main map</p>
+                <h2 id="mapTitle">How AI can change society</h2>
+                <p>Blue shows access and capability. Orange shows social risks and dependency trade-offs.</p>
+              </div>
+
+              <div class="map-watchouts" aria-labelledby="warningsTitle">
+                <p class="warning-label" id="warningsTitle">Watch-outs</p>
+                <div class="warning-list" id="warningList" aria-live="polite"></div>
+              </div>
+            </div>
+
+            <div
+              class="map-surface"
+              role="img"
+              aria-label="Mechanism map connecting Generative AI access to knowledge access, expertise shift, speed and compression, pseudo-expert risk, and platform dependency"
+            >
+              <svg class="map-links" viewBox="0 0 1200 980" aria-hidden="true">
+                <defs>
+                  <marker id="mapArrowBlue" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+                    <path d="M2,2 L12,7 L2,12 Z"></path>
+                  </marker>
+                  <marker id="mapArrowOrange" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+                    <path d="M2,2 L12,7 L2,12 Z"></path>
+                  </marker>
+                </defs>
+                <path id="linkAccessKnowledge" class="map-link map-link--blue" data-source="nodeAccess" data-target="nodeKnowledge" d="M223.2 383 V165.8 H422"></path>
+                <path id="linkAccessExpertise" class="map-link map-link--blue" data-source="nodeAccess" data-target="nodeExpertise" d="M300 490 H422"></path>
+                <path id="linkAccessSpeed" class="map-link map-link--blue" data-source="nodeAccess" data-target="nodeSpeed" d="M160.8 597 V745.6 H418"></path>
+                <path id="linkKnowledgeExpertise" class="map-link map-link--blue map-link--thin" data-source="nodeKnowledge" data-target="nodeExpertise" d="M552 272.8 V373"></path>
+                <path id="linkExpertisePseudo" class="map-link map-link--orange" data-source="nodeExpertise" data-target="nodePseudo" d="M672 451.5 H751.8 V243.6 H890"></path>
+                <path id="linkSpeedPseudo" class="map-link map-link--orange" data-source="nodeSpeed" data-target="nodePseudo" d="M672 649.3 H1000.8 V380.6"></path>
+                <path id="linkAccessDependency" class="map-link map-link--orange map-link--arc" data-source="nodeAccess" data-target="nodeDependency" d="M60 554.2 H34 V956 H872 V819.1 H900"></path>
+              </svg>
+
+            <article class="map-node map-node--access" id="nodeAccess">
+              <p>GenAI access</p>
+              <strong id="nodeAccessScore">70</strong>
+              <span>Tools in many hands</span>
+              <small>When access rises, more people can attempt knowledge work.</small>
+            </article>
+
+            <article class="map-node map-node--knowledge" id="nodeKnowledge">
+              <p>Knowledge access</p>
+              <strong id="nodeKnowledgeScore">52</strong>
+              <span>Knowledge reaches more people</span>
+              <small>More people can get explanations, drafts, and guidance.</small>
+            </article>
+
+            <article class="map-node map-node--expertise" id="nodeExpertise">
+              <p>Expertise shift</p>
+              <strong id="nodeExpertiseScore">64</strong>
+              <span>Judgement moves to users</span>
+              <small>People can do more themselves, but they must judge quality.</small>
+            </article>
+
+            <article class="map-node map-node--speed" id="nodeSpeed">
+              <p>Speed &amp; compression</p>
+              <strong id="nodeSpeedScore">59</strong>
+              <span>Less waiting, less distance</span>
+              <small>Work can move faster across places, teams, and time zones.</small>
+            </article>
+
+            <article class="map-node map-node--pseudo" id="nodePseudo">
+              <p>Pseudo-expert risk</p>
+              <strong id="nodePseudoScore">62</strong>
+              <span>Confidence without mastery</span>
+              <small>People may sound knowledgeable before they really understand.</small>
+            </article>
+
+            <article class="map-node map-node--dependency" id="nodeDependency">
+              <p>Platform dependency</p>
+              <strong id="nodeDependencyScore">66</strong>
+              <span>Who controls the rails</span>
+              <small>Society may depend on the providers that host the tools.</small>
+            </article>
+          </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

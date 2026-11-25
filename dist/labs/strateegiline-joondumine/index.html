@@ -1,0 +1,2161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Team Misalignment &amp; Strategy Drift Simulation 2D</title>
+
+<style>
+  :root{
+    --bg:#FBF5F7;
+    --bg2:#E8EEF9;
+    --card:rgba(255,255,255,.76);
+    --stroke:rgba(126,132,169,.24);
+    --text:rgba(49,50,78,.96);
+    --muted:rgba(93,96,125,.82);
+    --primary:#6C8CF0;
+    --accent:#A48BFF;
+    --risk:#F08A63;
+    --ok:#6CBF9A;
+    --shadow:0 18px 48px rgba(114,118,150,.16);
+    --r:18px;
+    --r2:22px;
+    --font: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  html.embedMode,
+  body.embedMode{
+    height:auto;
+    min-height:0;
+  }
+  body{
+    margin:0;
+    font-family:var(--font);
+    color:var(--text);
+    background:#fff;
+    min-width:0;
+    overflow-x:hidden;
+  }
+  body.embedMode{
+    background:transparent;
+    overflow:hidden;
+  }
+
+  .app{
+    width:min(1120px,96vw);
+    margin:18px auto;
+    border:1px solid var(--stroke);
+    border-radius:var(--r2);
+    overflow:hidden;
+    background:
+      radial-gradient(920px 540px at 18% 6%, rgba(108,140,240,.18), transparent 62%),
+      radial-gradient(820px 620px at 82% 38%, rgba(240,138,99,.14), transparent 64%),
+      linear-gradient(160deg, var(--bg), var(--bg2));
+    box-shadow:var(--shadow);
+  }
+  body.embedMode .app{
+    width:min(1120px,100%);
+    margin:0 auto;
+  }
+
+  .top{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    gap:12px;
+    padding:10px 10px 12px;
+  }
+  .top > div:first-child{min-width:0}
+  .title{
+    font-size:clamp(20px,2.8vw,28px);
+    font-weight:800;
+    letter-spacing:.2px;
+    line-height:1.05;
+  }
+  .titleRow{display:flex;align-items:center;gap:8px}
+  .agIcon{
+    width:40px;
+    height:40px;
+    display:inline-block;
+    vertical-align:middle;
+  }
+  .sub{
+    font-size:clamp(13px,1.9vw,15px);
+    color:rgba(49,50,78,.82);
+    margin-top:6px;
+    line-height:1.25;
+    max-width:900px;
+  }
+  .topRight{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    justify-self:end;
+    align-self:center;
+  }
+
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border:1px solid var(--stroke);
+    border-radius:999px;
+    background:rgba(255,255,255,.64);
+    font-size:12px;
+    white-space:nowrap;
+  }
+  #stepBadge{
+    padding:8px 12px;
+    font-size:clamp(12px,1.45vw,16px);
+    font-weight:800;
+    line-height:1;
+  }
+  .miniPill{padding:6px 10px}
+
+  .grid{
+    display:grid;
+    grid-template-columns:.72fr 1.78fr;
+    gap:12px;
+    padding:0 10px 12px;
+    min-height:520px;
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--stroke);
+    border-radius:var(--r2);
+    overflow:hidden;
+  }
+
+  .side{display:flex;flex-direction:column;gap:12px}
+  .panel{padding:12px}
+  .panelHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .panelTitle{
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .brandCard{
+    padding:12px;
+    background:rgba(255,255,255,.56);
+  }
+  .brandTitle{
+    margin:0 0 6px 0;
+    font-size:14px;
+    font-weight:900;
+    letter-spacing:.01em;
+    color:rgba(49,50,78,.94);
+  }
+  .brandLogo{
+    display:block;
+    width:min(220px, 100%);
+    height:auto;
+    margin:0 0 8px 0;
+  }
+  .brandCopy{
+    margin:0;
+    font-size:12px;
+    line-height:1.4;
+    color:rgba(93,96,125,.88);
+  }
+  .brandLink{
+    display:inline-flex;
+    align-items:center;
+    margin-top:8px;
+    font-size:12px;
+    font-weight:800;
+    color:#5D74C8;
+    text-decoration:none;
+    border-bottom:1px solid rgba(93,116,200,.34);
+  }
+  .brandLink:hover{
+    color:#4B5CA8;
+    border-bottom-color:rgba(75,92,168,.5);
+  }
+
+  .group{
+    border:1px solid rgba(126,132,169,.16);
+    border-radius:14px;
+    padding:10px;
+    margin-top:10px;
+    background:rgba(255,255,255,.38);
+  }
+  .group:first-child{margin-top:0}
+  .groupHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .groupTitle{font-weight:800;font-size:13px}
+  .groupSub{color:var(--muted);font-size:12px}
+
+  .rowCtrl{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(120px,1fr) auto;
+    gap:10px;
+    align-items:center;
+    padding:8px 0;
+    border-top:1px solid rgba(255,255,255,.08);
+  }
+  .rowCtrl:first-of-type{border-top:0;padding-top:0}
+  .rowCtrlSlider{grid-template-columns:minmax(108px,auto) 1fr}
+  .rowCtrlTeam{grid-template-columns:minmax(108px,auto) 1fr auto}
+  .labelWrap{display:flex;align-items:center;gap:8px;min-width:0}
+  .lbl{font-size:12.5px;font-weight:700}
+  .valPill{
+    font-size:12px;
+    min-width:54px;
+    text-align:center;
+    padding:6px 8px;
+    border:1px solid var(--stroke);
+    border-radius:999px;
+    background:rgba(255,255,255,.74);
+  }
+  .ctrlStack{grid-column:1/-1}
+  .valPillMini{
+    min-width:40px;
+    padding:4px 6px;
+    font-size:11px;
+  }
+  .rowCtrl .valPillMini{
+    min-width:40px;
+    padding:4px 6px;
+  }
+
+  input[type="range"]{width:100%;accent-color:var(--primary)}
+  select,.btn{
+    border:1px solid var(--stroke);
+    border-radius:12px;
+    background:rgba(255,255,255,.74);
+    color:var(--text);
+    padding:10px 11px;
+    font-weight:700;
+    font-size:12.5px;
+  }
+  select option{background:#fdf8fa;color:#31324e}
+  .btn{cursor:pointer}
+  .btn:hover{background:rgba(255,255,255,.94)}
+
+  .btnRow{
+    display:grid;
+    grid-template-columns:.68fr .68fr 1.64fr;
+    gap:8px;
+    align-items:center;
+  }
+  .btnRow > *{min-width:0}
+  .btnRow .btn,
+  .btnRow select{height:42px;padding:9px 10px;font-size:12px}
+  .btnRow #playBtn,
+  .btnRow #resetBtn{
+    height:37px;
+    font-size:11.5px;
+    font-weight:800;
+    padding:6px 8px;
+  }
+  .btnRow #playBtn{
+    background:var(--primary);
+    border-color:rgba(164,139,255,.42);
+    color:#fff;
+    font-weight:900;
+    box-shadow:0 0 0 1px rgba(255,255,255,.24) inset, 0 8px 20px rgba(108,140,240,.22);
+  }
+  .btnRow #playBtn:hover{
+    filter:brightness(1.06);
+    box-shadow:0 0 0 1px rgba(255,255,255,.32) inset, 0 10px 24px rgba(108,140,240,.28);
+  }
+  .btnRow #speedSel{
+    height:42px;
+    font-size:13px;
+    font-weight:900;
+    padding-right:12px;
+  }
+
+  .stateLabel{
+    justify-self:end;
+    font-size:12px;
+    font-weight:900;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid rgba(126,132,169,.18);
+    background:rgba(255,255,255,.82);
+    color:var(--text);
+    white-space:nowrap;
+  }
+  .stateBarTrack{
+    grid-column:1/-1;
+    width:100%;
+    height:8px;
+    border-radius:999px;
+    border:1px solid rgba(126,132,169,.14);
+    background:rgba(224,228,244,.76);
+    overflow:hidden;
+  }
+  .stateBarFill{
+    width:0%;
+    height:100%;
+    border-radius:999px;
+    background:var(--primary);
+    transition:width .2s ease, background-color .2s ease;
+  }
+
+  .hasTip{position:relative}
+  .infoBtn{
+    width:18px;
+    height:18px;
+    border-radius:999px;
+    border:1px solid rgba(126,132,169,.18);
+    background:rgba(255,255,255,.78);
+    color:var(--text);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    cursor:pointer;
+    flex:0 0 auto;
+    padding:0;
+  }
+
+  .infoTip{
+    display:none;
+    margin-top:8px;
+    padding:8px 10px;
+    border-radius:10px;
+    border:1px solid rgba(126,132,169,.16);
+    background:rgba(252,249,255,.94);
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.35;
+    grid-column:1/-1;
+  }
+  .hasTipOpen .infoTip{display:block}
+
+  .canvasWrap{position:relative;height:100%}
+  .simInner{position:relative;height:100%;display:flex;flex-direction:column}
+  .simHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border-bottom:1px solid rgba(126,132,169,.12);
+    background:rgba(255,255,255,.38);
+    flex-wrap:wrap;
+  }
+  .simHead .h{font-size:13px;font-weight:800}
+  .simHead .muted{font-size:12px;color:rgba(93,96,125,.88);margin-top:2px}
+  .canvasHost{position:relative;flex:1;min-height:0}
+  .canvasHost canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
+  .simWatermarks{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .simWatermark{
+    position:absolute;
+    top:56%;
+    font:800 clamp(22px, 2.7vw, 30px) Inter, "Segoe UI", Arial, sans-serif;
+    color:rgba(93,96,125,.24);
+    opacity:.20;
+    text-align:center;
+    letter-spacing:.01em;
+    white-space:nowrap;
+    user-select:none;
+    text-transform:none;
+  }
+  .simWatermark.left{
+    left:18%;
+    transform:translate(-50%, -50%) rotate(-12deg);
+  }
+  .simWatermark.right{
+    left:82%;
+    transform:translate(-50%, -50%) rotate(12deg);
+  }
+  .stateHud{
+    position:absolute;
+    right:10px;
+    bottom:10px;
+    width:min(286px, calc(100% - 20px));
+    padding:12px;
+    border-radius:14px;
+    border:1px solid rgba(126,132,169,.18);
+    background:rgba(252,249,255,.9);
+    box-shadow:0 10px 28px rgba(114,118,150,.14);
+    z-index:3;
+    pointer-events:none;
+  }
+  .stateHudHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .stateHudTitle{
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .stateHud .stateLabel{
+    font-size:12px;
+    padding:5px 9px;
+    background:rgba(255,255,255,.8);
+    border-width:1px;
+  }
+  .stateHudMetric{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    font-size:13px;
+    color:var(--muted);
+    margin:5px 0;
+  }
+  .stateHudMetric strong{
+    font-family:ui-monospace,Consolas,monospace;
+    font-size:17px;
+    color:var(--text);
+  }
+  .stateHud .stateBarTrack{
+    margin-top:10px;
+    height:9px;
+  }
+
+  @media (max-width:980px){
+    .grid{grid-template-columns:1fr;gap:12px;padding:0 10px 12px}
+    .grid{min-height:0}
+    .canvasWrap{min-height:0}
+    .simInner{min-height:clamp(320px,60vw,500px)}
+    .canvasHost{min-height:clamp(260px,48vw,420px)}
+  }
+
+  @media (max-width:760px){
+    .app{
+      width:100%;
+      margin:0;
+      border-radius:0;
+      border-left:0;
+      border-right:0;
+    }
+    .top{
+      padding:10px;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:8px;
+    }
+    .top > div:first-child{width:auto}
+    .topRight{width:auto;justify-content:flex-end}
+    .agIcon{
+      width:34px;
+      height:34px;
+    }
+    .grid{gap:10px;padding:0 8px 10px}
+    .panel{padding:8px}
+    .group{padding:8px;margin-top:8px}
+    .groupTitle{font-size:12.5px}
+    .groupSub{font-size:11.5px}
+    .brandCard{padding:10px}
+    .brandTitle{font-size:13px}
+    .brandLogo{width:min(190px, 100%)}
+    .brandCopy,.brandLink{font-size:11.5px}
+    .rowCtrl{grid-template-columns:minmax(88px,auto) 1fr auto;gap:8px;padding:7px 0}
+    .rowCtrlSlider{grid-template-columns:minmax(110px,auto) 1fr}
+    .rowCtrlTeam{grid-template-columns:minmax(104px,auto) 1fr auto}
+    .labelWrap{white-space:nowrap;gap:6px}
+    .lbl{font-size:12px}
+    .rowCtrl .valPill{min-width:46px;padding:5px 6px}
+    .btnRow{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .btnRow #speedSel{grid-column:1/-1}
+    .btnRow .btn,
+    .btnRow select{padding:7px 8px}
+    .btnRow #playBtn,
+    .btnRow #resetBtn{height:35px;font-size:11px}
+    .btnRow #speedSel{height:40px}
+    .simInner{min-height:clamp(300px,72vw,460px)}
+    .canvasHost{min-height:clamp(240px,58vw,360px)}
+    .stateHud{
+      right:6px;
+      bottom:6px;
+      width:min(132px, calc(100% - 12px));
+      padding:5px;
+      border-radius:10px;
+    }
+    .stateHudHead{
+      gap:4px;
+      margin-bottom:4px;
+    }
+    .stateHudTitle{
+      font-size:8px;
+      letter-spacing:.03em;
+    }
+    .stateHud .stateLabel{
+      font-size:8px;
+      padding:2px 5px;
+    }
+    .stateHudMetric{
+      gap:4px;
+      margin:2px 0;
+      font-size:9px;
+    }
+    .stateHudMetric strong{
+      font-size:11px;
+    }
+    .stateHud .stateBarTrack{
+      margin-top:5px;
+      height:5px;
+    }
+    .simWatermark{opacity:.22}
+    .simWatermark.left{left:21%}
+    .simWatermark.right{left:79%}
+  }
+  @media (max-width:460px){
+    .titleRow{align-items:flex-start}
+    .sub{max-width:none}
+    .panelTitle{letter-spacing:.08em}
+    .simInner{min-height:320px}
+    .canvasHost{min-height:250px}
+  }
+</style>
+<link rel="stylesheet" href="./theme.css" />
+</head>
+<body>
+<div class="app widgetCard">
+  <div class="top">
+    <div class="heroCopy">
+      <div class="eyebrow">System Visibility</div>
+      <div class="title titleRow">
+        <svg class="agIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="#0C2944" stroke="#FF8C2A" stroke-width="1.5"/>
+          <circle cx="12" cy="12" r="4.1" fill="#FF8C2A" opacity=".18"/>
+          <path d="M7 15l3-3 2 2 5-5" fill="none" stroke="#EAF4FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Team Misalignment &amp; <span class="titleHighlight">Strategy Drift</span> Simulation 2D</span>
+      </div>
+      <div class="sub">Track how <span class="subHighlight">signals spread</span>, how clusters form, and what pulls teams back toward one direction in <strong>20 seconds</strong>.</div>
+    </div>
+    <div class="topRight">
+      <div class="pill" id="stepBadge"><span class="pillLabel">Story Arc</span><span id="stepVal">0 / 300</span></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="side">
+      <div class="card">
+        <div class="panel">
+          <div class="introBlock">
+            <div class="introEyebrow">Diffusion View</div>
+            <h2 class="introTitle">See <span class="keyBlue">relationships</span>, not just agents.</h2>
+            <p class="introCopy">Blue movement fields and diffusion traces reveal activity. Orange agents and cluster halos show where direction converges, stalls, or breaks apart in the 2D system map.</p>
+            <div class="introMetrics">
+              <div class="metricPill"><strong>20s</strong><span>decision window</span></div>
+              <div class="metricPill"><strong>Live field</strong><span>energy flow</span></div>
+              <div class="metricPill"><strong>Cluster pull</strong><span>adoption cues</span></div>
+            </div>
+          </div>
+          <div class="panelHead">
+            <div class="panelTitle">Control Inputs</div>
+            <div class="pill miniPill modePill">
+              <span style="opacity:.9;">Mode:</span>
+              <strong id="modeReadout">Mixed Signals</strong>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="groupHead">
+              <div>
+                <div class="groupTitle">Dynamics</div>
+                <div class="groupSub">Tune team scale and alignment pressure.</div>
+              </div>
+            </div>
+
+            <div class="rowCtrl rowCtrlTeam hasTip">
+              <div class="labelWrap">
+                <div class="lbl">Team Size</div>
+                <button class="infoBtn" type="button" aria-label="Team size info">i</button>
+              </div>
+              <input id="teamSize" type="range" min="5" max="500" step="1" value="500" />
+              <div class="valPill valPillMini" id="teamSizeVal">500</div>
+              <div class="infoTip">How many agents are in the simulation.</div>
+            </div>
+
+            <div class="rowCtrl rowCtrlSlider hasTip">
+              <div class="labelWrap">
+                <div class="lbl">Assumptions</div>
+                <button class="infoBtn" type="button" aria-label="Assumption variance info">i</button>
+              </div>
+              <input id="assVar" type="range" min="0" max="3" step="1" value="1" aria-label="Assumption variance" />
+              <div class="infoTip">How far private assumptions drift from the shared goal.</div>
+            </div>
+
+            <div class="rowCtrl rowCtrlSlider hasTip">
+              <div class="labelWrap">
+                <div class="lbl">Communication</div>
+                <button class="infoBtn" type="button" aria-label="Communication frequency info">i</button>
+              </div>
+              <input id="commFreq" type="range" min="0" max="3" step="1" value="1" aria-label="Communication frequency" />
+              <div class="infoTip">How often agents sync with shared direction signals.</div>
+            </div>
+
+            <div class="rowCtrl rowCtrlSlider hasTip">
+              <div class="labelWrap">
+                <div class="lbl">Leadership</div>
+                <button class="infoBtn" type="button" aria-label="Leadership signal info">i</button>
+              </div>
+              <input id="leadStr" type="range" min="0" max="3" step="1" value="1" aria-label="Leadership signal" />
+              <div class="infoTip">How strongly the leader direction pulls agents to the true goal.</div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="btnRow">
+              <button class="btn" id="playBtn">Pause</button>
+              <button class="btn" id="resetBtn">Reset</button>
+              <select id="speedSel" aria-label="Speed">
+                <option value="0">0.5x Slow</option>
+                <option value="1">1x Normal</option>
+                <option value="2">2x Fast</option>
+                <option value="3">3x Very Fast</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="card brandCard">
+        <div class="brandEyebrow">Primary CTA</div>
+        <h3 class="brandTitle">Turn hidden drift into a visible system.</h3>
+        <p class="brandCopy">Make goals and behaviour patterns seen clearly with interactive simulations that expose signal spread, cluster formation, and alignment pressure.</p>
+        <div class="brandMeta">
+          <div class="pill miniPill">20 second story</div>
+          <div class="pill miniPill">Interactive playback</div>
+        </div>
+        <a class="brandLink" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">Visit website</a>
+      </div>
+    </div>
+
+    <div class="card canvasWrap">
+      <div class="simInner">
+        <div class="simHead">
+          <div>
+            <div class="simEyebrow">Dynamic System View</div>
+            <div class="h">Alignment Field <span class="titleHighlight">Network</span></div>
+            <div class="muted">Dense blue traces reveal communication flow while orange agents and halos show cluster diffusion toward the goal.</div>
+          </div>
+          <div class="simLegend" aria-hidden="true">
+            <div class="pill miniPill legendPill"><span class="legendDot"></span><strong>Live Mesh</strong></div>
+            <div class="pill miniPill legendPill accent"><span class="legendDot"></span><strong>Cluster Diffusion</strong></div>
+          </div>
+        </div>
+        <div class="canvasHost" id="canvasHost">
+          <canvas id="simCanvas" aria-label="2D alignment field"></canvas>
+          <div class="simWatermarks" aria-hidden="true">
+            <div class="simWatermark left">Simfluence.io</div>
+            <div class="simWatermark right">Simfluence.io</div>
+          </div>
+          <div class="stateHud" aria-live="polite">
+            <div class="stateHudHead">
+              <div class="stateHudTitle">System state</div>
+              <div class="stateLabel" id="mState">Normal</div>
+            </div>
+            <div class="stateHudMetric">
+              <span>Alignment Index</span>
+              <strong id="mAlign">-</strong>
+            </div>
+            <div class="stateHudMetric">
+              <span>Adopted</span>
+              <strong id="mGoal">0</strong>
+            </div>
+            <div class="stateBarTrack"><div class="stateBarFill" id="mStateBar"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+/* ===== Run cap ===== */
+const MAX_STEPS = 300;
+const SPEED_SPS = [18, 36, 70, 110];
+
+/* ===== Helpers ===== */
+function mulberry32(seed){
+  let t = seed >>> 0;
+  return function(){
+    t += 0x6D2B79F5;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function wrapAngle(a){ while(a <= -Math.PI) a += Math.PI * 2; while(a > Math.PI) a -= Math.PI * 2; return a; }
+function angleDiff(a, b){ return wrapAngle(a - b); }
+function lerpAngle(a, b, t){ const d = angleDiff(b, a); return wrapAngle(a + d * t); }
+function rotateXZ(x, z, ang){
+  const c = Math.cos(ang), s = Math.sin(ang);
+  return { x: x * c - z * s, z: x * s + z * c };
+}
+function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+function pointToSegmentDistance2D(px, pz, ax, az, bx, bz){
+  const abx = bx - ax;
+  const abz = bz - az;
+  const ab2 = abx * abx + abz * abz;
+  if(ab2 <= 1e-8) return Math.hypot(px - ax, pz - az);
+  const t = clamp(((px - ax) * abx + (pz - az) * abz) / ab2, 0, 1);
+  const qx = ax + abx * t;
+  const qz = az + abz * t;
+  return Math.hypot(px - qx, pz - qz);
+}
+
+/* ===== Category semantics ===== */
+const ASS_VAR_RAD = [0.10, 0.26, 0.48, 0.80];
+const COMM_P = [0.08, 0.22, 0.50, 0.92];
+const LEAD_W = [0.18, 0.38, 0.62, 0.95];
+const GOAL_REACH_R = 3.6;
+const WALL_BINS = 96;
+const RUN_ZOOM = 1.28;
+const OUTCOME_ZOOM = 1.95;
+
+/* ===== World + model ===== */
+const WORLD = { radius: 42 };
+const GOAL_TRUE = { x: 0, z: -WORLD.radius + 8 };
+const GOAL_DIR = Math.atan2(GOAL_TRUE.z, GOAL_TRUE.x);
+
+const STATE = {
+  playing: false,
+  raf: 0,
+  lastT: null,
+  acc: 0,
+  step: 0,
+  firstDiverge: null,
+  rnd: mulberry32(1337),
+  idleT: 0,
+  idleCycle: 0,
+  idleAcc: 0,
+  idlePreviewMode: true,
+  spark: { x: 0, z: 0, t: 0 },
+  alignment: 0,
+  zoom: RUN_ZOOM,
+  targetZoom: RUN_ZOOM,
+  viewX: 0,
+  viewZ: 0,
+  targetViewX: 0,
+  targetViewZ: 0,
+  labelState: {},
+  outcomeFx: null
+};
+
+const PARAMS = {
+  teamSize: 500,
+  seed: 1337,
+  assVarCat: 1,
+  commCat: 1,
+  leadCat: 1,
+  speedCat: 0
+};
+
+const IDLE_LOOP_SECONDS = 15;
+const IDLE_SPEED_CAT = 0;
+const IDLE_PREVIEW_SPS = SPEED_SPS[IDLE_SPEED_CAT];
+
+const TOTAL = { goal: 0, wall: 0 };
+const agentData = [];
+const wallHeat = new Float32Array(WALL_BINS);
+const wallErr = new Float32Array(WALL_BINS);
+
+const BUBBLES = {
+  aligned: {
+    title: "Aligned",
+    fill: "rgba(255,208,173,0.20)",
+    stroke: "rgba(255,216,184,0.92)",
+    text: "#FFF6EE",
+    visible: false,
+    sm: null,
+    x: 0,
+    z: 0,
+    r: 0,
+    count: 0
+  },
+  drifting: {
+    title: "Drifting",
+    fill: "rgba(255,176,102,0.22)",
+    stroke: "rgba(255,186,124,0.92)",
+    text: "#FFF0E0",
+    visible: false,
+    sm: null,
+    x: 0,
+    z: 0,
+    r: 0,
+    count: 0
+  },
+  misaligned: {
+    title: "Misaligned",
+    fill: "rgba(255,122,26,0.24)",
+    stroke: "rgba(255,140,42,0.96)",
+    text: "#FFF2E8",
+    visible: false,
+    sm: null,
+    x: 0,
+    z: 0,
+    r: 0,
+    count: 0
+  }
+};
+
+/* ===== DOM ===== */
+const ui = {
+  canvasHost: document.getElementById("canvasHost"),
+  stepVal: document.getElementById("stepVal"),
+  mState: document.getElementById("mState"),
+  mStateBar: document.getElementById("mStateBar"),
+  mAlign: document.getElementById("mAlign"),
+  mGoal: document.getElementById("mGoal"),
+  teamSize: document.getElementById("teamSize"),
+  teamSizeVal: document.getElementById("teamSizeVal"),
+  assVar: document.getElementById("assVar"),
+  commFreq: document.getElementById("commFreq"),
+  leadStr: document.getElementById("leadStr"),
+  speedSel: document.getElementById("speedSel"),
+  playBtn: document.getElementById("playBtn"),
+  resetBtn: document.getElementById("resetBtn"),
+  modeReadout: document.getElementById("modeReadout")
+};
+
+const host = ui.canvasHost;
+const stepEl = ui.stepVal;
+const mState = ui.mState;
+const mStateBar = ui.mStateBar;
+const mAlign = ui.mAlign;
+const mGoal = ui.mGoal;
+
+const IS_EMBEDDED = window.parent !== window;
+if(IS_EMBEDDED){
+  document.documentElement.classList.add("embedMode");
+  document.body.classList.add("embedMode");
+}
+
+let canvas = document.getElementById("simCanvas");
+if(!canvas){
+  canvas = document.createElement("canvas");
+  canvas.id = "simCanvas";
+  canvas.setAttribute("aria-label", "2D alignment field");
+  host.prepend(canvas);
+}
+
+const ctx = canvas.getContext("2d");
+const trailCanvas = document.createElement("canvas");
+const trailCtx = trailCanvas.getContext("2d");
+
+const VIEW = {
+  w: 1,
+  h: 1,
+  dpr: 1,
+  scale: 1,
+  cx: 0,
+  cy: 0
+};
+
+function deriveModeReadout(){
+  const alignmentScore = (PARAMS.commCat * 1.1) + (PARAMS.leadCat * 1.2) - (PARAMS.assVarCat * 1.25);
+  if(alignmentScore >= 3.4) return "Converging Fast";
+  if(alignmentScore >= 1.4) return "Aligned Signals";
+  if(alignmentScore >= -0.4) return "Mixed Signals";
+  return "Fragmented Signals";
+}
+
+function alignmentStateCategory(alignment){
+  const a = clamp(alignment, 0, 1);
+  if(a >= 0.84) return { label: "Aligned", color: "#74E5FF", fill: a };
+  if(a >= 0.68) return { label: "Stable", color: "#4AAFFF", fill: a };
+  if(a >= 0.52) return { label: "Watch", color: "#93D8FF", fill: a };
+  if(a >= 0.36) return { label: "Drifting", color: "#FFB066", fill: a };
+  if(a >= 0.20) return { label: "Strained", color: "#FF8C2A", fill: a };
+  return { label: "Critical", color: "#FF5F2A", fill: a };
+}
+
+function isIdlePreviewing(){
+  return STATE.idlePreviewMode && !STATE.playing && STATE.step === 0;
+}
+
+function updateControlReadouts(){
+  ui.teamSizeVal.textContent = String(PARAMS.teamSize);
+  ui.speedSel.value = String(PARAMS.speedCat);
+  ui.modeReadout.textContent = deriveModeReadout();
+  ui.playBtn.textContent = (STATE.playing || isIdlePreviewing()) ? "Pause" : "Play";
+}
+
+function setPlayUi(isPlaying){
+  STATE.playing = !!isPlaying;
+  updateControlReadouts();
+}
+
+function startSimulation(){
+  if(STATE.step >= MAX_STEPS) resetModel();
+  STATE.idlePreviewMode = false;
+  STATE.targetZoom = RUN_ZOOM;
+  STATE.targetViewX = 0;
+  STATE.targetViewZ = 0;
+  if(STATE.step < MAX_STEPS) STATE.outcomeFx = null;
+  setPlayUi(true);
+}
+
+function pauseSimulation(){
+  setPlayUi(false);
+  STATE.acc = 0;
+}
+
+function resetSimulation(){
+  STATE.idlePreviewMode = false;
+  pauseSimulation();
+  STATE.lastT = null;
+  resetModel();
+}
+
+function setupEmbedAutoHeight(){
+  let rafId = 0;
+  let lastH = 0;
+  const rootEl = document.querySelector(".widgetCard");
+
+  const measureHeight = ()=>{
+    const body = document.body;
+    const html = document.documentElement;
+    const docHeight = Math.ceil(Math.max(
+      html ? html.scrollHeight : 0,
+      html ? html.offsetHeight : 0,
+      body ? body.scrollHeight : 0,
+      body ? body.offsetHeight : 0
+    ));
+
+    let appHeight = 0;
+    if(rootEl){
+      const rectH = rootEl.getBoundingClientRect().height;
+      const cs = getComputedStyle(rootEl);
+      const mt = parseFloat(cs.marginTop) || 0;
+      const mb = parseFloat(cs.marginBottom) || 0;
+      appHeight = Math.ceil(rectH + mt + mb);
+    }
+    return appHeight > 0 ? appHeight : docHeight;
+  };
+
+  const pushHeight = ()=>{
+    rafId = 0;
+    const h = measureHeight();
+    if(Math.abs(h - lastH) < 1) return;
+    lastH = h;
+    try{
+      window.parent?.postMessage({ type: "widget:resize", widget: "alignment-gap", height: h }, "*");
+      window.parent?.postMessage({ type: "flowguard:height", height: h }, "*");
+      window.parent?.postMessage({ type: "alignment-gap:height", height: h }, "*");
+    }catch(_){ }
+  };
+
+  const schedule = ()=>{ if(!rafId) rafId = requestAnimationFrame(pushHeight); };
+  schedule();
+
+  window.addEventListener("message", (e)=>{
+    const d = e.data;
+    if(!d || typeof d !== "object") return;
+    if(
+      d.type === "flowguard:request-height" ||
+      d.type === "alignment-gap:request-height" ||
+      d.type === "widget:request-height"
+    ){
+      schedule();
+    }
+  }, { passive: true });
+
+  window.addEventListener("resize", schedule, { passive: true });
+  window.addEventListener("load", schedule);
+
+  if("ResizeObserver" in window){
+    const ro = new ResizeObserver(schedule);
+    if(rootEl) ro.observe(rootEl);
+  }
+}
+
+function worldToScreen(x, z){
+  const scale = VIEW.scale * STATE.zoom;
+  return {
+    x: VIEW.cx + (x - STATE.viewX) * scale,
+    y: VIEW.cy + (z - STATE.viewZ) * scale
+  };
+}
+
+function worldRadiusToPx(radius){
+  return radius * VIEW.scale * STATE.zoom;
+}
+
+function pathRoundRect(context, x, y, w, h, r){
+  const rr = Math.min(r, w * 0.5, h * 0.5);
+  context.beginPath();
+  context.moveTo(x + rr, y);
+  context.arcTo(x + w, y, x + w, y + h, rr);
+  context.arcTo(x + w, y + h, x, y + h, rr);
+  context.arcTo(x, y + h, x, y, rr);
+  context.arcTo(x, y, x + w, y, rr);
+  context.closePath();
+}
+
+function clearTrailCanvas(){
+  trailCtx.setTransform(1, 0, 0, 1, 0, 0);
+  trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+}
+
+function resizeCanvas(){
+  const w = Math.max(10, host.clientWidth || 800);
+  const h = Math.max(10, host.clientHeight || 520);
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
+
+  trailCanvas.width = canvas.width;
+  trailCanvas.height = canvas.height;
+  clearTrailCanvas();
+
+  VIEW.w = canvas.width;
+  VIEW.h = canvas.height;
+  VIEW.dpr = dpr;
+  const pad = 20 * dpr;
+  VIEW.scale = Math.min(
+    (VIEW.w - pad * 2) / (WORLD.radius * 2),
+    (VIEW.h - pad * 2) / (WORLD.radius * 2)
+  );
+  VIEW.cx = VIEW.w * 0.5;
+  VIEW.cy = VIEW.h * 0.5;
+
+  renderFrame();
+}
+
+function fadeTrails(){
+  trailCtx.save();
+  trailCtx.globalCompositeOperation = "source-over";
+  trailCtx.fillStyle = "rgba(7,27,45,0.12)";
+  trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+  trailCtx.restore();
+}
+
+function drawTrailSegment(ax, az, bx, bz, color, alpha, widthWorld){
+  const p0 = worldToScreen(ax, az);
+  const p1 = worldToScreen(bx, bz);
+  trailCtx.save();
+  trailCtx.strokeStyle = color;
+  trailCtx.globalAlpha = alpha;
+  trailCtx.lineWidth = Math.max(0.8 * VIEW.dpr, widthWorld * worldRadiusToPx(1) * 0.11);
+  trailCtx.lineCap = "round";
+  trailCtx.beginPath();
+  trailCtx.moveTo(p0.x, p0.y);
+  trailCtx.lineTo(p1.x, p1.y);
+  trailCtx.stroke();
+  trailCtx.restore();
+}
+
+function drawSector(centerAng, halfSpan, innerR, outerR, fillStyle){
+  const center = worldToScreen(0, 0);
+  const a0 = centerAng - halfSpan;
+  const a1 = centerAng + halfSpan;
+  ctx.beginPath();
+  ctx.arc(center.x, center.y, outerR, a0, a1, false);
+  ctx.arc(center.x, center.y, innerR, a1, a0, true);
+  ctx.closePath();
+  ctx.fillStyle = fillStyle;
+  ctx.fill();
+}
+
+function drawField(){
+  const center = worldToScreen(0, 0);
+  const r = worldRadiusToPx(WORLD.radius);
+
+  const backGrad = ctx.createRadialGradient(center.x, center.y - r * 0.3, r * 0.2, center.x, center.y, r * 1.1);
+  backGrad.addColorStop(0, "rgba(18,68,108,0.92)");
+  backGrad.addColorStop(0.52, "rgba(11,42,69,0.97)");
+  backGrad.addColorStop(1, "rgba(4,17,29,0.99)");
+  ctx.fillStyle = backGrad;
+  ctx.beginPath();
+  ctx.arc(center.x, center.y, r, 0, Math.PI * 2);
+  ctx.fill();
+
+  drawSector(GOAL_DIR, 0.26, r * 0.08, r * 0.96, "rgba(255,140,42,0.12)");
+  drawSector(GOAL_DIR, 0.58, r * 0.08, r * 0.90, "rgba(105,195,255,0.10)");
+  drawSector(GOAL_DIR, 1.12, r * 0.08, r * 0.82, "rgba(105,195,255,0.05)");
+
+  ctx.beginPath();
+  ctx.arc(center.x, center.y, r, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(111,213,255,0.34)";
+  ctx.lineWidth = Math.max(1.4 * VIEW.dpr, 1);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(center.x, center.y, r - 3 * VIEW.dpr, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(111,213,255,0.12)";
+  ctx.lineWidth = Math.max(1 * VIEW.dpr, 1);
+  ctx.stroke();
+}
+
+function drawGoal(){
+  const gp = worldToScreen(GOAL_TRUE.x, GOAL_TRUE.z);
+  const glowR = 17 * VIEW.dpr;
+
+  const grad = ctx.createRadialGradient(gp.x, gp.y, 0, gp.x, gp.y, glowR);
+  grad.addColorStop(0, "rgba(255,140,42,0.72)");
+  grad.addColorStop(1, "rgba(255,140,42,0)");
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(gp.x, gp.y, glowR, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(gp.x, gp.y, 4.8 * VIEW.dpr, 0, Math.PI * 2);
+  ctx.fillStyle = "#FF8C2A";
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(gp.x, gp.y, 9 * VIEW.dpr, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(234,247,255,0.85)";
+  ctx.lineWidth = Math.max(1.25 * VIEW.dpr, 1);
+  ctx.stroke();
+}
+
+function drawWallTicks(){
+  const center = worldToScreen(0, 0);
+  const baseR = worldRadiusToPx(WORLD.radius - 1.4);
+
+  for(let i = 0; i < WALL_BINS; i++){
+    const heat = wallHeat[i];
+    if(heat < 0.15) continue;
+
+    const avgErr = wallErr[i] / Math.max(0.001, heat);
+    let col = "rgba(116,229,255,0.62)";
+    if(avgErr >= 0.22 && avgErr < 0.55) col = "rgba(111,195,255,0.66)";
+    if(avgErr >= 0.55) col = "rgba(255,140,42,0.74)";
+
+    const ang = ((i + 0.5) / WALL_BINS) * Math.PI * 2 - Math.PI;
+    const c = Math.cos(ang), s = Math.sin(ang);
+    const len = (2.0 + Math.min(8.5, heat * 1.65)) * VIEW.dpr;
+    const x0 = center.x + c * baseR;
+    const y0 = center.y + s * baseR;
+    const x1 = center.x + c * (baseR + len);
+    const y1 = center.y + s * (baseR + len);
+
+    ctx.save();
+    ctx.strokeStyle = col;
+    ctx.globalAlpha = Math.min(0.84, 0.12 + heat * 0.085);
+    ctx.lineWidth = Math.max(1.1 * VIEW.dpr, 1);
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function drawBubble(b){
+  if(!b.visible) return;
+
+  const p = worldToScreen(b.x, b.z);
+  const r = Math.max(12 * VIEW.dpr, worldRadiusToPx(b.r) * 0.72);
+
+  ctx.save();
+  const halo = ctx.createRadialGradient(p.x, p.y, r * 0.18, p.x, p.y, r * 1.9);
+  halo.addColorStop(0, b.fill);
+  halo.addColorStop(1, "rgba(255,140,42,0)");
+  ctx.fillStyle = halo;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, r * 1.9, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.shadowColor = "rgba(255,140,42,0.22)";
+  ctx.shadowBlur = 18 * VIEW.dpr;
+  ctx.fillStyle = b.fill;
+  ctx.strokeStyle = b.stroke;
+  ctx.lineWidth = Math.max(1.4 * VIEW.dpr, 1);
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawBubbleLabels(){
+  const keys = ["aligned", "drifting", "misaligned"];
+  const placed = [];
+  const marginX = 10 * VIEW.dpr;
+  const marginTop = STATE.outcomeFx?.active ? 150 * VIEW.dpr : 10 * VIEW.dpr;
+  const marginBottom = 10 * VIEW.dpr;
+  const fontSize = Math.max(12, Math.round(13 * VIEW.dpr));
+  const padX = 10 * VIEW.dpr;
+  const padY = 6 * VIEW.dpr;
+  const connectorPad = 7 * VIEW.dpr;
+  const overlapPad = 6 * VIEW.dpr;
+
+  // Stable per-bubble anchors (do not switch every frame).
+  const angleByKey = {
+    aligned: -2.38,
+    drifting: -Math.PI / 2,
+    misaligned: -0.78
+  };
+
+  ctx.save();
+  ctx.font = `800 ${fontSize}px Bahnschrift, Aptos, Trebuchet MS, sans-serif`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+
+  for(const key of keys){
+    const b = BUBBLES[key];
+    if(!b.visible || b.count <= 0) continue;
+
+    const text = `${b.title} ${b.count}`;
+    const p = worldToScreen(b.x, b.z);
+    const r = Math.max(12 * VIEW.dpr, worldRadiusToPx(b.r) * 0.72);
+    const tw = ctx.measureText(text).width;
+    const w = tw + padX * 2;
+    const h = fontSize + padY * 2;
+
+    const ang = angleByKey[key] ?? (-Math.PI / 2);
+    const dist = r + 18 * VIEW.dpr;
+    const cx = p.x + Math.cos(ang) * dist;
+    const cy = p.y + Math.sin(ang) * dist;
+    const tx = clamp(cx - w * 0.5, marginX, VIEW.w - marginX - w);
+    const ty = clamp(cy - h * 0.5, marginTop, VIEW.h - marginBottom - h);
+
+    let st = STATE.labelState[key];
+    if(!st){
+      st = { x: tx, y: ty, w, h };
+      STATE.labelState[key] = st;
+    } else {
+      st.w = w;
+      st.h = h;
+      // Smooth follow to prevent jitter/flicker.
+      const followA = 0.18;
+      st.x += (tx - st.x) * followA;
+      st.y += (ty - st.y) * followA;
+      st.x = clamp(st.x, marginX, VIEW.w - marginX - w);
+      st.y = clamp(st.y, marginTop, VIEW.h - marginBottom - h);
+    }
+
+    placed.push({
+      key,
+      bubble: b,
+      text,
+      rect: { x: st.x, y: st.y, w: st.w, h: st.h },
+      anchorX: p.x + Math.cos(ang) * (r - 1 * VIEW.dpr),
+      anchorY: p.y + Math.sin(ang) * (r - 1 * VIEW.dpr),
+      linkX: 0,
+      linkY: 0
+    });
+  }
+
+  // Gentle repulsion keeps labels separated without side-switch flashing.
+  for(let iter = 0; iter < 6; iter++){
+    for(let i = 0; i < placed.length; i++){
+      for(let j = i + 1; j < placed.length; j++){
+        const a = placed[i].rect;
+        const b = placed[j].rect;
+        const ox = Math.min(a.x + a.w + overlapPad, b.x + b.w + overlapPad) - Math.max(a.x - overlapPad, b.x - overlapPad);
+        const oy = Math.min(a.y + a.h + overlapPad, b.y + b.h + overlapPad) - Math.max(a.y - overlapPad, b.y - overlapPad);
+        if(ox <= 0 || oy <= 0) continue;
+
+        const push = Math.min(oy * 0.42, 7 * VIEW.dpr);
+        if(a.y <= b.y){
+          a.y -= push;
+          b.y += push;
+        } else {
+          a.y += push;
+          b.y -= push;
+        }
+
+        a.y = clamp(a.y, marginTop, VIEW.h - marginBottom - a.h);
+        b.y = clamp(b.y, marginTop, VIEW.h - marginBottom - b.h);
+      }
+    }
+  }
+
+  // Persist resolved rects for the next frame (stability across ticks).
+  for(const it of placed){
+    const st = STATE.labelState[it.key];
+    if(st){
+      st.x = it.rect.x;
+      st.y = it.rect.y;
+      st.w = it.rect.w;
+      st.h = it.rect.h;
+    }
+    it.linkX = clamp(it.anchorX, it.rect.x, it.rect.x + it.rect.w);
+    it.linkY = clamp(it.anchorY, it.rect.y, it.rect.y + it.rect.h);
+  }
+
+  for(const it of placed){
+    ctx.beginPath();
+    ctx.moveTo(it.anchorX, it.anchorY);
+    ctx.lineTo(it.linkX, it.linkY);
+    ctx.strokeStyle = it.bubble.stroke;
+    ctx.lineWidth = Math.max(1.2 * VIEW.dpr, 1);
+    ctx.globalAlpha = 0.9;
+    ctx.stroke();
+  }
+
+  for(const it of placed){
+    const x = it.rect.x;
+    const y = it.rect.y;
+    const w = it.rect.w;
+    const h = it.rect.h;
+    const rr = 9 * VIEW.dpr;
+
+    pathRoundRect(ctx, x, y, w, h, rr);
+    const g = ctx.createLinearGradient(x, y, x + w, y + h);
+    g.addColorStop(0, "rgba(6,20,38,0.92)");
+    g.addColorStop(1, "rgba(17,49,82,0.90)");
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.strokeStyle = it.bubble.stroke;
+    ctx.lineWidth = Math.max(1.1 * VIEW.dpr, 1);
+    ctx.stroke();
+
+    ctx.fillStyle = it.bubble.text;
+    ctx.fillText(it.text, x + padX, y + h * 0.5);
+
+    ctx.beginPath();
+    ctx.arc(x + connectorPad, y + h * 0.5, 3.8 * VIEW.dpr, 0, Math.PI * 2);
+    ctx.fillStyle = it.bubble.stroke;
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+function drawAgent(a, sizePx){
+  if(a.reached) return;
+  const p = worldToScreen(a.x, a.z);
+  const c = Math.cos(a.heading);
+  const s = Math.sin(a.heading);
+  const nx = -s;
+  const nz = c;
+
+  const x1 = p.x + c * sizePx * 1.6;
+  const y1 = p.y + s * sizePx * 1.6;
+  const x2 = p.x - c * sizePx + nx * sizePx * 0.9;
+  const y2 = p.y - s * sizePx + nz * sizePx * 0.9;
+  const x3 = p.x - c * sizePx - nx * sizePx * 0.9;
+  const y3 = p.y - s * sizePx - nz * sizePx * 0.9;
+
+  let fill = "#FFE3C9";
+  if(a.visCat === 1) fill = "#FFB066";
+  if(a.visCat === 2) fill = "#FF6B2C";
+
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.lineTo(x3, y3);
+  ctx.closePath();
+  ctx.fillStyle = fill;
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(255,248,240,0.9)";
+  ctx.lineWidth = Math.max(0.7 * VIEW.dpr, 0.7);
+  ctx.stroke();
+}
+
+function drawSpark(){
+  if(STATE.spark.t <= 0) return;
+  const k = STATE.spark.t / 0.22;
+  const p = worldToScreen(STATE.spark.x, STATE.spark.z);
+  const r = (4.0 + (1 - k) * 6.5) * VIEW.dpr;
+
+  const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+  grad.addColorStop(0, `rgba(255,140,42,${0.58 * k})`);
+  grad.addColorStop(1, "rgba(255,140,42,0)");
+
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function renderFrame(){
+  if(!ctx || !canvas.width || !canvas.height) return;
+
+  ctx.clearRect(0, 0, VIEW.w, VIEW.h);
+  drawField();
+  ctx.drawImage(trailCanvas, 0, 0);
+  drawWallTicks();
+  drawBubble(BUBBLES.aligned);
+  drawBubble(BUBBLES.drifting);
+  drawBubble(BUBBLES.misaligned);
+
+  const density = Math.sqrt(Math.max(1, PARAMS.teamSize) / 140);
+  const agentSize = clamp(4.0 / Math.max(0.95, density), 1.6, 3.8) * VIEW.dpr * Math.min(1.22, 0.88 + 0.22 * STATE.zoom);
+  for(let i = 0; i < agentData.length; i++){
+    drawAgent(agentData[i], agentSize);
+  }
+
+  drawSpark();
+  drawGoal();
+  drawOutcomeFocusOverlay();
+  drawBubbleLabels();
+}
+
+function reseed(){
+  STATE.rnd = mulberry32(PARAMS.seed);
+}
+
+function setAgentReached(i, reason, counts = null){
+  const a = agentData[i];
+  if(!a || a.reached) return;
+  a.reached = true;
+  a.reachedBy = reason;
+  if(counts?.goal) TOTAL.goal += 1;
+  if(counts?.wall) TOTAL.wall += 1;
+}
+
+function didTouchGoal(a){
+  const distG = Math.hypot(GOAL_TRUE.x - a.x, GOAL_TRUE.z - a.z);
+  if(distG <= GOAL_REACH_R) return true;
+  return pointToSegmentDistance2D(
+    GOAL_TRUE.x, GOAL_TRUE.z,
+    a.px, a.pz,
+    a.x, a.z
+  ) <= GOAL_REACH_R;
+}
+
+function resetBubbleStates(){
+  for(const key of Object.keys(BUBBLES)){
+    const b = BUBBLES[key];
+    b.visible = false;
+    b.sm = null;
+    b.count = 0;
+    b.r = 0;
+  }
+}
+
+function triggerSpark(x, z){
+  STATE.spark.x = x;
+  STATE.spark.z = z;
+  STATE.spark.t = 0.22;
+}
+
+function getOutcomeLayout(){
+  let cx = 0;
+  let cz = 0;
+  let wt = 0;
+  const items = [];
+  for(const key of Object.keys(BUBBLES)){
+    const b = BUBBLES[key];
+    if(b.count <= 0) continue;
+    items.push(b);
+    const w = Math.max(1, b.count);
+    cx += b.x * w;
+    cz += b.z * w;
+    wt += w;
+  }
+  if(wt <= 0){
+    return { x: GOAL_TRUE.x, z: GOAL_TRUE.z, spread: 8 };
+  }
+
+  cx /= wt;
+  cz /= wt;
+
+  let spread = 0;
+  for(const b of items){
+    const d = Math.hypot(b.x - cx, b.z - cz) + Math.max(1.6, b.r * 0.55);
+    if(d > spread) spread = d;
+  }
+  spread = Math.max(6, spread);
+  return { x: cx, z: cz, spread };
+}
+
+function computeOutcomeZoom(spreadWorld){
+  const baseScale = Math.max(0.0001, VIEW.scale);
+  const halfSpanPx = Math.min(VIEW.w, VIEW.h) * 0.42;
+  const fitZoom = halfSpanPx / (baseScale * Math.max(1, spreadWorld));
+  return clamp(fitZoom, RUN_ZOOM * 1.06, OUTCOME_ZOOM);
+}
+
+function startOutcomeFocus(){
+  const candidates = [];
+  for(const key of Object.keys(BUBBLES)){
+    const b = BUBBLES[key];
+    if(b.count > 0){
+      candidates.push({
+        key,
+        count: b.count,
+        x: b.visible ? b.x : GOAL_TRUE.x,
+        z: b.visible ? b.z : GOAL_TRUE.z,
+        title: b.title
+      });
+    }
+  }
+
+  candidates.sort((a, b)=>b.count - a.count);
+  const focus = candidates[0] || { key: "aligned", count: 0, x: GOAL_TRUE.x, z: GOAL_TRUE.z, title: "Mixed" };
+  const pct = PARAMS.teamSize > 0 ? Math.round((focus.count / PARAMS.teamSize) * 100) : 0;
+
+  STATE.outcomeFx = {
+    active: true,
+    t: 0,
+    focusKey: focus.key,
+    focusX: focus.x,
+    focusZ: focus.z,
+    headline: `Outcome: ${focus.title} dominates`,
+    subline: `${focus.count}/${PARAMS.teamSize} agents (${pct}%)`
+  };
+  const layout = getOutcomeLayout();
+  STATE.targetViewX = layout.x;
+  STATE.targetViewZ = layout.z;
+  STATE.targetZoom = computeOutcomeZoom(layout.spread);
+}
+
+function drawOutcomeFocusOverlay(){
+  if(!STATE.outcomeFx?.active) return;
+
+  const fx = STATE.outcomeFx;
+  const reveal = clamp(fx.t / 0.9, 0, 1);
+  const pulse = 0.5 + 0.5 * Math.sin(fx.t * 3.2);
+  const focus = worldToScreen(fx.focusX, fx.focusZ);
+
+  ctx.save();
+  ctx.fillStyle = `rgba(3,15,26,${0.34 * reveal})`;
+  ctx.fillRect(0, 0, VIEW.w, VIEW.h);
+  ctx.restore();
+
+  const focusBubble = BUBBLES[fx.focusKey];
+  if(focusBubble && focusBubble.visible){
+    const baseR = Math.max(14 * VIEW.dpr, worldRadiusToPx(focusBubble.r) * 0.55);
+    const ring1 = baseR + (12 + pulse * 8) * VIEW.dpr;
+    const ring2 = baseR + (24 + pulse * 10) * VIEW.dpr;
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(111,213,255,0.88)";
+    ctx.lineWidth = Math.max(1.1 * VIEW.dpr, 1);
+    ctx.beginPath();
+    ctx.arc(focus.x, focus.y, ring1, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(255,140,42,0.58)";
+    ctx.beginPath();
+    ctx.arc(focus.x, focus.y, ring2, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  const cardW = Math.min(VIEW.w * 0.58, 380 * VIEW.dpr);
+  const cardH = 118 * VIEW.dpr;
+  const cardX = 14 * VIEW.dpr;
+  const cardY = 14 * VIEW.dpr;
+  const radius = 14 * VIEW.dpr;
+
+  ctx.save();
+  pathRoundRect(ctx, cardX, cardY, cardW, cardH, radius);
+  const cardGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH);
+  cardGrad.addColorStop(0, `rgba(6,24,39,${0.96 * reveal})`);
+  cardGrad.addColorStop(1, `rgba(12,46,73,${0.92 * reveal})`);
+  ctx.fillStyle = cardGrad;
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,140,42,0.42)";
+  ctx.lineWidth = Math.max(1 * VIEW.dpr, 1);
+  ctx.stroke();
+
+  ctx.fillStyle = "rgba(255,196,150,0.92)";
+  ctx.font = `700 ${Math.max(10, Math.round(11 * VIEW.dpr))}px Bahnschrift, Aptos, Trebuchet MS, sans-serif`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText("FINAL SNAPSHOT", cardX + 14 * VIEW.dpr, cardY + 12 * VIEW.dpr);
+
+  ctx.fillStyle = "#FFFFFF";
+  ctx.font = `800 ${Math.max(14, Math.round(16 * VIEW.dpr))}px Bahnschrift, Aptos, Trebuchet MS, sans-serif`;
+  ctx.fillText(fx.headline, cardX + 14 * VIEW.dpr, cardY + 34 * VIEW.dpr);
+
+  ctx.fillStyle = "rgba(230,238,246,0.88)";
+  ctx.font = `700 ${Math.max(12, Math.round(13 * VIEW.dpr))}px Bahnschrift, Aptos, Trebuchet MS, sans-serif`;
+  ctx.fillText(fx.subline, cardX + 14 * VIEW.dpr, cardY + 58 * VIEW.dpr);
+
+  const rowY = cardY + 84 * VIEW.dpr;
+  const keys = ["aligned", "drifting", "misaligned"];
+  const colors = ["#FFE3C9", "#FFB066", "#FF6B2C"];
+  const cellW = (cardW - 28 * VIEW.dpr) / keys.length;
+  for(let i = 0; i < keys.length; i++){
+    const k = keys[i];
+    const b = BUBBLES[k];
+    const x = cardX + 14 * VIEW.dpr + i * cellW;
+
+    ctx.fillStyle = colors[i];
+    ctx.beginPath();
+    ctx.arc(x + 7 * VIEW.dpr, rowY + 7 * VIEW.dpr, 4.3 * VIEW.dpr, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(233,246,255,0.95)";
+    ctx.font = `700 ${Math.max(10, Math.round(11 * VIEW.dpr))}px Bahnschrift, Aptos, Trebuchet MS, sans-serif`;
+    ctx.fillText(`${b.title}: ${b.count}`, x + 16 * VIEW.dpr, rowY);
+  }
+  ctx.restore();
+}
+
+function updateCameraFx(dt){
+  const zAlpha = 1 - Math.exp(-4.0 * dt);
+  const pAlpha = 1 - Math.exp(-3.6 * dt);
+
+  if(STATE.outcomeFx?.active){
+    STATE.outcomeFx.t += dt;
+
+    const follow = BUBBLES[STATE.outcomeFx.focusKey];
+    if(follow && follow.visible){
+      const followA = 1 - Math.exp(-3.2 * dt);
+      STATE.outcomeFx.focusX += (follow.x - STATE.outcomeFx.focusX) * followA;
+      STATE.outcomeFx.focusZ += (follow.z - STATE.outcomeFx.focusZ) * followA;
+    }
+
+    const layout = getOutcomeLayout();
+    STATE.targetViewX = layout.x;
+    STATE.targetViewZ = layout.z;
+    STATE.targetZoom = computeOutcomeZoom(layout.spread);
+  }
+
+  STATE.zoom += (STATE.targetZoom - STATE.zoom) * zAlpha;
+  STATE.viewX += (STATE.targetViewX - STATE.viewX) * pAlpha;
+  STATE.viewZ += (STATE.targetViewZ - STATE.viewZ) * pAlpha;
+}
+
+function resetModel(seedOverride = null){
+  PARAMS.seed = (seedOverride === null)
+    ? Math.floor(Math.random() * 1e9)
+    : (seedOverride >>> 0);
+
+  PARAMS.speedCat = IDLE_SPEED_CAT;
+  TOTAL.goal = 0;
+  TOTAL.wall = 0;
+
+  setPlayUi(false);
+  STATE.acc = 0;
+  STATE.lastT = null;
+  STATE.step = 0;
+  STATE.idleT = 0;
+  STATE.idleAcc = 0;
+  STATE.firstDiverge = null;
+  STATE.spark.t = 0;
+  STATE.alignment = 0;
+  STATE.zoom = RUN_ZOOM;
+  STATE.targetZoom = RUN_ZOOM;
+  STATE.viewX = 0;
+  STATE.viewZ = 0;
+  STATE.targetViewX = 0;
+  STATE.targetViewZ = 0;
+  STATE.labelState = {};
+  STATE.outcomeFx = null;
+
+  stepEl.textContent = `0 / ${MAX_STEPS}`;
+  clearTrailCanvas();
+
+  for(let i = 0; i < WALL_BINS; i++){
+    wallHeat[i] = 0;
+    wallErr[i] = 0;
+  }
+
+  resetBubbleStates();
+  agentData.length = 0;
+
+  reseed();
+  const rnd = STATE.rnd;
+
+  for(let i = 0; i < PARAMS.teamSize; i++){
+    const ang = rnd() * Math.PI * 2;
+    const rr = Math.sqrt(rnd()) * (WORLD.radius * 0.70);
+    const x = Math.cos(ang) * rr;
+    const z = Math.sin(ang) * rr;
+
+    const maxBias = ASS_VAR_RAD[PARAMS.assVarCat];
+    const spread = (PARAMS.assVarCat >= 2) ? (0.80 + 1.20 * rnd()) : 1.0;
+    const bias = (rnd() * 2 - 1) * maxBias * spread;
+    const pg = rotateXZ(GOAL_TRUE.x, GOAL_TRUE.z, bias);
+
+    const headNoise = 0.012 + 0.09 * maxBias;
+    const heading = wrapAngle(Math.atan2(pg.z - z, pg.x - x) + (rnd() * 2 - 1) * headNoise);
+
+    const stubborn = 0.55 + rnd() * 0.25;
+    const social = 0.25 + rnd() * 0.25;
+
+    const ga0 = Math.atan2(GOAL_TRUE.z - z, GOAL_TRUE.x - x);
+    const e0 = Math.abs(angleDiff(heading, ga0));
+    const cat0 = (e0 < 0.20) ? 0 : (e0 < 0.60 ? 1 : 2);
+
+    agentData.push({
+      x, z,
+      px: x,
+      pz: z,
+      heading,
+      stubborn,
+      social,
+      bias,
+      pgx: pg.x,
+      pgz: pg.z,
+      reached: false,
+      reachedBy: "",
+      visErr: e0,
+      visCat: cat0
+    });
+  }
+
+  computeMetricsAndVisuals();
+  renderFrame();
+}
+
+function idlePreviewStep(dt){
+  STATE.idleT += dt;
+  if(STATE.idleT >= IDLE_LOOP_SECONDS){
+    STATE.idleCycle++;
+    const cycleSeed = (((Math.random() * 1e9) | 0) ^ ((STATE.idleCycle * 2654435761) >>> 0)) >>> 0;
+    resetModel(cycleSeed);
+    return;
+  }
+
+  const pListen = COMM_P[1];
+  const wLead = LEAD_W[1];
+  const baseSpeed = 0.20;
+  const turnRate = 0.22;
+
+  let sx = 0, sz = 0, nA = 0;
+  for(let i = 0; i < agentData.length; i++){
+    const a = agentData[i];
+    if(a.reached) continue;
+    sx += Math.cos(a.heading);
+    sz += Math.sin(a.heading);
+    nA++;
+  }
+  const teamSignal = (nA > 0) ? Math.atan2(sz, sx) : GOAL_DIR;
+
+  for(let i = 0; i < agentData.length; i++){
+    const a = agentData[i];
+    if(a.reached) continue;
+
+    a.px = a.x;
+    a.pz = a.z;
+
+    const personalTarget = Math.atan2(a.pgz - a.z, a.pgx - a.x);
+    const leadTarget = Math.atan2(GOAL_TRUE.z - a.z, GOAL_TRUE.x - a.x);
+    const socialTarget = teamSignal;
+
+    const wLeadEff = wLead * (1.0 + 2.20 * pListen);
+    const wSocialEff = a.social * (0.65 + 0.95 * pListen);
+    const wPersonalEff = a.stubborn * (1.0 - 0.75 * wLead * pListen);
+    const sum = Math.max(0.0001, wPersonalEff + wLeadEff + wSocialEff);
+    const wp = wPersonalEff / sum;
+    const wl = wLeadEff / sum;
+    const ws = wSocialEff / sum;
+
+    const vx = wp * Math.cos(personalTarget) + wl * Math.cos(leadTarget) + ws * Math.cos(socialTarget);
+    const vz = wp * Math.sin(personalTarget) + wl * Math.sin(leadTarget) + ws * Math.sin(socialTarget);
+    const blendedTarget = Math.atan2(vz, vx);
+
+    const turnEff = clamp(turnRate + 0.26 * wLead * pListen, 0.18, 0.56);
+    a.heading = lerpAngle(a.heading, blendedTarget, turnEff);
+
+    const distG = Math.hypot(GOAL_TRUE.x - a.x, GOAL_TRUE.z - a.z);
+    const slow = Math.max(0.35, Math.min(1.0, distG / 24));
+
+    a.x += Math.cos(a.heading) * (baseSpeed * slow);
+    a.z += Math.sin(a.heading) * (baseSpeed * slow);
+
+    if(didTouchGoal(a)){
+      setAgentReached(i, "goal-preview");
+      continue;
+    }
+
+    const r = Math.hypot(a.x, a.z);
+    if(r >= WORLD.radius - 2.2){
+      const nx = a.x / Math.max(0.001, r);
+      const nz = a.z / Math.max(0.001, r);
+      a.x = nx * (WORLD.radius - 2.4);
+      a.z = nz * (WORLD.radius - 2.4);
+      a.heading = wrapAngle(Math.atan2(-nz, -nx));
+    }
+
+    drawTrailSegment(a.px, a.pz, a.x, a.z, "#69C3FF", 0.08, 1.05);
+  }
+
+  computeMetricsAndVisuals();
+}
+
+function stepModel(){
+  const rnd = STATE.rnd;
+
+  const pListen = COMM_P[PARAMS.commCat];
+  const wLead = LEAD_W[PARAMS.leadCat];
+
+  const sampleSize = Math.max(10, Math.floor(Math.sqrt(PARAMS.teamSize)));
+  let sx = 0, sz = 0;
+  for(let k = 0; k < sampleSize; k++){
+    const idx = (rnd() * agentData.length) | 0;
+    const h = agentData[idx].heading;
+    sx += Math.cos(h);
+    sz += Math.sin(h);
+  }
+  const teamSignal = Math.atan2(sz, sx);
+
+  const isBestCornerGlobal = (PARAMS.assVarCat === 0) && (PARAMS.commCat === 3) && (PARAMS.leadCat === 3);
+  const teamSignalAdj = isBestCornerGlobal ? lerpAngle(teamSignal, GOAL_DIR, 0.75) : teamSignal;
+
+  const baseSpeed = 0.20;
+  const turnRate = 0.22;
+
+  fadeTrails();
+
+  for(let i = 0; i < agentData.length; i++){
+    const a = agentData[i];
+    if(a.reached) continue;
+
+    a.px = a.x;
+    a.pz = a.z;
+
+    const personalTarget = Math.atan2(a.pgz - a.z, a.pgx - a.x);
+    const leadTarget = Math.atan2(GOAL_TRUE.z - a.z, GOAL_TRUE.x - a.x);
+
+    const listensRaw = rnd() < pListen;
+    const isBestCorner = isBestCornerGlobal;
+    const listens = isBestCorner ? true : listensRaw;
+    const socialTarget = listens ? teamSignalAdj : a.heading;
+
+    if(listens){
+      const maxBias = ASS_VAR_RAD[PARAMS.assVarCat];
+
+      let corr = clamp(0.020 + 0.140 * wLead * pListen, 0.0, 0.20);
+      if(isBestCorner) corr = 0.34;
+
+      a.bias *= (1.0 - corr * (1.0 - 0.75 * maxBias));
+      if(isBestCorner && Math.abs(a.bias) < 0.02) a.bias = 0.0;
+
+      const pg = rotateXZ(GOAL_TRUE.x, GOAL_TRUE.z, a.bias);
+      a.pgx = pg.x;
+      a.pgz = pg.z;
+    }
+
+    const wLeadEff = wLead * (1.0 + 2.20 * pListen) * (isBestCorner ? 1.55 : 1.0);
+    const wSocialEff = listens ? (a.social * (0.65 + 0.95 * pListen) * (isBestCorner ? 1.15 : 1.0)) : 0.0;
+    const wPersonalEff = a.stubborn * (1.0 - 0.75 * wLead * pListen) * (isBestCorner ? 0.18 : 1.0);
+
+    const sum = Math.max(0.0001, wPersonalEff + wLeadEff + wSocialEff);
+    const wp = wPersonalEff / sum;
+    const wl = wLeadEff / sum;
+    const ws = wSocialEff / sum;
+
+    const vx = wp * Math.cos(personalTarget) + wl * Math.cos(leadTarget) + ws * Math.cos(socialTarget);
+    const vz = wp * Math.sin(personalTarget) + wl * Math.sin(leadTarget) + ws * Math.sin(socialTarget);
+    const blendedTarget = Math.atan2(vz, vx);
+
+    const turnEff = clamp(turnRate + 0.26 * wLead * pListen + (isBestCorner ? 0.32 : 0.0), 0.22, 0.62);
+    a.heading = lerpAngle(a.heading, blendedTarget, turnEff);
+    if(isBestCorner) a.heading = lerpAngle(a.heading, GOAL_DIR, 0.22);
+
+    const distP = Math.hypot(a.pgx - a.x, a.pgz - a.z);
+    const slow = Math.max(0.12, Math.min(1.0, distP / 24));
+
+    a.x += Math.cos(a.heading) * (baseSpeed * slow);
+    a.z += Math.sin(a.heading) * (baseSpeed * slow);
+
+    if(didTouchGoal(a)){
+      setAgentReached(i, "goal", { goal: true });
+      continue;
+    }
+
+    const rr = Math.hypot(a.x, a.z);
+    if(rr >= WORLD.radius - 1.6){
+      const nx = a.x / rr, nz = a.z / rr;
+      a.x = nx * (WORLD.radius - 1.4);
+      a.z = nz * (WORLD.radius - 1.4);
+
+      const ang = Math.atan2(a.z, a.x);
+      const t = (ang + Math.PI) / (2 * Math.PI);
+      let bi = Math.floor(t * WALL_BINS);
+      if(bi >= WALL_BINS) bi = WALL_BINS - 1;
+
+      const leadDir = Math.atan2(GOAL_TRUE.z - a.z, GOAL_TRUE.x - a.x);
+      const err = Math.abs(angleDiff(a.heading, leadDir));
+      wallHeat[bi] += 1;
+      wallErr[bi] += err;
+
+      triggerSpark(a.x, a.z);
+      setAgentReached(i, "wall", { wall: true });
+      continue;
+    }
+
+    drawTrailSegment(a.px, a.pz, a.x, a.z, "#69C3FF", 0.13, 1.25);
+  }
+
+  STATE.step++;
+  if(STATE.step >= MAX_STEPS){
+    STATE.step = MAX_STEPS;
+    for(let i = 0; i < agentData.length; i++){
+      const a = agentData[i];
+      if(!a.reached) setAgentReached(i, "timeout");
+    }
+    pauseSimulation();
+  }
+
+  stepEl.textContent = `${STATE.step} / ${MAX_STEPS}`;
+  computeMetricsAndVisuals();
+  if(STATE.step === MAX_STEPS && !STATE.outcomeFx?.active){
+    startOutcomeFocus();
+  }
+}
+
+function computeMetricsAndVisuals(){
+  const reachedGoal = TOTAL.goal;
+
+  // Momentary alignment should reflect agents still in play.
+  // Reached/removed agents can freeze historical headings and distort live state.
+  let sumCosAll = 0;
+  let sumCosActive = 0;
+  let activeCount = 0;
+  const nAgents = Math.max(1, agentData.length);
+  for(const a of agentData){
+    const ga = Math.atan2(GOAL_TRUE.z - a.z, GOAL_TRUE.x - a.x);
+    const err = angleDiff(a.heading, ga);
+    const c = Math.cos(err);
+    sumCosAll += c;
+    if(!a.reached){
+      sumCosActive += c;
+      activeCount++;
+    }
+  }
+  const meanCos = (activeCount > 0)
+    ? (sumCosActive / Math.max(1, activeCount))
+    : (sumCosAll / nAgents);
+  const alignment = clamp((meanCos + 1) * 0.5, 0, 1);
+  STATE.alignment = alignment;
+
+  const bins = 18;
+  const occ = new Array(bins).fill(0);
+  for(const a of agentData){
+    const ang = wrapAngle(a.heading);
+    const t = (ang + Math.PI) / (2 * Math.PI);
+    let b = Math.floor(t * bins);
+    if(b === bins) b = bins - 1;
+    occ[b]++;
+  }
+  const thr = Math.max(2, Math.floor(nAgents * 0.03));
+  const occupied = occ.map(v => v >= thr ? 1 : 0);
+  let fragments = 0;
+  for(let i = 0; i < bins; i++){
+    const prev = occupied[(i - 1 + bins) % bins];
+    const cur = occupied[i];
+    if(cur === 1 && prev === 0) fragments++;
+  }
+  fragments = Math.max(1, fragments);
+
+  const DIVERGE_THRESH = 0.78;
+  if(STATE.firstDiverge === null && STATE.step > 0 && alignment < DIVERGE_THRESH){
+    STATE.firstDiverge = STATE.step;
+  }
+
+  let gx = 0, gz = 0, gn = 0, gErr = 0;
+  let yx = 0, yz = 0, yn = 0, yErr = 0;
+  let rx = 0, rz = 0, rn = 0, rErr = 0;
+
+  for(let i = 0; i < agentData.length; i++){
+    const a = agentData[i];
+    const goalAngLocal = Math.atan2(GOAL_TRUE.z - a.z, GOAL_TRUE.x - a.x);
+    const errRaw = Math.abs(angleDiff(a.heading, goalAngLocal));
+    a.visErr = a.visErr + (errRaw - a.visErr) * 0.16;
+
+    const err = a.visErr;
+    a.visCat = (err < 0.20) ? 0 : (err < 0.60 ? 1 : 2);
+
+    if(err < 0.20){
+      gx += a.x; gz += a.z; gn++; gErr += err;
+    } else if(err < 0.60){
+      yx += a.x; yz += a.z; yn++; yErr += err;
+    } else {
+      rx += a.x; rz += a.z; rn++; rErr += err;
+    }
+  }
+
+  const minShowBase = Math.max(6, Math.floor(nAgents * 0.04));
+  const minShow = (STATE.step >= MAX_STEPS || STATE.outcomeFx?.active) ? 1 : minShowBase;
+  const endPull = clamp((STATE.step - (MAX_STEPS - 90)) / 90, 0, 1);
+
+  function setBubbleState(key, cx, cz, count, avgErr, xOff){
+    const bubble = BUBBLES[key];
+    if(count < minShow){
+      bubble.visible = false;
+      return;
+    }
+
+    bubble.visible = true;
+    if(endPull > 0){
+      cx = cx + (GOAL_TRUE.x + xOff - cx) * endPull;
+      cz = cz + (GOAL_TRUE.z - cz) * endPull;
+    }
+
+    const sT = clamp(1.45 + Math.sqrt(count) * 0.28, 1.4, 13.2);
+
+    if(!bubble.sm){
+      bubble.sm = { x: cx, z: cz, s: sT };
+    }
+
+    bubble.sm.x += (cx - bubble.sm.x) * 0.08;
+    bubble.sm.z += (cz - bubble.sm.z) * 0.08;
+    bubble.sm.s += (sT - bubble.sm.s) * 0.10;
+
+    bubble.x = bubble.sm.x;
+    bubble.z = bubble.sm.z;
+    bubble.r = bubble.sm.s;
+    bubble.count = count;
+    bubble.avgErr = avgErr;
+  }
+
+  if(gn > 0) setBubbleState("aligned", gx / gn, gz / gn, gn, gErr / gn, -5.2);
+  else BUBBLES.aligned.visible = false;
+
+  if(yn > 0) setBubbleState("drifting", yx / yn, yz / yn, yn, yErr / yn, 0.0);
+  else BUBBLES.drifting.visible = false;
+
+  if(rn > 0) setBubbleState("misaligned", rx / rn, rz / rn, rn, rErr / rn, 5.2);
+  else BUBBLES.misaligned.visible = false;
+
+  BUBBLES.aligned.count = gn;
+  BUBBLES.drifting.count = yn;
+  BUBBLES.misaligned.count = rn;
+
+  for(let i = 0; i < WALL_BINS; i++){
+    wallHeat[i] *= 0.92;
+    wallErr[i] *= 0.92;
+  }
+
+  const stateInfo = alignmentStateCategory(alignment);
+  mState.textContent = stateInfo.label;
+  mState.style.color = stateInfo.color;
+  mState.style.borderColor = stateInfo.color;
+  mStateBar.style.width = `${Math.round(stateInfo.fill * 100)}%`;
+  mStateBar.style.backgroundColor = stateInfo.color;
+  mAlign.textContent = alignment.toFixed(2);
+  mGoal.textContent = String(reachedGoal);
+
+  void fragments;
+}
+
+function loop(t){
+  if(STATE.lastT === null) STATE.lastT = t;
+  const dt = Math.min(0.05, (t - STATE.lastT) / 1000);
+  STATE.lastT = t;
+
+  if(STATE.spark.t > 0){
+    STATE.spark.t = Math.max(0, STATE.spark.t - dt);
+  }
+
+  updateCameraFx(dt);
+
+  if(STATE.playing && STATE.step < MAX_STEPS){
+    const sps = SPEED_SPS[PARAMS.speedCat];
+    STATE.acc += dt * sps;
+    while(STATE.acc >= 1 && STATE.step < MAX_STEPS){
+      stepModel();
+      STATE.acc -= 1;
+    }
+  } else {
+    STATE.acc = 0;
+    if(isIdlePreviewing()){
+      STATE.idleAcc += dt * IDLE_PREVIEW_SPS;
+      while(STATE.idleAcc >= 1){
+        idlePreviewStep(1 / IDLE_PREVIEW_SPS);
+        STATE.idleAcc -= 1;
+      }
+    }
+  }
+
+  renderFrame();
+  STATE.raf = requestAnimationFrame(loop);
+}
+
+/* ===== UI wiring ===== */
+(function(){
+  function closeAll(){
+    document.querySelectorAll(".hasTipOpen").forEach(el => el.classList.remove("hasTipOpen"));
+  }
+
+  document.addEventListener("click", (e)=>{
+    const btn = e.target.closest(".infoBtn");
+    if(btn){
+      e.preventDefault();
+      e.stopPropagation();
+      const container = btn.closest(".hasTip");
+      if(!container) return;
+      const willOpen = !container.classList.contains("hasTipOpen");
+      closeAll();
+      if(willOpen) container.classList.add("hasTipOpen");
+      return;
+    }
+    closeAll();
+  }, true);
+
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape") closeAll();
+  });
+})();
+
+function bindResettingSlider(el, applyValue){
+  el.addEventListener("input", (e)=>{
+    applyValue(Number(e.target.value));
+    updateControlReadouts();
+  });
+  el.addEventListener("change", resetModel);
+}
+
+bindResettingSlider(ui.teamSize, (v)=>{ PARAMS.teamSize = v; });
+bindResettingSlider(ui.assVar, (v)=>{ PARAMS.assVarCat = v; });
+bindResettingSlider(ui.commFreq, (v)=>{ PARAMS.commCat = v; });
+bindResettingSlider(ui.leadStr, (v)=>{ PARAMS.leadCat = v; });
+
+ui.speedSel.addEventListener("change", (e)=>{
+  PARAMS.speedCat = Number(e.target.value);
+  updateControlReadouts();
+});
+
+ui.playBtn.addEventListener("click", ()=>{
+  if(isIdlePreviewing()){
+    resetSimulation();
+    return;
+  }
+  if(STATE.playing) pauseSimulation();
+  else startSimulation();
+});
+
+ui.resetBtn.addEventListener("click", ()=>{
+  if(isIdlePreviewing()){
+    resetSimulation();
+    return;
+  }
+  resetSimulation();
+});
+
+window.addEventListener("resize", resizeCanvas, { passive: true });
+if("ResizeObserver" in window){
+  const canvasRO = new ResizeObserver(() => resizeCanvas());
+  canvasRO.observe(host);
+}
+
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState === "visible") STATE.lastT = null;
+});
+
+/* ===== Boot ===== */
+setupEmbedAutoHeight();
+updateControlReadouts();
+resizeCanvas();
+resetModel();
+STATE.raf = requestAnimationFrame(loop);
+</script>
+</body>
+</html>
+
+

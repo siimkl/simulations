@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ROI Graphic | Return on Investment Graphic</title>
+  <meta
+    name="description"
+    content="ROI graphic and Return on Investment graphic showing break-even timing, cumulative revenue, cost, profit, and ROI over time."
+  />
+  <meta
+    name="keywords"
+    content="ROI graphic, Return on Investment graphic, ROI chart, break-even chart, ROI visualization"
+  />
+  <meta property="og:title" content="ROI Graphic | Return on Investment Graphic" />
+  <meta
+    property="og:description"
+    content="Interactive ROI graphic and Return on Investment graphic for showing cost, revenue, break-even timing, and ROI over time."
+  />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ROI Graphic | Return on Investment Graphic" />
+  <meta
+    name="twitter:description"
+    content="Interactive Return on Investment graphic that visualizes payback, break-even, and ROI growth over time."
+  />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="theme-color" content="#0b1f33" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "ROI Graphic",
+      "description": "Interactive ROI graphic and Return on Investment graphic for visualizing cost, revenue, break-even timing, and return over time.",
+      "mainEntity": {
+        "@type": "SoftwareApplication",
+        "name": "ROI Graphic Widget",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Any",
+        "description": "A Return on Investment graphic that models upfront investment, operating cost, revenue ramp, time to break-even, and total ROI."
+      }
+    }
+  </script>
+</head>
+<body>
+  <main class="roi-shell">
+    <section class="roi-widget" id="roiWidget">
+      <header class="roi-header">
+        <div class="roi-header-copy">
+          <p class="roi-badge">ROI Graphic</p>
+          <h1>ROI graphic: see how a project pays back over time.</h1>
+          <p class="roi-subtitle">
+            This Return on Investment graphic shows upfront spend, go-live delay, revenue ramp, break-even timing, and
+            profit growth in one simple view.
+          </p>
+        </div>
+
+        <div class="roi-header-actions">
+          <div class="roi-live" aria-live="polite">
+            <span class="roi-live-dot" aria-hidden="true"></span>
+              <span id="runStatus">Simulation 1 | Month 0 / 30</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="roi-progress" aria-label="Animation progress">
+        <div class="roi-progress-fill" id="progressBar"></div>
+      </div>
+
+      <div class="roi-main">
+        <section class="roi-panel roi-panel--chart" aria-labelledby="chartPanelTitle">
+          <div class="roi-panel-head roi-panel-head--chart">
+            <div>
+              <p class="roi-kicker">ROI graphic over time</p>
+              <h2 id="chartPanelTitle">Return on Investment graphic timeline</h2>
+            </div>
+          </div>
+
+          <div class="roi-chart-meta">
+            <div class="roi-legend" aria-hidden="true">
+              <span><i class="swatch swatch--revenue"></i>Revenue</span>
+              <span><i class="swatch swatch--cost"></i>Cost</span>
+              <span><i class="swatch swatch--profit"></i>Profit zone</span>
+              <span><i class="swatch swatch--loss"></i>Loss zone</span>
+            </div>
+            <p class="roi-caption" id="viewCaption">Spend lands first. Revenue begins after go-live. Break-even is where the gap closes.</p>
+          </div>
+
+          <div class="roi-chart-surface" id="chartSurface">
+            <div class="roi-break-banner" id="breakBanner" aria-live="polite"></div>
+
+            <svg
+              class="roi-chart"
+              id="roiChart"
+              viewBox="0 0 960 560"
+              preserveAspectRatio="none"
+              role="img"
+              aria-labelledby="chartTitle chartDesc"
+            >
+              <title id="chartTitle">ROI graphic over time</title>
+              <desc id="chartDesc">Return on Investment graphic showing cumulative revenue, cumulative cost, break-even timing, profit, and ROI growth over time.</desc>
+
+              <defs>
+                <linearGradient id="profitGradient" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#37d07e" stop-opacity="0.48"></stop>
+                  <stop offset="100%" stop-color="#37d07e" stop-opacity="0.02"></stop>
+                </linearGradient>
+                <linearGradient id="lossGradient" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#ff7474" stop-opacity="0.08"></stop>
+                  <stop offset="100%" stop-color="#ff7474" stop-opacity="0.42"></stop>
+                </linearGradient>
+                <linearGradient id="lineGlowRevenue" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#8cc8ff"></stop>
+                  <stop offset="100%" stop-color="#4f9fff"></stop>
+                </linearGradient>
+                <linearGradient id="lineGlowCost" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#ffd38a"></stop>
+                  <stop offset="100%" stop-color="#ff9d4d"></stop>
+                </linearGradient>
+                <clipPath id="revealClip">
+                  <rect id="revealRect" x="0" y="0" width="0" height="560"></rect>
+                </clipPath>
+              </defs>
+
+              <g id="gridLayer"></g>
+              <g id="axisLayer"></g>
+              <line id="zeroLine" class="roi-zero-line" x1="0" y1="0" x2="0" y2="0"></line>
+
+              <g clip-path="url(#revealClip)">
+                <path id="positiveArea" class="roi-area roi-area--profit"></path>
+                <path id="negativeArea" class="roi-area roi-area--loss"></path>
+                <path id="revenueLine" class="roi-line roi-line--revenue"></path>
+                <path id="costLine" class="roi-line roi-line--cost"></path>
+                <path id="roiLine" class="roi-line roi-line--roi"></path>
+                <line id="currentLine" class="roi-current-line" x1="0" y1="0" x2="0" y2="0"></line>
+              </g>
+
+              <g id="annotationLayer"></g>
+              <circle id="currentRevenueHalo" class="roi-current-halo roi-current-halo--revenue" cx="0" cy="0" r="0"></circle>
+              <circle id="currentRevenueDot" class="roi-current-dot roi-current-dot--revenue" cx="0" cy="0" r="0"></circle>
+              <circle id="currentCostHalo" class="roi-current-halo roi-current-halo--cost" cx="0" cy="0" r="0"></circle>
+              <circle id="currentCostDot" class="roi-current-dot roi-current-dot--cost" cx="0" cy="0" r="0"></circle>
+              <circle id="currentRoiHalo" class="roi-current-halo roi-current-halo--roi" cx="0" cy="0" r="0"></circle>
+              <circle id="currentRoiDot" class="roi-current-dot roi-current-dot--roi" cx="0" cy="0" r="0"></circle>
+
+              <line id="breakEvenLine" class="roi-break-line" x1="0" y1="0" x2="0" y2="0"></line>
+              <circle id="breakEvenPulse" class="roi-break-pulse" cx="0" cy="0" r="0"></circle>
+              <circle id="drawdownDot" class="roi-drawdown-dot" cx="0" cy="0" r="0"></circle>
+              <text id="breakEvenLabel" class="roi-callout"></text>
+              <text id="drawdownLabel" class="roi-callout roi-callout--muted"></text>
+
+              <line id="hoverLine" class="roi-hover-line" x1="0" y1="0" x2="0" y2="0"></line>
+              <circle id="hoverDot" class="roi-hover-dot" cx="0" cy="0" r="0"></circle>
+            </svg>
+
+            <div class="roi-tooltip" id="chartTooltip" hidden>
+              <p class="roi-tooltip-title" id="tooltipTitle">Month 0</p>
+              <div class="roi-tooltip-grid">
+                <p><span>Revenue so far</span><strong id="tooltipRevenue">$0</strong></p>
+                <p><span>Cost so far</span><strong id="tooltipCost">$0</strong></p>
+                <p><span>Profit so far</span><strong id="tooltipProfit">$0</strong></p>
+                <p><span>ROI</span><strong id="tooltipRoi">0%</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="roi-snapshot">
+            <div>
+              <p class="roi-snapshot-label" id="snapshotLabel">Month 0</p>
+              <p class="roi-snapshot-text" id="snapshotText">Upfront cost lands first, so the curve opens below zero before revenue begins.</p>
+            </div>
+
+            <div class="roi-snapshot-grid">
+              <article>
+                <span>Revenue so far</span>
+                <strong id="snapshotRevenue">$0</strong>
+              </article>
+              <article>
+                <span>Cost so far</span>
+                <strong id="snapshotCost">$0</strong>
+              </article>
+              <article>
+                <span>Profit so far</span>
+                <strong id="snapshotProfit">$0</strong>
+              </article>
+              <article>
+                <span>ROI so far</span>
+                <strong id="snapshotRoi">0%</strong>
+              </article>
+            </div>
+          </div>
+
+          <article class="roi-explainer-card" aria-labelledby="roiExplainerTitle">
+            <p class="roi-explainer-kicker">ROI Basics</p>
+            <h3 id="roiExplainerTitle">What is ROI and why does it matter?</h3>
+            <p class="roi-explainer-text">
+              ROI, or return on investment, compares what a project earns with what it costs. It matters because it helps
+              you judge whether the money you spend today is likely to create enough value later, and how long it will
+              take to pay back.
+            </p>
+          </article>
+        </section>
+
+        <section class="roi-panel roi-panel--inputs" aria-labelledby="controlsTitle">
+          <div class="roi-panel-head">
+            <p class="roi-kicker">Inputs</p>
+            <h2 id="controlsTitle">Set the basics</h2>
+            <p class="roi-panel-copy">Choose a simulation, adjust the sliders, then run or reset it here.</p>
+          </div>
+
+          <div class="roi-presets" id="compareButtons" aria-label="Simulation slots">
+            <button class="roi-preset" type="button" data-run-slot="0"></button>
+            <button class="roi-preset" type="button" data-run-slot="1"></button>
+            <button class="roi-preset" type="button" data-run-slot="2"></button>
+          </div>
+
+          <div class="roi-action-row roi-action-row--panel">
+            <button class="roi-button roi-button--primary" id="pauseButton" type="button" aria-pressed="false">Run</button>
+            <button class="roi-button roi-button--ghost" id="replayButton" type="button">Reset</button>
+            <select class="roi-speed-select" id="speedSelect" name="speedSelect" aria-label="Simulation speed">
+              <option value="0.5" selected>Speed 0.5X</option>
+              <option value="1">Speed 1X</option>
+              <option value="2">Speed 2X</option>
+            </select>
+          </div>
+
+          <form class="roi-controls" id="controlForm">
+            <label class="roi-control">
+              <span class="roi-control-top">
+                <span>Upfront cost</span>
+                <output for="upfrontCost" id="upfrontCostValue">$0</output>
+              </span>
+              <input id="upfrontCost" name="upfrontCost" type="range" min="0" max="400000" step="5000" value="120000" />
+              <small class="roi-control-note">Money spent before results start. More upfront cost means a bigger early loss and later payback.</small>
+            </label>
+
+            <label class="roi-control">
+              <span class="roi-control-top">
+                <span>Launch delay</span>
+                <output for="delay" id="delayValue">0 months</output>
+              </span>
+              <input id="delay" name="delay" type="range" min="0" max="12" step="1" value="4" />
+              <small class="roi-control-note">How long until revenue starts. More delay pushes the revenue line right and delays break-even.</small>
+            </label>
+
+            <label class="roi-control">
+              <span class="roi-control-top">
+                <span>Monthly revenue</span>
+                <output for="peakMonthlyRevenue" id="peakMonthlyRevenueValue">$0/mo</output>
+              </span>
+              <input id="peakMonthlyRevenue" name="peakMonthlyRevenue" type="range" min="10000" max="450000" step="5000" value="135000" />
+              <small class="roi-control-note">Revenue per month once the project is fully running. Higher revenue improves payback and ROI.</small>
+            </label>
+
+            <label class="roi-control">
+              <span class="roi-control-top">
+                <span>Monthly cost</span>
+                <output for="monthlyOperatingCost" id="monthlyOperatingCostValue">$0/mo</output>
+              </span>
+              <input id="monthlyOperatingCost" name="monthlyOperatingCost" type="range" min="2000" max="120000" step="1000" value="28000" />
+              <small class="roi-control-note">Ongoing cost per month. Higher cost makes the cost line rise faster and slows payback.</small>
+            </label>
+
+            <label class="roi-control">
+              <span class="roi-control-top">
+                <span>Growth speed</span>
+                <output for="adoptionSpeed" id="adoptionSpeedValue">Steady</output>
+              </span>
+              <input id="adoptionSpeed" name="adoptionSpeed" type="range" min="0.4" max="1.8" step="0.05" value="1" />
+              <small class="roi-control-note">How fast revenue builds after launch. Faster growth gets you to the monthly revenue level sooner.</small>
+            </label>
+
+            <label class="roi-control">
+              <span class="roi-control-top">
+                <span>Months shown</span>
+                <output for="timeHorizon" id="timeHorizonValue">30 months</output>
+              </span>
+              <input id="timeHorizon" name="timeHorizon" type="range" min="12" max="48" step="1" value="30" />
+              <small class="roi-control-note">How long the chart runs. A longer window shows more of the payoff story.</small>
+            </label>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

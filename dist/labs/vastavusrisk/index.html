@@ -1,0 +1,3324 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Compliance Drift Simulator | How Small Control Failures Become Audit Disasters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #f4f7f9;
+  --ink: #16232c;
+  --muted: #5a6a74;
+  --panel: #fbfdff;
+  --line: #d2dde4;
+  --accent: #1e96ec;
+  --warning: #ffb020;
+  --vizHeight: 460px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Manrope", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 500px at 8% 0%, #d7eefc 0%, rgba(215, 238, 252, 0) 60%),
+    radial-gradient(1000px 500px at 95% 15%, #fce8d0 0%, rgba(252, 232, 208, 0) 58%),
+    linear-gradient(180deg, #f4f7f9 0%, #ecf1f5 100%);
+}
+
+.widget {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(247, 251, 255, 0.94));
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(17, 39, 53, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+}
+
+.hero {
+  padding: 20px 22px;
+  display: grid;
+  gap: 10px;
+}
+
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.hero-runtime {
+  min-width: 148px;
+  display: grid;
+  gap: 0;
+  padding: 8px 11px 9px;
+  border-radius: 14px;
+  border: 1px solid rgba(104, 154, 189, 0.34);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 196, 92, 0.28), rgba(255, 196, 92, 0) 30%),
+    radial-gradient(circle at 88% 20%, rgba(88, 196, 154, 0.22), rgba(88, 196, 154, 0) 34%),
+    linear-gradient(135deg, rgba(243, 250, 255, 0.96), rgba(225, 241, 252, 0.92));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 10px 20px rgba(26, 76, 108, 0.08);
+  justify-items: end;
+}
+
+.hero-runtime-day {
+  font: 700 0.96rem "Space Grotesk", sans-serif;
+  color: #123f5c;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.hero-progress {
+  height: 16px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #c8d8e2;
+  background: #e9f1f6;
+}
+
+.hero-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #1e96ec 0%, #6fcbff 55%, #ffb020 100%);
+  transition: width 0.08s linear;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(30, 150, 236, 0.12);
+  color: #0f4f79;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kicker::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--warning);
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+h1 {
+  margin: 0;
+  font: 700 clamp(1.4rem, 1rem + 1.5vw, 2.4rem) "Space Grotesk", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.hero p {
+  margin: 0;
+  max-width: 900px;
+  color: var(--muted);
+}
+
+.hero-lede {
+  margin: 0;
+  max-width: 760px;
+  color: #173b52;
+  font: 700 clamp(1rem, 0.92rem + 0.45vw, 1.18rem) "Space Grotesk", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(250px, 305px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.controls {
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+
+.controls h2,
+.sim h2 {
+  margin: 0;
+  font: 700 1.04rem "Space Grotesk", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.control-list {
+  display: grid;
+  gap: 12px;
+}
+
+.control-row {
+  padding: 11px 12px;
+  border: 1px solid #d7e3ea;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  display: grid;
+  gap: 8px;
+}
+
+.control-row label {
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.value-pill {
+  color: #0e527f;
+  background: rgba(30, 150, 236, 0.14);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.control-help {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5f7380;
+}
+
+input[type="range"],
+select {
+  width: 100%;
+}
+
+input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  accent-color: var(--accent);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d8e2e9 0%, #e4edf3 100%);
+  border: 1px solid #d4dee6;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -5px;
+  border-radius: 50%;
+  border: 1px solid #8dbddd;
+  background: linear-gradient(180deg, #ffffff 0%, #eef7fd 100%);
+  box-shadow: 0 2px 6px rgba(16, 36, 49, 0.16);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d8e2e9 0%, #e4edf3 100%);
+  border: 1px solid #d4dee6;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #8dbddd;
+  background: linear-gradient(180deg, #ffffff 0%, #eef7fd 100%);
+  box-shadow: 0 2px 6px rgba(16, 36, 49, 0.16);
+}
+
+select {
+  font: 600 13px "Manrope", sans-serif;
+  color: var(--ink);
+  border-radius: 10px;
+  border: 1px solid #c7d5de;
+  padding: 8px 10px;
+  background: #fff;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.toggle-row label {
+  margin: 0;
+}
+
+.switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+}
+
+.switch input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.switch-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid #bcc9d3;
+  background: #dbe3e9;
+  transition: background 0.2s ease;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(16, 36, 49, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.switch input:focus-visible + .switch-track {
+  outline: 2px solid #0f4f79;
+  outline-offset: 2px;
+}
+
+.switch input:checked + .switch-track {
+  background: rgba(24, 169, 87, 0.4);
+  border-color: rgba(24, 169, 87, 0.75);
+}
+
+.switch input:checked + .switch-track .switch-thumb {
+  transform: translateX(22px);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+button {
+  appearance: none;
+  border-radius: 12px;
+  border: 1px solid #b5c5d0;
+  background: #fff;
+  color: var(--ink);
+  font: 700 13px "Manrope", sans-serif;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: #7aaed0;
+}
+
+button.primary {
+  background: linear-gradient(120deg, #0f8ddb, #22a7f0 55%, #6ec7ff);
+  border-color: #0f8ddb;
+  color: #fff;
+}
+
+.brandPanel {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #355063, #4c6b7a 54%, #658490);
+  border: 1px solid rgba(19, 38, 60, 0.1);
+}
+
+.brandInner {
+  position: relative;
+  padding: 15px 16px 16px;
+  color: rgba(247, 251, 255, 0.98);
+}
+
+.brandInner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 82% 22%, rgba(255, 255, 255, 0.14), transparent 24%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 44%);
+  pointer-events: none;
+}
+
+.brandLogo {
+  position: relative;
+  display: block;
+  width: min(152px, 58%);
+  height: auto;
+  margin: 0 0 10px;
+}
+
+.brandCopy {
+  position: relative;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: rgba(246, 250, 255, 0.94);
+}
+
+.brandLink {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #effbff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(239, 251, 255, 0.68);
+  white-space: nowrap;
+}
+
+.brandLink:hover {
+  opacity: 0.92;
+}
+
+.sim {
+  position: relative;
+  padding: 0;
+  display: block;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.progress {
+  display: grid;
+  gap: 6px;
+}
+
+.progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.progress-track {
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #c7d4de;
+  background: #e5edf3;
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #1e96ec 0%, #6fcbff 55%, #ffb020 100%);
+  transition: width 0.08s linear;
+}
+
+.sim-top {
+  display: grid;
+  gap: 12px;
+}
+
+.story-shell {
+  display: grid;
+  gap: 8px;
+}
+
+.viz-superhead {
+  margin: 0;
+  font: 700 11px "Space Grotesk", sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #5a6e7c;
+}
+
+.story-panel {
+  border: 1px solid #d1dee7;
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: grid;
+  align-content: start;
+  height: 126px;
+  gap: 6px;
+  background:
+    radial-gradient(circle at 9% 15%, rgba(30, 150, 236, 0.16), rgba(30, 150, 236, 0) 32%),
+    radial-gradient(circle at 92% 14%, rgba(255, 176, 32, 0.16), rgba(255, 176, 32, 0) 30%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.96), rgba(241, 248, 254, 0.92));
+  box-shadow: 0 10px 22px rgba(22, 53, 72, 0.08);
+}
+
+.story-kicker {
+  margin: 0;
+  font: 700 11px "Space Grotesk", sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f6fae;
+}
+
+.story-title {
+  margin: 0;
+  font: 700 clamp(1rem, 0.9rem + 0.45vw, 1.18rem) "Space Grotesk", sans-serif;
+  letter-spacing: -0.02em;
+  color: #17384d;
+}
+
+.story-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #546875;
+  max-width: 840px;
+}
+
+.viz-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-height: 320px;
+  height: var(--vizHeight);
+}
+
+.viz {
+  position: relative;
+  border-radius: 20px;
+  border: none;
+  overflow: hidden;
+  height: 100%;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(30, 150, 236, 0.2), rgba(30, 150, 236, 0) 35%),
+    radial-gradient(circle at 87% 10%, rgba(255, 176, 32, 0.22), rgba(255, 176, 32, 0) 32%),
+    radial-gradient(circle at 86% 92%, rgba(225, 77, 77, 0.2), rgba(225, 77, 77, 0) 35%),
+    linear-gradient(160deg, #f8fcff 0%, #edf6fd 48%, #f7fbff 100%);
+  min-height: 320px;
+  box-shadow: none;
+}
+
+.viz[data-mode="manual"] {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(30, 150, 236, 0.22), rgba(30, 150, 236, 0) 35%),
+    radial-gradient(circle at 87% 10%, rgba(255, 176, 32, 0.23), rgba(255, 176, 32, 0) 32%),
+    radial-gradient(circle at 86% 92%, rgba(225, 77, 77, 0.2), rgba(225, 77, 77, 0) 35%),
+    linear-gradient(160deg, #f8fcff 0%, #edf6fd 48%, #f7fbff 100%);
+}
+
+.viz[data-mode="automated"] {
+  background:
+    radial-gradient(circle at 14% 16%, rgba(19, 166, 115, 0.2), rgba(19, 166, 115, 0) 36%),
+    radial-gradient(circle at 85% 12%, rgba(30, 150, 236, 0.2), rgba(30, 150, 236, 0) 35%),
+    radial-gradient(circle at 88% 88%, rgba(32, 122, 85, 0.16), rgba(32, 122, 85, 0) 35%),
+    linear-gradient(160deg, #f7fcfb 0%, #ebf8f4 48%, #f6fcfa 100%);
+}
+
+.viz-head {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(137, 161, 176, 0.48);
+  background: rgba(249, 252, 255, 0.9);
+  color: #1d445c;
+  font: 700 11px "Space Grotesk", sans-serif;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.viz[data-mode="automated"] .viz-head {
+  border-color: rgba(76, 151, 126, 0.48);
+  color: #1a5b41;
+  background: rgba(246, 255, 251, 0.9);
+}
+
+.viz::before {
+  content: none;
+}
+
+.viz::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(210, 231, 245, 0.16));
+  pointer-events: none;
+}
+
+.viz canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sim-stats-modal {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(16, 42, 59, 0.28);
+  backdrop-filter: blur(2px);
+  z-index: 12;
+}
+
+.sim-stats-modal.show {
+  display: flex;
+  animation: statsIn 0.28s ease-out;
+}
+
+.sim-stats {
+  position: relative;
+  width: min(940px, 100%);
+  max-height: calc(100% - 28px);
+  overflow: auto;
+  display: grid;
+  gap: 8px;
+  border: 1px solid #c8d9e4;
+  border-radius: 16px;
+  background:
+    radial-gradient(420px 180px at 0% 0%, rgba(98, 191, 242, 0.14), rgba(98, 191, 242, 0) 60%),
+    radial-gradient(360px 180px at 100% 100%, rgba(113, 216, 173, 0.14), rgba(113, 216, 173, 0) 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(241, 248, 254, 0.96));
+  padding: 12px 10px 10px;
+  box-shadow: 0 18px 36px rgba(21, 53, 73, 0.2);
+}
+
+.sim-stats h2 {
+  margin: 0;
+  font: 700 0.98rem "Space Grotesk", sans-serif;
+  color: #183649;
+}
+
+.sim-stats-note {
+  margin: 0;
+  font-size: 12px;
+  color: #5a6d7a;
+}
+
+.sim-stats-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid #adc5d4;
+  background: #fff;
+  color: #1d3b50;
+  font: 700 14px "Space Grotesk", sans-serif;
+  line-height: 1;
+  padding: 0;
+}
+
+.sim-stats-close:hover {
+  border-color: #7ea8c0;
+  background: #f1f8fd;
+}
+
+.risk-compare {
+  border-radius: 16px;
+  border: 1px solid #c6d8e5;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  background:
+    radial-gradient(420px 180px at 8% 0%, rgba(56, 177, 232, 0.2), rgba(56, 177, 232, 0) 60%),
+    radial-gradient(340px 160px at 92% 100%, rgba(37, 186, 124, 0.18), rgba(37, 186, 124, 0) 66%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(239, 247, 255, 0.9));
+  box-shadow: 0 12px 24px rgba(26, 62, 84, 0.1);
+}
+
+.risk-process-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.risk-process {
+  border: 1px solid rgba(189, 206, 218, 0.9);
+  border-radius: 14px;
+  padding: 9px;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(242, 249, 255, 0.92));
+}
+
+.risk-process.manual {
+  background: linear-gradient(180deg, rgba(255, 248, 245, 0.96), rgba(255, 242, 236, 0.9));
+}
+
+.risk-process.automated {
+  background: linear-gradient(180deg, rgba(245, 255, 250, 0.96), rgba(235, 250, 243, 0.9));
+}
+
+.risk-process-name {
+  margin: 0;
+  font: 700 11px "Space Grotesk", sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #466172;
+}
+
+.risk-process-outcome {
+  margin: 0;
+  max-width: min(100%, 320px);
+  font-size: 12px;
+  line-height: 1.36;
+  text-align: center;
+  color: #4b5f6c;
+}
+
+.process-metrics {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.metric-chip {
+  border: 1px solid rgba(192, 207, 218, 0.88);
+  border-radius: 12px;
+  padding: 7px 8px;
+  display: grid;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.metric-chip span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5f7482;
+}
+
+.metric-chip strong {
+  font: 700 12.5px/1.35 "Space Grotesk", sans-serif;
+  color: #19384b;
+}
+
+.risk-ring {
+  --risk: 0;
+  --ring-main: #1cb777;
+  --ring-glow: rgba(28, 183, 119, 0.26);
+  position: relative;
+  width: 146px;
+  height: 146px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(from -90deg, var(--ring-main) calc(var(--risk) * 1%), rgba(204, 218, 228, 0.5) 0);
+  box-shadow: 0 10px 24px rgba(25, 64, 87, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.36);
+}
+
+.risk-ring::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ring-glow) 0%, rgba(0, 0, 0, 0) 72%);
+  z-index: 0;
+}
+
+.risk-ring::after {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(252, 255, 255, 0.95), rgba(240, 248, 255, 0.92));
+  border: 1px solid rgba(196, 214, 225, 0.85);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.52);
+  z-index: 1;
+}
+
+.risk-process.manual .risk-ring {
+  --ring-main: #ef6d57;
+  --ring-glow: rgba(239, 109, 87, 0.27);
+}
+
+.risk-process.automated .risk-ring {
+  --ring-main: #1ab976;
+  --ring-glow: rgba(26, 185, 118, 0.27);
+}
+
+.risk-ring-content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+}
+
+.risk-ring-value {
+  font: 800 1.2rem "Space Grotesk", sans-serif;
+  letter-spacing: -0.02em;
+  color: #18394f;
+}
+
+.risk-ring-band {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4f6573;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.risk-delta {
+  border-radius: 999px;
+  border: 1px solid #bfd3e0;
+  padding: 8px 12px;
+  font: 700 12px "Space Grotesk", sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #234d66;
+  background: linear-gradient(90deg, rgba(234, 245, 252, 0.9), rgba(242, 251, 248, 0.9));
+}
+
+.risk-delta.good {
+  color: #0d7a48;
+  border-color: rgba(26, 185, 118, 0.45);
+  background: linear-gradient(90deg, rgba(224, 249, 236, 0.9), rgba(233, 254, 244, 0.92));
+}
+
+.risk-delta.bad {
+  color: #aa3f33;
+  border-color: rgba(239, 109, 87, 0.45);
+  background: linear-gradient(90deg, rgba(253, 232, 226, 0.9), rgba(255, 239, 232, 0.92));
+}
+
+.narrative {
+  margin: 0;
+  font-size: 13px;
+  color: #4d5f6a;
+  border: 1px solid #d1dce5;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 10px 12px;
+}
+
+.narrative.insight {
+  border-style: dashed;
+  background: rgba(250, 253, 255, 0.9);
+  color: #314653;
+}
+
+.level-controlled {
+  color: #0c7f42;
+}
+
+.level-drift {
+  color: #a76b0a;
+}
+
+.level-elevated {
+  color: #bf5500;
+}
+
+.level-critical {
+  color: #b32b2b;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.95);
+    opacity: 0.75;
+  }
+  to {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes statsIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1080px) {
+  .risk-ring {
+    width: 132px;
+    height: 132px;
+  }
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .story-panel {
+    height: 138px;
+  }
+
+  .viz-compare {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .viz {
+    height: 360px;
+  }
+
+  .risk-process-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .widget {
+    padding: 12px;
+  }
+
+  .story-panel {
+    height: 160px;
+  }
+
+  .hero-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-runtime {
+    justify-items: start;
+    min-width: 0;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .risk-process-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .risk-ring {
+    width: 124px;
+    height: 124px;
+  }
+
+  .viz-compare,
+  .viz {
+    min-height: 0;
+  }
+
+  .viz {
+    min-height: 320px;
+    height: 320px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="widget" id="widget">
+  <header class="panel hero">
+    <div class="hero-top">
+      <span class="kicker">Hidden Compliance Drift</span>
+      <div class="hero-runtime" aria-live="polite">
+        <span id="dayCounter" class="hero-runtime-day">Day 0 / 500</span>
+      </div>
+    </div>
+    <h1>Compliance Drift Simulator</h1>
+    <p class="hero-lede">How small control failures silently become audit disasters.</p>
+    <p>Watch missed checks, documentation gaps, and audit timing turn manual work into hidden risk across 500 workdays.<br />Small errors look harmless day to day, then stack into audit exposure.</p>
+    <div class="hero-progress">
+      <div class="hero-progress-fill" id="progressFill"></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel controls" aria-label="Simulation controls">
+      <h2>Model Inputs</h2>
+      <p class="intro">Adjust workload and oversight to see how fast hidden compliance drift outgrows what the team notices.</p>
+
+      <div class="control-list">
+        <div class="control-row">
+          <label for="teamSize">Team Size <span class="value-pill" id="teamSizeValue">20</span></label>
+          <input id="teamSize" type="range" min="5" max="100" step="1" value="20" />
+          <p class="control-help">Number of employees performing compliance checks.</p>
+        </div>
+
+        <div class="control-row">
+          <label for="checksPerDay">Control Checks Per Day <span class="value-pill" id="checksPerDayValue">80</span></label>
+          <input id="checksPerDay" type="range" min="10" max="300" step="1" value="80" />
+          <p class="control-help">Total operational controls executed daily, including temperature logs, cleaning checks, and traceability entries.</p>
+        </div>
+
+        <div class="control-row">
+          <label for="auditFrequency">Oversight Rhythm <span class="value-pill" id="auditFrequencyValue">Balanced</span></label>
+          <select id="auditFrequency">
+            <option value="monthly">Tight Oversight</option>
+            <option value="quarterly" selected>Balanced Cadence</option>
+            <option value="twiceYearly">Light Cadence</option>
+            <option value="yearly">Reactive Audit</option>
+          </select>
+          <p class="control-help" id="auditFrequencyHelp">Formal audits every 125 workdays with light spot reviews between cycles. Drift can build before the next formal review.</p>
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button id="startPause" class="primary" type="button">Pause</button>
+        <button id="reset" type="button">Reset Run</button>
+      </div>
+
+      <section class="brandPanel">
+        <div class="brandInner">
+          <img class="brandLogo" src="../../media/simfluence.webp" alt="Simfluence logo" />
+          <p class="brandCopy">Simulation stories for compliance buyers, audit leaders, and operations teams who need to see hidden risk before the audit does.<a class="brandLink" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">Visit website</a></p>
+        </div>
+      </section>
+    </aside>
+
+    <section class="panel sim" aria-label="Simulation output">
+      <div class="sim-top">
+        <div class="story-shell" id="storyShell">
+          <p class="viz-superhead">Manual Process vs Automated Control System</p>
+          <div class="story-panel" aria-live="polite">
+            <p class="story-kicker">How Does Risk Accumulate Without Anyone Noticing?</p>
+            <p class="story-title" id="storyTitle">Day 1-100: Everything looks fine</p>
+            <p class="story-text" id="storyText">Manual systems create invisible operational drift. Small skipped checks and inaccurate records quietly accumulate while automated controls keep verifying the process.</p>
+          </div>
+        </div>
+        <div class="viz-compare" id="vizCompare">
+          <div class="viz" data-mode="manual" id="manualViz">
+            <p class="viz-head">Manual Process</p>
+            <canvas id="manualCanvas" aria-label="Manual compliance flow visualization"></canvas>
+          </div>
+          <div class="viz" data-mode="automated" id="automatedViz">
+            <p class="viz-head">Automated Controls</p>
+            <canvas id="automatedCanvas" aria-label="Automated compliance flow visualization"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-stats-modal" id="simStatsModal" role="dialog" aria-modal="true" aria-labelledby="simStatsTitle" aria-hidden="true">
+        <div class="sim-stats" id="simStatsCard" aria-live="polite">
+          <button type="button" class="sim-stats-close" id="simStatsClose" aria-label="Close simulation stats">X</button>
+          <h2 id="simStatsTitle">Audit Outcome</h2>
+          <p class="sim-stats-note">End-of-run snapshot after 500 workdays. This is where hidden drift becomes visible.</p>
+          <section class="risk-compare" aria-label="Process risk comparison diagram">
+            <div class="risk-process-grid">
+              <article class="risk-process manual">
+                <p class="risk-process-name">Manual System</p>
+                <div class="risk-ring" id="manualRiskRing" style="--risk: 0;">
+                  <div class="risk-ring-content">
+                    <span class="risk-ring-value" id="manualRiskValue">0.0%</span>
+                    <span class="risk-ring-band" id="manualRiskBand">Low risk</span>
+                  </div>
+                </div>
+                <p class="risk-process-outcome" id="manualOutcomeText">Hidden compliance drift detected. Multiple control failures accumulated unnoticed.</p>
+                <div class="process-metrics">
+                  <div class="metric-chip"><span>Hidden Risk</span><strong id="manualHiddenMetric">0.0</strong></div>
+                  <div class="metric-chip"><span>Open Findings</span><strong id="manualOpenMetric">0.0</strong></div>
+                  <div class="metric-chip"><span>Resolved</span><strong id="manualResolvedMetric">0.0</strong></div>
+                  <div class="metric-chip"><span>Audit Severity</span><strong id="manualSeverityMetric">Pending</strong></div>
+                  <div class="metric-chip"><span>Stability</span><strong id="manualStabilityMetric">Stable</strong></div>
+                  <div class="metric-chip"><span>Oversight</span><strong id="manualOversightMetric">Base cadence</strong></div>
+                  <div class="metric-chip"><span>Trust</span><strong id="manualTrustMetric">100</strong></div>
+                  <div class="metric-chip"><span>Remediation</span><strong id="manualRemediationMetric">0 days</strong></div>
+                </div>
+              </article>
+
+              <article class="risk-process automated">
+                <p class="risk-process-name">Automated System</p>
+                <div class="risk-ring" id="automatedRiskRing" style="--risk: 0;">
+                  <div class="risk-ring-content">
+                    <span class="risk-ring-value" id="automatedRiskValue">0.0%</span>
+                    <span class="risk-ring-band" id="automatedRiskBand">Low risk</span>
+                  </div>
+                </div>
+                <p class="risk-process-outcome" id="automatedOutcomeText">Continuous monitoring prevented risk escalation.</p>
+                <div class="process-metrics">
+                  <div class="metric-chip"><span>Hidden Risk</span><strong id="automatedHiddenMetric">0.0</strong></div>
+                  <div class="metric-chip"><span>Open Findings</span><strong id="automatedOpenMetric">0.0</strong></div>
+                  <div class="metric-chip"><span>Resolved</span><strong id="automatedResolvedMetric">0.0</strong></div>
+                  <div class="metric-chip"><span>Audit Severity</span><strong id="automatedSeverityMetric">Pending</strong></div>
+                  <div class="metric-chip"><span>Stability</span><strong id="automatedStabilityMetric">Stable</strong></div>
+                  <div class="metric-chip"><span>Oversight</span><strong id="automatedOversightMetric">Base cadence</strong></div>
+                  <div class="metric-chip"><span>Trust</span><strong id="automatedTrustMetric">100</strong></div>
+                  <div class="metric-chip"><span>Remediation</span><strong id="automatedRemediationMetric">0 days</strong></div>
+                </div>
+              </article>
+            </div>
+            <div class="risk-delta" id="riskDelta">Risk gap: 0.0 pts</div>
+            <p class="narrative insight" id="insightText">Insight: Compliance failures rarely happen in a single moment. They emerge slowly from hundreds of small missed controls.</p>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+  const SIM_CONFIG = {
+    automationOmissionMultiplier: 0.35,
+    automationDetectionRate: 0.75,
+    manualDetectionRate: 0.15,
+    automationRiskMultiplier: 0.45,
+    manualShockCapacityMultiplier: 0.82,
+    automatedShockCapacityMultiplier: 0.95,
+    manualShockMissMultiplier: 1.15,
+    automatedShockMissMultiplier: 1.03,
+    manualRemediationRate: 0.12,
+    automatedRemediationRate: 0.22,
+    severeOversightDays: 60,
+    trustHitPerFinding: 0.4,
+    manualTrustRecovery: 0.12,
+    automatedTrustRecovery: 0.22,
+    auditPauseMs: 3640
+  };
+
+  const MODEL = {
+    totalDays: 500,
+    runtimeMs: 15000,
+    naturalResolutionMultiplier: 0.999,
+    manualChecksPerReviewer: 4,
+    automatedChecksPerReviewer: 6.5,
+    riskThresholdBase: 200,
+    riskThresholdPerReviewer: 29,
+    hiddenRiskWeight: 0.95,
+    findingsRiskWeight: 1.45,
+    shockRiskWeight: 3.2,
+    trustRiskWeight: 1.35,
+    auditPrograms: {
+      monthly: {
+        badge: "Tight",
+        formalInterval: 42,
+        rollingInterval: 10,
+        rollingShare: 0.075,
+        detectionLift: 0.07,
+        helper: "Formal audits every 42 workdays with frequent spot reviews. Helps detect drift early before risks accumulate."
+      },
+      quarterly: {
+        badge: "Balanced",
+        formalInterval: 125,
+        rollingInterval: 21,
+        rollingShare: 0.04,
+        detectionLift: 0.035,
+        helper: "Formal audits every 125 workdays with light spot reviews between cycles. Drift can build before the next formal review."
+      },
+      twiceYearly: {
+        badge: "Light",
+        formalInterval: 250,
+        rollingInterval: 42,
+        rollingShare: 0.022,
+        detectionLift: 0.015,
+        helper: "Two major audits across the run with only occasional review sweeps. Hidden issues have long stretches to accumulate."
+      },
+      yearly: {
+        badge: "Reactive",
+        formalInterval: 500,
+        rollingInterval: 84,
+        rollingShare: 0.008,
+        detectionLift: 0.005,
+        helper: "Most issues stay hidden until the final audit near day 500. This is where manual drift becomes easiest to miss."
+      }
+    }
+  };
+  const FIXED_OMISSION_RATE = 0.04;
+  const FIXED_CRITICALITY = 3;
+
+  MODEL.dayMs = MODEL.runtimeMs / MODEL.totalDays;
+
+  const ui = {
+    widget: document.getElementById("widget"),
+    controlsPanel: document.querySelector(".controls"),
+    storyShell: document.getElementById("storyShell"),
+    vizCompare: document.getElementById("vizCompare"),
+
+    teamSize: document.getElementById("teamSize"),
+    checksPerDay: document.getElementById("checksPerDay"),
+    auditFrequency: document.getElementById("auditFrequency"),
+
+    teamSizeValue: document.getElementById("teamSizeValue"),
+    checksPerDayValue: document.getElementById("checksPerDayValue"),
+    auditFrequencyValue: document.getElementById("auditFrequencyValue"),
+    auditFrequencyHelp: document.getElementById("auditFrequencyHelp"),
+
+    dayCounter: document.getElementById("dayCounter"),
+    progressFill: document.getElementById("progressFill"),
+    storyTitle: document.getElementById("storyTitle"),
+    storyText: document.getElementById("storyText"),
+    simStatsModal: document.getElementById("simStatsModal"),
+    simStatsClose: document.getElementById("simStatsClose"),
+    manualRiskRing: document.getElementById("manualRiskRing"),
+    manualRiskValue: document.getElementById("manualRiskValue"),
+    manualRiskBand: document.getElementById("manualRiskBand"),
+    manualOutcomeText: document.getElementById("manualOutcomeText"),
+    manualHiddenMetric: document.getElementById("manualHiddenMetric"),
+    manualOpenMetric: document.getElementById("manualOpenMetric"),
+    manualResolvedMetric: document.getElementById("manualResolvedMetric"),
+    manualSeverityMetric: document.getElementById("manualSeverityMetric"),
+    manualStabilityMetric: document.getElementById("manualStabilityMetric"),
+    manualOversightMetric: document.getElementById("manualOversightMetric"),
+    manualTrustMetric: document.getElementById("manualTrustMetric"),
+    manualRemediationMetric: document.getElementById("manualRemediationMetric"),
+    automatedRiskRing: document.getElementById("automatedRiskRing"),
+    automatedRiskValue: document.getElementById("automatedRiskValue"),
+    automatedRiskBand: document.getElementById("automatedRiskBand"),
+    automatedOutcomeText: document.getElementById("automatedOutcomeText"),
+    automatedHiddenMetric: document.getElementById("automatedHiddenMetric"),
+    automatedOpenMetric: document.getElementById("automatedOpenMetric"),
+    automatedResolvedMetric: document.getElementById("automatedResolvedMetric"),
+    automatedSeverityMetric: document.getElementById("automatedSeverityMetric"),
+    automatedStabilityMetric: document.getElementById("automatedStabilityMetric"),
+    automatedOversightMetric: document.getElementById("automatedOversightMetric"),
+    automatedTrustMetric: document.getElementById("automatedTrustMetric"),
+    automatedRemediationMetric: document.getElementById("automatedRemediationMetric"),
+    riskDelta: document.getElementById("riskDelta"),
+    insightText: document.getElementById("insightText"),
+
+    startPause: document.getElementById("startPause"),
+    reset: document.getElementById("reset"),
+
+    manualCanvas: document.getElementById("manualCanvas"),
+    automatedCanvas: document.getElementById("automatedCanvas")
+  };
+  const EMBED_WIDGET_ID = "sim11-compliance-drift";
+
+  const num = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+  const whole = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 });
+
+  const runtime = {
+    running: true,
+    day: 0,
+    statsDismissed: false,
+    visualTimeMs: 0,
+    auditPauseMsRemaining: 0,
+    quality: null,
+    isInViewport: true,
+    isDocumentVisible: !document.hidden,
+    lastRenderTs: 0
+  };
+  const PERFORMANCE_PROFILES = {
+    default: {
+      key: "default",
+      frameIntervalMs: 0,
+      maxFrameStepMs: 80,
+      dprMax: 2,
+      minSpawnCount: 12,
+      maxSpawnCount: 64,
+      maxActiveParticles: 160,
+      maxTrailPoints: 9,
+      minExposureCount: 10,
+      maxExposureCount: 48,
+      maxActiveExposures: 56,
+      maxAuditBurstCount: 10,
+      maxResolvedBurstCount: 12,
+      maxActiveBursts: 72,
+      binSweepCount: 6,
+      hiddenFlowPulseCount: 7,
+      findingFlowPulseCount: 5,
+      remediationPacketCap: 7,
+      auditMarkerCount: 5,
+      auditBurstRayCount: 7,
+      findingBurstRayCount: 5,
+      hiddenBurstRayCount: 6
+    },
+    lite: {
+      key: "lite",
+      frameIntervalMs: 1000 / 30,
+      maxFrameStepMs: 96,
+      dprMax: 1.35,
+      minSpawnCount: 8,
+      maxSpawnCount: 36,
+      maxActiveParticles: 96,
+      maxTrailPoints: 6,
+      minExposureCount: 6,
+      maxExposureCount: 26,
+      maxActiveExposures: 32,
+      maxAuditBurstCount: 6,
+      maxResolvedBurstCount: 8,
+      maxActiveBursts: 40,
+      binSweepCount: 4,
+      hiddenFlowPulseCount: 4,
+      findingFlowPulseCount: 3,
+      remediationPacketCap: 5,
+      auditMarkerCount: 3,
+      auditBurstRayCount: 5,
+      findingBurstRayCount: 4,
+      hiddenBurstRayCount: 4
+    }
+  };
+  const SEVERITY_META = {
+    pending: { label: "Pending", shockDays: 0 },
+    clean: { label: "Clean", shockDays: 0 },
+    minor: { label: "Minor", shockDays: 8 },
+    moderate: { label: "Moderate", shockDays: 20 },
+    severe: { label: "Severe", shockDays: 40 }
+  };
+  const RISK_META = [
+    {
+      max: 35,
+      className: "level-controlled",
+      summaryLabel: "Low risk",
+      ringMain: "#1cb777",
+      ringGlow: "rgba(28, 183, 119, 0.28)"
+    },
+    {
+      max: 65,
+      className: "level-drift",
+      summaryLabel: "Risk rising",
+      ringMain: "#ffb020",
+      ringGlow: "rgba(255, 176, 32, 0.3)"
+    },
+    {
+      max: 85,
+      className: "level-elevated",
+      summaryLabel: "High risk",
+      ringMain: "#ff8d2b",
+      ringGlow: "rgba(255, 141, 43, 0.3)"
+    },
+    {
+      max: Infinity,
+      className: "level-critical",
+      summaryLabel: "Critical",
+      ringMain: "#e14d4d",
+      ringGlow: "rgba(225, 77, 77, 0.3)"
+    }
+  ];
+
+  function createScenario(automated, canvas) {
+    return {
+      automated: automated,
+      canvas: canvas,
+      ctx: canvas.getContext("2d"),
+      state: {
+        hiddenBacklog: 0,
+        openFindings: 0,
+        resolvedFindings: 0,
+        displayRisk: 0,
+        trustScore: 100,
+        operationalStability: 100,
+
+        dailyChecks: 0,
+        dailyMisses: 0,
+        dailyUndetected: 0,
+        dailyDetected: 0,
+        dailyResolved: 0,
+
+        auditSeverity: "Pending",
+        severityLevel: "pending",
+        lastAuditDay: 0,
+        lastReviewDay: 0,
+        auditJustTriggered: false,
+        auditShockDaysRemaining: 0,
+        extraOversightDaysRemaining: 0,
+        daysInRemediation: 0
+      },
+      viz: {
+        particles: [],
+        bursts: [],
+        exposures: [],
+        paintCache: null,
+        stackWobble: 0,
+        stackImpact: 0,
+        detectedImpact: 0,
+        resolvedImpact: 0,
+        auditLineAlpha: 0,
+        auditFlash: 0,
+        auditDrain: 0,
+        hiddenGhostRatio: 0
+      }
+    };
+  }
+
+  const scenarios = {
+    manual: createScenario(false, ui.manualCanvas),
+    automated: createScenario(true, ui.automatedCanvas)
+  };
+  const scenarioList = [scenarios.manual, scenarios.automated];
+
+  let rafId = 0;
+  let lastTs = 0;
+  let dayAccumulator = 0;
+  let embedHeightRafId = 0;
+  let lastEmbedHeight = 0;
+
+  function getPerformanceProfile() {
+    const prefersReducedMotion = typeof window.matchMedia === "function"
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarsePointer = typeof window.matchMedia === "function"
+      && window.matchMedia("(pointer: coarse)").matches;
+    const smallViewport = window.innerWidth <= 960;
+    const lowCpu = (navigator.hardwareConcurrency || 8) <= 4;
+    const lowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
+    return (prefersReducedMotion || (smallViewport && (coarsePointer || lowCpu || lowMemory)))
+      ? PERFORMANCE_PROFILES.lite
+      : PERFORMANCE_PROFILES.default;
+  }
+
+  function getQuality() {
+    return runtime.quality || PERFORMANCE_PROFILES.default;
+  }
+
+  function syncPerformanceProfile() {
+    const next = getPerformanceProfile();
+    if (runtime.quality && runtime.quality.key === next.key) {
+      return;
+    }
+    runtime.quality = next;
+    lastTs = 0;
+    runtime.lastRenderTs = 0;
+    resizeCanvases();
+  }
+
+  function canAnimate() {
+    return runtime.isDocumentVisible && runtime.isInViewport;
+  }
+
+  function stopFrameLoop() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+    lastTs = 0;
+    runtime.lastRenderTs = 0;
+  }
+
+  function ensureFrameLoop() {
+    if (!rafId && canAnimate()) {
+      rafId = requestAnimationFrame(frame);
+    }
+  }
+
+  function readControls() {
+    return {
+      teamSize: Number(ui.teamSize.value),
+      checksPerDay: Number(ui.checksPerDay.value),
+      auditFrequency: ui.auditFrequency.value
+    };
+  }
+
+  function getAuditProgram(auditFrequency) {
+    return MODEL.auditPrograms[auditFrequency] || MODEL.auditPrograms.quarterly;
+  }
+
+  function getLaneCount(teamSize) {
+    return Math.max(4, Math.min(12, Math.round(teamSize / 8)));
+  }
+
+  function getLoadProfile(scenario, controls, capacityMultiplier) {
+    const baseChecksPerReviewer = scenario.automated
+      ? MODEL.automatedChecksPerReviewer
+      : MODEL.manualChecksPerReviewer;
+    const targetChecksPerReviewer = Math.max(1.8, baseChecksPerReviewer * (capacityMultiplier || 1));
+    const loadPerReviewer = controls.checksPerDay / Math.max(1, controls.teamSize);
+    return {
+      loadPressure: Math.max(0, loadPerReviewer / targetChecksPerReviewer - 1),
+      reviewBuffer: Math.max(0, 1 - loadPerReviewer / targetChecksPerReviewer)
+    };
+  }
+
+  function syncControlLabels() {
+    const teamSize = Number(ui.teamSize.value);
+    const laneCount = getLaneCount(teamSize);
+    const auditProgram = getAuditProgram(ui.auditFrequency.value);
+    ui.teamSizeValue.textContent = teamSize + " (" + laneCount + " lanes)";
+    ui.checksPerDayValue.textContent = ui.checksPerDay.value;
+    ui.auditFrequencyValue.textContent = auditProgram.badge;
+    ui.auditFrequencyHelp.textContent = auditProgram.helper;
+  }
+
+  function getSeverityKey(revealed) {
+    if (revealed <= 0.1) {
+      return "clean";
+    }
+    if (revealed < 15) {
+      return "minor";
+    }
+    if (revealed < 40) {
+      return "moderate";
+    }
+    return "severe";
+  }
+
+  function getSeverityMeta(key) {
+    return SEVERITY_META[key] || SEVERITY_META.pending;
+  }
+
+  function getScenarioAuditProgram(scenario, auditFrequency) {
+    const base = getAuditProgram(auditFrequency);
+    const escalated = scenario.state.extraOversightDaysRemaining > 0;
+    if (!escalated) {
+      return base;
+    }
+    return {
+      badge: base.badge,
+      formalInterval: Math.max(14, Math.round(base.formalInterval * 0.7)),
+      rollingInterval: Math.max(7, Math.round(base.rollingInterval * 0.7)),
+      rollingShare: Math.min(0.14, base.rollingShare * 1.25),
+      detectionLift: base.detectionLift + 0.02,
+      helper: base.helper
+    };
+  }
+
+  function getOversightStatusText(state) {
+    return state.extraOversightDaysRemaining > 0 ? "Escalated" : "Base cadence";
+  }
+
+  function getStabilityText(score) {
+    if (score >= 82) {
+      return "Stable";
+    }
+    if (score >= 64) {
+      return "Controlled";
+    }
+    if (score >= 42) {
+      return "Under pressure";
+    }
+    return "Disrupted";
+  }
+
+  function getStoryStage(day, manualState, automatedState) {
+    if (manualState.auditJustTriggered || automatedState.auditJustTriggered) {
+      return {
+        title: "Audit day: hidden drift becomes visible",
+        text: "The audit does not fix the system. It converts hidden issues into open findings, raises remediation pressure, and makes the short-term disruption visible."
+      };
+    }
+    if (manualState.auditShockDaysRemaining > 0 || automatedState.auditShockDaysRemaining > 0) {
+      return {
+        title: "Post-audit: remediation slows the operation",
+        text: "Manual operations are under strain while teams chase findings, document corrective action, and absorb extra oversight. Automated controls recover faster because fewer issues were exposed."
+      };
+    }
+    if (day <= 100) {
+      return {
+        title: "Day 1-100: Everything looks fine",
+        text: "Manual systems still appear stable. A few skipped checks and weak records disappear into the daily workload while automated controls keep verifying the process."
+      };
+    }
+    if (day <= 200) {
+      return {
+        title: "Day 101-200: Minor drift begins",
+        text: "Small omissions are starting to stack inside the manual system. Nothing feels catastrophic yet, but the drift is no longer correcting itself."
+      };
+    }
+    if (day <= 350) {
+      return {
+        title: "Day 201-350: Hidden risk growing",
+        text: "Missed checks, documentation gaps, and delayed reviews are compounding into hidden exposure. Automated controls keep stripping out risk before it can accumulate."
+      };
+    }
+    if (day < 420) {
+      return {
+        title: "Day 351-419: Audit still feels far away",
+        text: "The manual process still looks manageable on the surface, but concentrated exposure is now sitting in the system waiting for the next audit."
+      };
+    }
+    return {
+      title: "Day 420-500: Audit reveals accumulated failures",
+      text: "The audit turns invisible drift into visible failure. What looked like isolated misses is now a pattern of accumulated control breakdowns."
+    };
+  }
+
+  function getOutcomeMessage(automated, state) {
+    if (!automated) {
+      if (state.severityLevel === "severe" || state.auditShockDaysRemaining > 18 || state.openFindings > 40) {
+        return "Severe hidden drift detected.<br>Missed controls piled up unnoticed. Remediation is under way.";
+      }
+      if (state.severityLevel === "moderate" || state.openFindings > 15) {
+        return "Compliance drift exposed.<br>Corrective action is now slowing the manual process.";
+      }
+      if (state.hiddenBacklog < 6 && state.openFindings < 6) {
+        return "Minor drift is visible.<br>The manual process still needs follow-up work.";
+      }
+      return "Hidden drift is still building quietly.<br>The manual process has not corrected it yet.";
+    }
+
+    if (state.severityLevel === "severe" || state.openFindings > 25) {
+      return "Findings were detected.<br>Automation contained the spread and recovery remains controlled.";
+    }
+    if (state.severityLevel === "moderate" || state.openFindings > 8) {
+      return "Limited findings detected.<br>Continuous controls kept recovery fast and contained.";
+    }
+    if (state.hiddenBacklog < 4 && state.openFindings < 4) {
+      return "Continuous controls kept drift visible.<br>Risk escalation was prevented.";
+    }
+    return "Automation is containing drift.<br>It has not become a larger audit problem.";
+  }
+
+  function queueAuditExposure(scenario, revealed, hiddenCap) {
+    const viz = scenario.viz;
+    const quality = getQuality();
+    const ghostRatio = hiddenCap > 0 ? clamp(revealed / hiddenCap, 0, 1) : 0;
+    viz.auditLineAlpha = Math.max(viz.auditLineAlpha, 0.72);
+    viz.auditFlash = Math.max(viz.auditFlash, 0.34 + ghostRatio * 0.66);
+    if (revealed <= 0.1) {
+      return;
+    }
+    viz.auditDrain = Math.max(viz.auditDrain, 0.78 + ghostRatio * 0.22);
+    viz.hiddenGhostRatio = Math.max(viz.hiddenGhostRatio, Math.max(0.18, ghostRatio));
+    viz.stackImpact = Math.min(1, viz.stackImpact + 0.42 + ghostRatio * 0.24);
+    viz.detectedImpact = Math.min(1, viz.detectedImpact + 0.24 + ghostRatio * 0.34);
+    const count = clamp(
+      Math.round(revealed * (scenario.automated ? 1.35 : 1.85)),
+      quality.minExposureCount,
+      Math.min(quality.maxExposureCount, scenario.automated ? 30 : 48)
+    );
+    for (let i = 0; i < count; i += 1) {
+      viz.exposures.push({
+        progress: 0,
+        delay: Math.random() * 160,
+        speed: 1.05 + Math.random() * 1.15,
+        fromRatio: 0.08 + Math.random() * 0.84,
+        toRatio: 0.08 + Math.random() * 0.84,
+        alpha: 0.98,
+        phase: Math.random() * Math.PI * 2,
+        arcHeight: 22 + Math.random() * 28,
+        size: 3.3 + Math.random() * 2.3,
+        tail: 0.18 + Math.random() * 0.15
+      });
+    }
+    trimArray(viz.exposures, quality.maxActiveExposures);
+    const burstCount = clamp(Math.round(4 + ghostRatio * 8), 4, quality.maxAuditBurstCount);
+    for (let i = 0; i < burstCount; i += 1) {
+      viz.bursts.push({
+        kind: "audit",
+        xRatio: 0.16 + Math.random() * 0.66,
+        yRatio: 0.16 + Math.random() * 0.64,
+        radius: 8 + Math.random() * 6,
+        alpha: 0.96,
+        life: 0,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+    trimArray(viz.bursts, quality.maxActiveBursts);
+    viz.auditLineAlpha = 1;
+  }
+
+  function queueResolvedBursts(scenario, resolvedToday) {
+    if (resolvedToday <= 0.1) {
+      return;
+    }
+    const quality = getQuality();
+    const count = clamp(Math.round(resolvedToday * 1.1), 2, quality.maxResolvedBurstCount);
+    for (let i = 0; i < count; i += 1) {
+      scenario.viz.bursts.push({
+        kind: "resolved",
+        xRatio: 0.12 + Math.random() * 0.76,
+        yRatio: 0.18 + Math.random() * 0.6,
+        radius: 4 + Math.random() * 2,
+        alpha: 0.92,
+        life: 0,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+    trimArray(scenario.viz.bursts, quality.maxActiveBursts);
+    scenario.viz.resolvedImpact = Math.min(1, scenario.viz.resolvedImpact + Math.min(0.75, resolvedToday * 0.03));
+  }
+
+  function isFormalAuditDay(day, auditProgram, state) {
+    return day - state.lastAuditDay >= auditProgram.formalInterval;
+  }
+
+  function isRollingReviewDay(day, auditProgram, state) {
+    return auditProgram.rollingInterval > 0
+      && day - state.lastReviewDay >= auditProgram.rollingInterval
+      && !isFormalAuditDay(day, auditProgram, state);
+  }
+
+  function getRiskMeta(displayRisk) {
+    const risk = clamp(displayRisk, 0, 100);
+    for (let i = 0; i < RISK_META.length; i += 1) {
+      if (risk <= RISK_META[i].max) {
+        return RISK_META[i];
+      }
+    }
+    return RISK_META[RISK_META.length - 1];
+  }
+
+  function resetScenario(scenario) {
+    const state = scenario.state;
+    const viz = scenario.viz;
+
+    state.hiddenBacklog = 0;
+    state.openFindings = 0;
+    state.resolvedFindings = 0;
+    state.displayRisk = 0;
+    state.trustScore = 100;
+    state.operationalStability = 100;
+
+    state.dailyChecks = 0;
+    state.dailyMisses = 0;
+    state.dailyUndetected = 0;
+    state.dailyDetected = 0;
+    state.dailyResolved = 0;
+
+    state.auditSeverity = "Pending";
+    state.severityLevel = "pending";
+    state.lastAuditDay = 0;
+    state.lastReviewDay = 0;
+    state.auditJustTriggered = false;
+    state.auditShockDaysRemaining = 0;
+    state.extraOversightDaysRemaining = 0;
+    state.daysInRemediation = 0;
+
+    viz.particles.length = 0;
+    viz.bursts.length = 0;
+    viz.exposures.length = 0;
+    viz.stackWobble = 0;
+    viz.stackImpact = 0;
+    viz.detectedImpact = 0;
+    viz.resolvedImpact = 0;
+    viz.auditLineAlpha = 0;
+    viz.auditFlash = 0;
+    viz.auditDrain = 0;
+    viz.hiddenGhostRatio = 0;
+  }
+
+  function resetState() {
+    runtime.day = 0;
+    runtime.statsDismissed = false;
+    runtime.visualTimeMs = 0;
+    runtime.auditPauseMsRemaining = 0;
+    runtime.lastRenderTs = 0;
+    scenarioList.forEach(resetScenario);
+    dayAccumulator = 0;
+  }
+
+  function getFlowBounds(height) {
+    const pad = 14;
+    const topInset = clamp(height * 0.05, 24, 38);
+    const bottomInset = clamp(height * 0.015, 8, 14);
+    const laneMargin = clamp(height * 0.04, 14, 24);
+    const top = pad + topInset + laneMargin;
+    const bottom = Math.max(top + 120, height - pad - bottomInset - laneMargin);
+    return { top: top, bottom: bottom, span: bottom - top };
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function trimArray(list, maxLength) {
+    if (list.length > maxLength) {
+      list.splice(0, list.length - maxLength);
+    }
+    return list;
+  }
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  function roundRectPath(ctx, x, y, width, height, radius) {
+    const r = Math.min(radius, width * 0.5, height * 0.5);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + width - r, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+    ctx.lineTo(x + width, y + height - r);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+    ctx.lineTo(x + r, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function cubicPoint(p0, p1, p2, p3, t) {
+    const mt = 1 - t;
+    const mt2 = mt * mt;
+    const t2 = t * t;
+    return {
+      x: mt2 * mt * p0.x + 3 * mt2 * t * p1.x + 3 * mt * t2 * p2.x + t2 * t * p3.x,
+      y: mt2 * mt * p0.y + 3 * mt2 * t * p1.y + 3 * mt * t2 * p2.y + t2 * t * p3.y
+    };
+  }
+
+  function getStaticPaints(scenario, width, height, laneLeftX, hiddenLaneY, hiddenRouteStartX, findingLaneY, findingEntryX) {
+    const viz = scenario.viz;
+    const key = [
+      scenario.automated ? "a" : "m",
+      width,
+      height,
+      Math.round(laneLeftX),
+      Math.round(hiddenLaneY),
+      Math.round(hiddenRouteStartX),
+      Math.round(findingLaneY),
+      Math.round(findingEntryX)
+    ].join("|");
+    if (viz.paintCache && viz.paintCache.key === key) {
+      return viz.paintCache;
+    }
+    const ctx = scenario.ctx;
+    const base = ctx.createLinearGradient(0, 0, width, height);
+    base.addColorStop(0, scenario.automated ? "#f7fcfb" : "#f8fcff");
+    base.addColorStop(0.5, scenario.automated ? "#ebf8f4" : "#eef7fd");
+    base.addColorStop(1, scenario.automated ? "#f5fcfa" : "#f6fbff");
+
+    const hiddenLaneGlow = ctx.createLinearGradient(laneLeftX, hiddenLaneY, hiddenRouteStartX, hiddenLaneY);
+    hiddenLaneGlow.addColorStop(0, "rgba(255, 188, 92, 0.16)");
+    hiddenLaneGlow.addColorStop(0.6, "rgba(255, 154, 70, 0.46)");
+    hiddenLaneGlow.addColorStop(1, "rgba(240, 96, 68, 0.55)");
+
+    const findingLaneGlow = ctx.createLinearGradient(laneLeftX, findingLaneY, findingEntryX, findingLaneY);
+    findingLaneGlow.addColorStop(0, "rgba(244, 119, 87, 0.08)");
+    findingLaneGlow.addColorStop(0.7, "rgba(241, 98, 74, 0.28)");
+    findingLaneGlow.addColorStop(1, "rgba(214, 52, 70, 0.42)");
+
+    viz.paintCache = { key: key, base: base, hiddenLaneGlow: hiddenLaneGlow, findingLaneGlow: findingLaneGlow };
+    return viz.paintCache;
+  }
+
+  function pushDailyParticles(scenario, controls) {
+    const state = scenario.state;
+    const viz = scenario.viz;
+    const quality = getQuality();
+    const lanes = getLaneCount(controls.teamSize);
+    const teamLoad = 0.5 + controls.teamSize / 120;
+    const spawnCount = clamp(
+      Math.round((state.dailyChecks / 9) * teamLoad),
+      quality.minSpawnCount,
+      quality.maxSpawnCount
+    );
+    const missShare = state.dailyChecks > 0 ? state.dailyMisses / state.dailyChecks : 0;
+    const findingShare = state.dailyMisses > 0 ? state.dailyDetected / state.dailyMisses : 0;
+    const flowBounds = getFlowBounds(scenario.canvas.clientHeight || 420);
+    const speedMultiplier = state.auditShockDaysRemaining > 0
+      ? (scenario.automated ? 0.95 : 0.82)
+      : 1;
+
+    for (let i = 0; i < spawnCount; i += 1) {
+      const laneIndex = i % lanes;
+      const laneRatio = lanes > 1 ? laneIndex / (lanes - 1) : 0.5;
+      const laneY = flowBounds.top + laneRatio * flowBounds.span + (Math.random() * 16 - 8);
+
+      let type = "clean";
+      if (Math.random() < missShare) {
+        type = Math.random() < findingShare ? "finding" : "hidden";
+      }
+
+      viz.particles.push({
+        type,
+        x: 32 - Math.random() * 18,
+        y: laneY,
+        drift: (Math.random() - 0.5) * 20,
+        size: type === "clean" ? 3 : 4,
+        speed: (100 + Math.random() * 85) * speedMultiplier,
+        delay: Math.random() * MODEL.dayMs * 0.9,
+        age: 0,
+        alpha: 0.85,
+        trail: type === "hidden" ? [] : null
+      });
+    }
+
+    trimArray(viz.particles, quality.maxActiveParticles);
+    queueResolvedBursts(scenario, state.dailyResolved);
+  }
+
+  function runScenarioDay(scenario, controls, day) {
+    const state = scenario.state;
+    const auditProgram = getScenarioAuditProgram(scenario, controls.auditFrequency);
+    const baseOmissionRate = FIXED_OMISSION_RATE;
+    const criticality = FIXED_CRITICALITY;
+    const inShock = state.auditShockDaysRemaining > 0;
+    const shockCapacityMultiplier = inShock
+      ? (scenario.automated ? SIM_CONFIG.automatedShockCapacityMultiplier : SIM_CONFIG.manualShockCapacityMultiplier)
+      : 1;
+    const shockMissMultiplier = inShock
+      ? (scenario.automated ? SIM_CONFIG.automatedShockMissMultiplier : SIM_CONFIG.manualShockMissMultiplier)
+      : 1;
+    const remediationPressure = clamp(
+      state.openFindings / Math.max(18, controls.teamSize * (scenario.automated ? 4.5 : 3.4)),
+      0,
+      scenario.automated ? 0.12 : 0.22
+    );
+    const effectiveCapacityMultiplier = Math.max(0.55, shockCapacityMultiplier * (1 - remediationPressure));
+    const loadProfile = getLoadProfile(scenario, controls, effectiveCapacityMultiplier);
+    const effectiveOmissionRate = clamp(
+      (scenario.automated
+        ? baseOmissionRate * SIM_CONFIG.automationOmissionMultiplier
+        : baseOmissionRate)
+      * shockMissMultiplier
+      * (1 + loadProfile.loadPressure * (scenario.automated ? 0.55 : 0.95))
+      * (1 - loadProfile.reviewBuffer * (scenario.automated ? 0.18 : 0.12)),
+      scenario.automated ? 0.004 : 0.01,
+      scenario.automated ? 0.12 : 0.2
+    );
+    const baseDetectionRate = scenario.automated
+      ? SIM_CONFIG.automationDetectionRate
+      : SIM_CONFIG.manualDetectionRate;
+    const detectionRate = clamp(
+      baseDetectionRate
+      + auditProgram.detectionLift
+      + (state.extraOversightDaysRemaining > 0 ? 0.02 : 0)
+      + (inShock ? (scenario.automated ? 0.02 : 0.01) : 0)
+      + loadProfile.reviewBuffer * 0.08
+      - loadProfile.loadPressure * (scenario.automated ? 0.07 : 0.11),
+      scenario.automated ? 0.4 : 0.05,
+      scenario.automated ? 0.98 : 0.92
+    );
+    const riskMultiplier = scenario.automated ? SIM_CONFIG.automationRiskMultiplier : 1;
+
+    state.dailyChecks = controls.checksPerDay;
+    state.dailyMisses = state.dailyChecks * effectiveOmissionRate;
+    state.dailyDetected = state.dailyMisses * detectionRate;
+    state.dailyUndetected = state.dailyMisses - state.dailyDetected;
+    state.dailyResolved = 0;
+    state.auditJustTriggered = false;
+
+    state.hiddenBacklog += state.dailyUndetected;
+    state.hiddenBacklog *= MODEL.naturalResolutionMultiplier;
+    state.openFindings += state.dailyDetected;
+
+    if (isRollingReviewDay(day, auditProgram, state)) {
+      const rollingShare = auditProgram.rollingShare * (scenario.automated ? 1.08 : 1);
+      const reviewExposure = state.hiddenBacklog * clamp(rollingShare, 0, 0.28);
+      state.hiddenBacklog -= reviewExposure;
+      state.openFindings += reviewExposure;
+      state.lastReviewDay = day;
+      scenario.viz.detectedImpact = Math.min(1, scenario.viz.detectedImpact + 0.12);
+    }
+
+    if (isFormalAuditDay(day, auditProgram, state)) {
+      const revealed = state.hiddenBacklog;
+      state.hiddenBacklog = 0;
+      state.openFindings += revealed;
+      state.severityLevel = getSeverityKey(revealed);
+      state.auditSeverity = getSeverityMeta(state.severityLevel).label;
+      state.lastAuditDay = day;
+      state.lastReviewDay = day;
+      state.auditJustTriggered = true;
+      state.auditShockDaysRemaining = Math.max(
+        state.auditShockDaysRemaining,
+        getSeverityMeta(state.severityLevel).shockDays
+      );
+      if (state.severityLevel === "severe") {
+        state.extraOversightDaysRemaining = Math.max(
+          state.extraOversightDaysRemaining,
+          SIM_CONFIG.severeOversightDays
+        );
+      }
+      state.trustScore = Math.max(0, state.trustScore - revealed * SIM_CONFIG.trustHitPerFinding);
+      queueAuditExposure(scenario, revealed, controls.checksPerDay * 8);
+      runtime.auditPauseMsRemaining = Math.max(runtime.auditPauseMsRemaining, SIM_CONFIG.auditPauseMs);
+    }
+
+    const remediationRate = scenario.automated
+      ? SIM_CONFIG.automatedRemediationRate
+      : SIM_CONFIG.manualRemediationRate;
+    const remediationMultiplier = (state.auditShockDaysRemaining > 0 || state.auditJustTriggered
+      ? (scenario.automated ? 1.18 : 1.35)
+      : 1)
+      + Math.max(0, loadProfile.reviewBuffer * 0.18);
+    const remediationCapacity = remediationRate * controls.teamSize * remediationMultiplier;
+    const resolvedToday = Math.min(state.openFindings, remediationCapacity);
+    state.openFindings -= resolvedToday;
+    state.resolvedFindings += resolvedToday;
+    state.dailyResolved = resolvedToday;
+
+    if (state.openFindings > 0.1 || state.auditShockDaysRemaining > 0) {
+      state.daysInRemediation += 1;
+    } else {
+      state.daysInRemediation = 0;
+    }
+
+    if (state.openFindings < Math.max(2, controls.teamSize * 0.18)) {
+      state.trustScore = Math.min(
+        100,
+        state.trustScore + (scenario.automated ? SIM_CONFIG.automatedTrustRecovery : SIM_CONFIG.manualTrustRecovery)
+      );
+    } else if (resolvedToday > 0) {
+      state.trustScore = Math.min(100, state.trustScore + (scenario.automated ? 0.08 : 0.04));
+    }
+
+    const riskUnits =
+      state.hiddenBacklog * MODEL.hiddenRiskWeight
+      + state.openFindings * MODEL.findingsRiskWeight
+      + state.auditShockDaysRemaining * MODEL.shockRiskWeight
+      + (100 - state.trustScore) * MODEL.trustRiskWeight;
+    const riskThreshold = MODEL.riskThresholdBase + controls.teamSize * MODEL.riskThresholdPerReviewer;
+    state.displayRisk = Math.min(100, (riskUnits * criticality * riskMultiplier / riskThreshold) * 100);
+    const stabilityPenalty =
+      state.openFindings * (scenario.automated ? 0.55 : 0.85)
+      + state.auditShockDaysRemaining * (scenario.automated ? 0.7 : 1.25)
+      + remediationPressure * 100
+      + loadProfile.loadPressure * 18;
+    state.operationalStability = clamp(100 - stabilityPenalty, 6, 100);
+
+    pushDailyParticles(scenario, controls);
+
+    if (state.auditShockDaysRemaining > 0) {
+      state.auditShockDaysRemaining -= 1;
+    }
+    if (state.extraOversightDaysRemaining > 0) {
+      state.extraOversightDaysRemaining -= 1;
+    }
+  }
+
+  function runOneDay() {
+    const controls = readControls();
+    runtime.day += 1;
+
+    runScenarioDay(scenarios.manual, controls, runtime.day);
+    runScenarioDay(scenarios.automated, controls, runtime.day);
+
+    if (runtime.day >= MODEL.totalDays) {
+      runtime.running = false;
+      ui.startPause.textContent = "Replay";
+    }
+
+    updateUI();
+  }
+
+  function setRiskRing(ringEl, riskValue, riskMeta) {
+    const risk = clamp(riskValue, 0, 100);
+    const meta = riskMeta || getRiskMeta(risk);
+    ringEl.style.setProperty("--risk", risk.toFixed(2));
+    ringEl.style.setProperty("--ring-main", meta.ringMain);
+    ringEl.style.setProperty("--ring-glow", meta.ringGlow);
+  }
+
+  function updateUI() {
+    syncControlLabels();
+    const complete = runtime.day >= MODEL.totalDays;
+    const showStatsModal = complete && !runtime.statsDismissed;
+
+    const manualState = scenarios.manual.state;
+    const automatedState = scenarios.automated.state;
+    const manualRisk = getRiskMeta(manualState.displayRisk);
+    const automatedRisk = getRiskMeta(automatedState.displayRisk);
+    const storyStage = getStoryStage(Math.max(1, runtime.day), manualState, automatedState);
+
+    ui.dayCounter.textContent = "Day " + runtime.day + " / " + MODEL.totalDays;
+    ui.progressFill.style.width = (runtime.day / MODEL.totalDays * 100).toFixed(2) + "%";
+    ui.storyTitle.textContent = storyStage.title;
+    ui.storyText.textContent = storyStage.text;
+
+    ui.manualRiskValue.textContent = num.format(manualState.displayRisk) + "%";
+    ui.automatedRiskValue.textContent = num.format(automatedState.displayRisk) + "%";
+    ui.manualRiskBand.textContent = manualRisk.summaryLabel;
+    ui.automatedRiskBand.textContent = automatedRisk.summaryLabel;
+    ui.manualOutcomeText.innerHTML = getOutcomeMessage(false, manualState);
+    ui.automatedOutcomeText.innerHTML = getOutcomeMessage(true, automatedState);
+    ui.manualHiddenMetric.textContent = num.format(manualState.hiddenBacklog);
+    ui.automatedHiddenMetric.textContent = num.format(automatedState.hiddenBacklog);
+    ui.manualOpenMetric.textContent = num.format(manualState.openFindings);
+    ui.automatedOpenMetric.textContent = num.format(automatedState.openFindings);
+    ui.manualResolvedMetric.textContent = num.format(manualState.resolvedFindings);
+    ui.automatedResolvedMetric.textContent = num.format(automatedState.resolvedFindings);
+    ui.manualSeverityMetric.textContent = manualState.auditSeverity;
+    ui.automatedSeverityMetric.textContent = automatedState.auditSeverity;
+    ui.manualStabilityMetric.textContent = getStabilityText(manualState.operationalStability) + " (" + whole.format(manualState.operationalStability) + ")";
+    ui.automatedStabilityMetric.textContent = getStabilityText(automatedState.operationalStability) + " (" + whole.format(automatedState.operationalStability) + ")";
+    ui.manualOversightMetric.textContent = getOversightStatusText(manualState) + (manualState.extraOversightDaysRemaining > 0 ? " " + whole.format(manualState.extraOversightDaysRemaining) + "d" : "");
+    ui.automatedOversightMetric.textContent = getOversightStatusText(automatedState) + (automatedState.extraOversightDaysRemaining > 0 ? " " + whole.format(automatedState.extraOversightDaysRemaining) + "d" : "");
+    ui.manualTrustMetric.textContent = whole.format(manualState.trustScore);
+    ui.automatedTrustMetric.textContent = whole.format(automatedState.trustScore);
+    ui.manualRemediationMetric.textContent = whole.format(manualState.daysInRemediation) + " days";
+    ui.automatedRemediationMetric.textContent = whole.format(automatedState.daysInRemediation) + " days";
+    ui.manualRiskBand.className = "risk-ring-band " + manualRisk.className;
+    ui.automatedRiskBand.className = "risk-ring-band " + automatedRisk.className;
+    setRiskRing(ui.manualRiskRing, manualState.displayRisk, manualRisk);
+    setRiskRing(ui.automatedRiskRing, automatedState.displayRisk, automatedRisk);
+
+    const delta = manualState.displayRisk - automatedState.displayRisk;
+    if (delta > 0.1) {
+      ui.riskDelta.className = "risk-delta good";
+      ui.riskDelta.textContent = "Automation prevents " + num.format(delta) + " pts of risk escalation";
+    } else if (delta < -0.1) {
+      ui.riskDelta.className = "risk-delta bad";
+      ui.riskDelta.textContent = "Automation adds " + num.format(Math.abs(delta)) + " pts of exposure";
+    } else {
+      ui.riskDelta.className = "risk-delta";
+      ui.riskDelta.textContent = "Both systems end with the same audit exposure";
+    }
+
+    ui.simStatsModal.classList.toggle("show", showStatsModal);
+    ui.simStatsModal.setAttribute("aria-hidden", showStatsModal ? "false" : "true");
+
+    ui.insightText.textContent = manualState.auditSeverity === "Severe"
+      ? "Insight: The audit did not solve the problem. It exposed the hidden drift and pushed the manual system into a longer remediation period."
+      : "Insight: Audits reveal accumulated issues, but remediation is what actually reduces the backlog over time.";
+  }
+
+  function syncVizHeight() {
+    if (!ui.controlsPanel || !ui.vizCompare) {
+      resizeCanvases();
+      return;
+    }
+
+    if (window.innerWidth <= 960) {
+      ui.widget.style.setProperty("--vizHeight", "390px");
+      resizeCanvases();
+      return;
+    }
+
+    const controlsRect = ui.controlsPanel.getBoundingClientRect();
+    const vizRect = ui.vizCompare.getBoundingClientRect();
+    const targetHeight = Math.max(320, Math.round(controlsRect.bottom - vizRect.top + 1));
+    ui.widget.style.setProperty("--vizHeight", targetHeight + "px");
+    resizeCanvases();
+  }
+
+  function resizeScenarioCanvas(scenario) {
+    const bounds = scenario.canvas.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) {
+      return;
+    }
+    const quality = getQuality();
+    const dpr = Math.max(1, Math.min(quality.dprMax, window.devicePixelRatio || 1));
+    scenario.canvas.width = Math.round(bounds.width * dpr);
+    scenario.canvas.height = Math.round(bounds.height * dpr);
+    scenario.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    scenario.viz.paintCache = null;
+  }
+
+  function resizeCanvases() {
+    scenarioList.forEach(resizeScenarioCanvas);
+  }
+
+  function renderScenarioFrame(scenario, controls, dt, now) {
+    const canvas = scenario.canvas;
+    const ctx = scenario.ctx;
+    const state = scenario.state;
+    const viz = scenario.viz;
+    const quality = getQuality();
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    if (!width || !height) {
+      return;
+    }
+
+    ctx.clearRect(0, 0, width, height);
+
+    viz.stackImpact = Math.max(0, viz.stackImpact - dt * 0.0018);
+    viz.detectedImpact = Math.max(0, viz.detectedImpact - dt * 0.0022);
+    viz.resolvedImpact = Math.max(0, viz.resolvedImpact - dt * 0.0024);
+    viz.auditLineAlpha = Math.max(0, viz.auditLineAlpha - dt * 0.00105);
+    viz.auditFlash = Math.max(0, viz.auditFlash - dt * 0.0015);
+    viz.auditDrain = Math.max(0, viz.auditDrain - dt * 0.00075);
+    viz.hiddenGhostRatio = Math.max(0, viz.hiddenGhostRatio - dt * 0.00045);
+    const isAutomated = scenario.automated;
+
+    const pad = 14;
+    const topInset = clamp(height * 0.05, 24, 38);
+    const bottomInset = clamp(height * 0.012, 6, 10);
+    const mainTop = pad + topInset;
+    const mainBottom = height - bottomInset;
+    const mainH = Math.max(160, mainBottom - mainTop);
+    const availableMainW = width - pad * 2;
+    const sideW = clamp(availableMainW * (width < 680 ? 0.36 : 0.28), 138, 260);
+    const sideX = width - pad - sideW;
+    const flowX = pad;
+    const flowY = mainTop;
+    const flowW = Math.max(150, sideX - flowX - 10);
+    const flowH = mainH;
+    const lineX = flowX + flowW * 0.62;
+    const warningLabel = state.auditShockDaysRemaining > 0
+      ? "Operational Strain | Remediation Underway"
+      : (state.openFindings > 8 ? "Remediation Underway" : "");
+    const badges = [];
+
+    if (warningLabel) {
+      badges.push({
+        text: warningLabel,
+        width: clamp(warningLabel.length * 6.15 + 28, 124, width * 0.56),
+        height: 22,
+        radius: 11,
+        fill: isAutomated ? "rgba(235, 253, 245, 0.94)" : "rgba(255, 241, 232, 0.94)",
+        stroke: isAutomated ? "rgba(72, 168, 127, 0.42)" : "rgba(214, 132, 93, 0.42)",
+        textColor: isAutomated ? "#1d6f4d" : "#8a432d",
+        font: "700 10.5px Space Grotesk",
+        textY: 14
+      });
+    }
+
+    if (state.extraOversightDaysRemaining > 0) {
+      const oversightText = "Oversight Escalated";
+      badges.push({
+        text: oversightText,
+        width: clamp(oversightText.length * 5.95 + 26, 118, width * 0.38),
+        height: 20,
+        radius: 10,
+        fill: "rgba(243, 248, 255, 0.94)",
+        stroke: "rgba(111, 157, 192, 0.42)",
+        textColor: "#315a79",
+        font: "700 10px Space Grotesk",
+        textY: 13
+      });
+    }
+
+    const flowBounds = getFlowBounds(height);
+    const laneTop = clamp(flowBounds.top, flowY + 18, flowY + flowH - 120);
+    const laneBottom = clamp(flowBounds.bottom, laneTop + 90, flowY + flowH - 12);
+    const laneSpan = Math.max(90, laneBottom - laneTop);
+
+    const sideInnerY = flowY + 8;
+    const sideInnerH = Math.max(180, flowH - 10);
+    const stackX = sideX + 10;
+    const stackY = sideInnerY;
+    const stackW = sideW - 20;
+    const laneCount = getLaneCount(controls.teamSize);
+    const stackGap = 10;
+    const resolvedH = clamp(sideInnerH * 0.18, 56, 84);
+    const hiddenH = clamp(sideInnerH * 0.34, 96, 140);
+    const findingsH = Math.max(96, sideInnerH - hiddenH - resolvedH - stackGap * 2);
+    const hiddenRect = { x: stackX, y: stackY, w: stackW, h: hiddenH };
+    const findingsRect = { x: stackX, y: hiddenRect.y + hiddenRect.h + stackGap, w: stackW, h: findingsH };
+    const resolvedRect = { x: stackX, y: findingsRect.y + findingsRect.h + stackGap, w: stackW, h: resolvedH };
+    const hiddenCap = controls.checksPerDay * 8;
+    const findingsCap = controls.checksPerDay * 4.2;
+    const resolvedCap = controls.checksPerDay * 12;
+    const hiddenRatio = clamp(state.hiddenBacklog / Math.max(1, hiddenCap), 0, 1);
+    const findingsRatio = clamp(state.openFindings / Math.max(1, findingsCap), 0, 1);
+    const resolvedRatio = clamp(state.resolvedFindings / Math.max(1, resolvedCap), 0, 1);
+    const hiddenGhostRatio = clamp(viz.hiddenGhostRatio, 0, 1);
+    viz.stackWobble += dt * 0.002;
+    const hiddenWobble = Math.sin(viz.stackWobble) * 1.6;
+    const findingsWobble = Math.sin(viz.stackWobble * 1.1 + 1.2) * 1.2;
+    const resolvedWobble = Math.sin(viz.stackWobble * 0.9 + 2.1) * 0.9;
+    const hiddenFillHeight = hiddenRect.h * hiddenRatio;
+    const findingsFillHeight = findingsRect.h * findingsRatio;
+    const resolvedFillHeight = resolvedRect.h * resolvedRatio;
+    const hiddenGhostFillHeight = hiddenRect.h * hiddenGhostRatio;
+    const hiddenSurfaceY = clamp(hiddenRect.y + hiddenRect.h - hiddenFillHeight + hiddenWobble, hiddenRect.y + 8, hiddenRect.y + hiddenRect.h - 8);
+    const findingsSurfaceY = clamp(findingsRect.y + findingsRect.h - findingsFillHeight + findingsWobble, findingsRect.y + 8, findingsRect.y + findingsRect.h - 8);
+    const resolvedSurfaceY = clamp(resolvedRect.y + resolvedRect.h - resolvedFillHeight + resolvedWobble, resolvedRect.y + 8, resolvedRect.y + resolvedRect.h - 8);
+    const hiddenGhostSurfaceY = clamp(hiddenRect.y + hiddenRect.h - hiddenGhostFillHeight, hiddenRect.y + 8, hiddenRect.y + hiddenRect.h - 8);
+    const auditAlpha = Math.max(viz.auditLineAlpha, state.auditJustTriggered ? 1 : 0);
+    const auditFlash = Math.max(viz.auditFlash, auditAlpha * 0.82);
+    const drainAlpha = Math.max(viz.auditDrain, auditAlpha * 0.72);
+
+    const sweep = ((now * 170) % (width + 280)) - 140;
+    const sweepGlow = ctx.createLinearGradient(sweep - 180, 0, sweep + 180, 0);
+    sweepGlow.addColorStop(0, isAutomated ? "rgba(72, 177, 139, 0)" : "rgba(107, 183, 224, 0)");
+    sweepGlow.addColorStop(0.5, isAutomated ? "rgba(72, 177, 139, 0.16)" : "rgba(107, 183, 224, 0.15)");
+    sweepGlow.addColorStop(1, isAutomated ? "rgba(72, 177, 139, 0)" : "rgba(107, 183, 224, 0)");
+    ctx.fillStyle = sweepGlow;
+    ctx.fillRect(0, 0, width, height);
+
+    // Flow/backlog now render directly on canvas background without extra panel cards.
+
+    ctx.strokeStyle = isAutomated ? "rgba(65, 147, 115, 0.28)" : "rgba(87, 145, 177, 0.26)";
+    ctx.lineWidth = 1.2;
+    const laneLeftX = flowX + 34;
+    const laneRightX = flowX + flowW - 30;
+    const laneSpanX = Math.max(40, laneRightX - laneLeftX);
+    const hiddenLaneY = laneTop + laneSpan * 0.18;
+    const findingLaneY = laneTop + laneSpan * 0.56;
+    const hiddenRouteStartX = laneRightX - 8;
+    const findingEntryX = hiddenRouteStartX - Math.min(42, laneSpanX * 0.14);
+    const staticPaints = getStaticPaints(
+      scenario,
+      width,
+      height,
+      laneLeftX,
+      hiddenLaneY,
+      hiddenRouteStartX,
+      findingLaneY,
+      findingEntryX
+    );
+    ctx.fillStyle = staticPaints.base;
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = sweepGlow;
+    ctx.fillRect(0, 0, width, height);
+
+    for (let i = 0; i < laneCount; i += 1) {
+      const laneRatio = laneCount > 1 ? i / (laneCount - 1) : 0.5;
+      const y = laneTop + laneRatio * laneSpan;
+      ctx.beginPath();
+      ctx.moveTo(laneLeftX, y);
+      ctx.lineTo(laneRightX, y);
+      ctx.stroke();
+
+      const nodePulse = 1 + 0.1 * Math.sin(now * 4 + i * 0.8);
+      const nodeRadius = 3.2 * nodePulse;
+      ctx.fillStyle = isAutomated ? "rgba(39, 146, 112, 0.9)" : "rgba(46, 122, 163, 0.9)";
+      ctx.beginPath();
+      ctx.arc(laneLeftX, y, nodeRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = isAutomated ? "rgba(39, 146, 112, 0.3)" : "rgba(46, 122, 163, 0.28)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(laneLeftX, y, nodeRadius + 2, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = staticPaints.hiddenLaneGlow;
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(laneLeftX, hiddenLaneY);
+    ctx.lineTo(hiddenRouteStartX, hiddenLaneY);
+    ctx.stroke();
+
+    const flowEndX = laneRightX;
+    const findingGateX = findingsRect.x + 6;
+    const findingGateY = findingsSurfaceY;
+    const hiddenEntryX = hiddenRouteStartX;
+    const hiddenEntryY = hiddenLaneY;
+    const hiddenGateX = hiddenRect.x + 6;
+    const hiddenGateY = hiddenGhostRatio > 0.01
+      ? lerp(hiddenSurfaceY, hiddenGhostSurfaceY, 0.58)
+      : hiddenSurfaceY;
+    const hiddenPath = {
+      p0: { x: hiddenEntryX, y: hiddenEntryY },
+      p1: { x: hiddenEntryX + laneSpanX * 0.14, y: hiddenEntryY - 14 },
+      p2: { x: hiddenGateX - 50, y: hiddenGateY - 18 },
+      p3: { x: hiddenGateX, y: hiddenGateY }
+    };
+    const findingPath = {
+      p0: { x: findingEntryX, y: findingLaneY },
+      p1: { x: findingEntryX + laneSpanX * 0.1, y: findingLaneY + 12 },
+      p2: { x: findingGateX - 46, y: findingGateY + 24 },
+      p3: { x: findingGateX, y: findingGateY }
+    };
+    const remediationFlowStrength = clamp(
+      (state.openFindings / Math.max(1, findingsCap)) * 0.72
+      + (state.dailyResolved / Math.max(1, controls.teamSize * 0.22)) * 0.3
+      + viz.resolvedImpact * 0.24
+      + (state.daysInRemediation > 0 ? 0.14 : 0.08),
+      0.1,
+      isAutomated ? 0.94 : 0.76
+    );
+    const remediationStartX = findingsRect.x + findingsRect.w * (isAutomated ? 0.72 : 0.68);
+    const remediationStartY = findingsRect.y + findingsRect.h * 0.82;
+    const remediationEndX = resolvedRect.x + resolvedRect.w * (isAutomated ? 0.36 : 0.42);
+    const remediationEndY = resolvedRect.y + resolvedRect.h * 0.26;
+    const remediationPath = {
+      p0: { x: remediationStartX, y: remediationStartY },
+      p1: { x: remediationStartX + findingsRect.w * 0.16, y: findingsRect.y + findingsRect.h + 12 },
+      p2: { x: remediationEndX + resolvedRect.w * 0.12, y: resolvedRect.y - 6 },
+      p3: { x: remediationEndX, y: remediationEndY }
+    };
+    ctx.strokeStyle = staticPaints.findingLaneGlow;
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(laneLeftX, findingLaneY);
+    ctx.lineTo(findingEntryX, findingLaneY);
+    ctx.stroke();
+
+    if (viz.detectedImpact > 0.01) {
+      const detX = findingsRect.x + findingsRect.w * 0.42;
+      const detY = findingsRect.y + findingsRect.h * 0.32;
+      const detectedGlow = ctx.createRadialGradient(detX, detY, 6, detX, detY, 54);
+      detectedGlow.addColorStop(0, "rgba(239, 101, 84," + (0.18 + viz.detectedImpact * 0.24).toFixed(3) + ")");
+      detectedGlow.addColorStop(1, "rgba(239, 101, 84, 0)");
+      ctx.fillStyle = detectedGlow;
+      ctx.fillRect(detX - 60, detY - 58, 120, 116);
+    }
+
+    if (viz.stackImpact > 0.01) {
+      const hotX = hiddenRect.x + hiddenRect.w * 0.52;
+      const hotY = hiddenRect.y + hiddenRect.h * 0.58;
+      const backlogGlow = ctx.createRadialGradient(hotX, hotY, 6, hotX, hotY, 70);
+      backlogGlow.addColorStop(0, "rgba(229, 84, 67," + (0.2 + viz.stackImpact * 0.3).toFixed(3) + ")");
+      backlogGlow.addColorStop(1, "rgba(229, 84, 67, 0)");
+      ctx.fillStyle = backlogGlow;
+      ctx.fillRect(hotX - 84, hotY - 84, 168, 168);
+    }
+
+    function drawBin(rect, label, palette, fillHeight, wobble, emphasis) {
+      roundRectPath(ctx, rect.x, rect.y, rect.w, rect.h, 12);
+      const shell = ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
+      shell.addColorStop(0, palette.shell0);
+      shell.addColorStop(1, palette.shell1);
+      ctx.fillStyle = shell;
+      ctx.fill();
+      ctx.strokeStyle = palette.stroke;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.save();
+      roundRectPath(ctx, rect.x + 2, rect.y + 2, rect.w - 4, rect.h - 4, 10);
+      ctx.clip();
+
+      for (let i = 0; i < quality.binSweepCount; i += 1) {
+        const sweepY = rect.y + ((now * 30 + i * 28) % (rect.h + 40)) - 20;
+        ctx.strokeStyle = palette.sweep;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(rect.x - 8, sweepY);
+        ctx.lineTo(rect.x + rect.w + 10, sweepY - 20);
+        ctx.stroke();
+      }
+
+      const fill = ctx.createLinearGradient(0, rect.y + rect.h, 0, rect.y);
+      fill.addColorStop(0, palette.fill0);
+      fill.addColorStop(0.55, palette.fill1);
+      fill.addColorStop(1, palette.fill2);
+      ctx.fillStyle = fill;
+      ctx.fillRect(rect.x + 3, rect.y + rect.h - fillHeight + wobble, rect.w - 6, fillHeight);
+
+      const surfaceGlow = ctx.createLinearGradient(rect.x, rect.y + rect.h - fillHeight - 2, rect.x, rect.y + rect.h - fillHeight + 14);
+      surfaceGlow.addColorStop(0, "rgba(255, 255, 255, 0.5)");
+      surfaceGlow.addColorStop(1, "rgba(255, 255, 255, 0)");
+      ctx.fillStyle = surfaceGlow;
+      ctx.fillRect(rect.x + 3, rect.y + rect.h - fillHeight + wobble - 2, rect.w - 6, 16);
+
+      if (emphasis > 0.01) {
+        const glow = ctx.createRadialGradient(rect.x + rect.w * 0.5, rect.y + rect.h * 0.5, 4, rect.x + rect.w * 0.5, rect.y + rect.h * 0.5, 54);
+        glow.addColorStop(0, palette.glowStart.replace("__A__", (0.14 + emphasis * 0.22).toFixed(3)));
+        glow.addColorStop(1, palette.glowEnd);
+        ctx.fillStyle = glow;
+        ctx.fillRect(rect.x - 40, rect.y - 40, rect.w + 80, rect.h + 80);
+      }
+
+      ctx.restore();
+
+      const labelW = Math.min(rect.w - 16, Math.max(96, label.length * 6.2 + 26));
+      roundRectPath(ctx, rect.x + 8, rect.y + 8, labelW, 20, 10);
+      ctx.fillStyle = palette.labelBg;
+      ctx.fill();
+      ctx.strokeStyle = palette.labelStroke;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillStyle = palette.labelText;
+      ctx.font = "700 11px Space Grotesk";
+      ctx.fillText(label, rect.x + 16, rect.y + 22);
+    }
+
+    drawBin(hiddenRect, "Hidden Drift", {
+      shell0: isAutomated ? "rgba(245, 255, 250, 0.96)" : "rgba(255, 249, 241, 0.96)",
+      shell1: isAutomated ? "rgba(234, 249, 241, 0.94)" : "rgba(255, 238, 224, 0.94)",
+      stroke: isAutomated ? "rgba(91, 160, 132, 0.36)" : "rgba(196, 129, 99, 0.4)",
+      sweep: isAutomated ? "rgba(112, 180, 149, 0.16)" : "rgba(223, 150, 104, 0.18)",
+      fill0: isAutomated ? "rgba(85, 180, 144, 0.78)" : "rgba(255, 168, 72, 0.9)",
+      fill1: isAutomated ? "rgba(114, 201, 169, 0.8)" : "rgba(255, 134, 66, 0.9)",
+      fill2: isAutomated ? "rgba(153, 219, 192, 0.82)" : "rgba(255, 206, 106, 0.88)",
+      glowStart: isAutomated ? "rgba(78, 194, 151,__A__)" : "rgba(255, 149, 72,__A__)",
+      glowEnd: isAutomated ? "rgba(78, 194, 151, 0)" : "rgba(255, 149, 72, 0)",
+      labelBg: isAutomated ? "rgba(233, 252, 244, 0.94)" : "rgba(255, 243, 232, 0.94)",
+      labelStroke: isAutomated ? "rgba(74, 158, 124, 0.4)" : "rgba(196, 129, 99, 0.42)",
+      labelText: isAutomated ? "#1f6a50" : "#8b3d34"
+    }, hiddenFillHeight, hiddenWobble, viz.stackImpact);
+
+    if (hiddenGhostRatio > 0.01) {
+      const ghostCoreAlpha = (0.34 + hiddenGhostRatio * 0.28 + drainAlpha * 0.22).toFixed(3);
+      const ghostEdgeAlpha = (0.18 + hiddenGhostRatio * 0.2).toFixed(3);
+      ctx.save();
+      roundRectPath(ctx, hiddenRect.x + 2, hiddenRect.y + 2, hiddenRect.w - 4, hiddenRect.h - 4, 10);
+      ctx.clip();
+      const ghostFill = ctx.createLinearGradient(0, hiddenRect.y + hiddenRect.h, 0, hiddenRect.y);
+      ghostFill.addColorStop(0, isAutomated ? "rgba(74, 194, 154," + ghostCoreAlpha + ")" : "rgba(255, 170, 52," + ghostCoreAlpha + ")");
+      ghostFill.addColorStop(0.55, isAutomated ? "rgba(110, 214, 176," + ghostCoreAlpha + ")" : "rgba(255, 128, 64," + ghostCoreAlpha + ")");
+      ghostFill.addColorStop(1, isAutomated ? "rgba(182, 242, 214," + ghostEdgeAlpha + ")" : "rgba(255, 226, 132," + ghostEdgeAlpha + ")");
+      ctx.fillStyle = ghostFill;
+      ctx.fillRect(hiddenRect.x + 3, hiddenRect.y + hiddenRect.h - hiddenGhostFillHeight, hiddenRect.w - 6, hiddenGhostFillHeight);
+
+      ctx.globalCompositeOperation = "lighter";
+      const siphonGlow = ctx.createRadialGradient(hiddenGateX + 4, hiddenGateY, 6, hiddenGateX + 4, hiddenGateY, 54 + drainAlpha * 24);
+      siphonGlow.addColorStop(0, "rgba(255, 244, 224," + (0.28 + drainAlpha * 0.28).toFixed(3) + ")");
+      siphonGlow.addColorStop(0.35, "rgba(255, 165, 112," + (0.24 + drainAlpha * 0.26).toFixed(3) + ")");
+      siphonGlow.addColorStop(1, "rgba(255, 165, 112,0)");
+      ctx.fillStyle = siphonGlow;
+      ctx.fillRect(hiddenGateX - 70, hiddenGateY - 64, 140, 128);
+
+      for (let k = 0; k < quality.binSweepCount; k += 1) {
+        const sourceX = hiddenRect.x + hiddenRect.w * (0.32 + k * 0.09);
+        const sourceY = hiddenGhostSurfaceY + 10 + k * 8 + Math.sin(now * 7 + k * 0.9) * 7;
+        const bendY = sourceY - (8 + Math.cos(now * 6 + k) * 6);
+        ctx.strokeStyle = isAutomated
+          ? "rgba(126, 240, 202," + (0.14 + drainAlpha * 0.22).toFixed(3) + ")"
+          : "rgba(255, 204, 112," + (0.18 + drainAlpha * 0.24).toFixed(3) + ")";
+        ctx.lineWidth = 1.1 + drainAlpha * 1.4;
+        ctx.beginPath();
+        ctx.moveTo(sourceX, sourceY);
+        ctx.quadraticCurveTo(hiddenRect.x + hiddenRect.w * 0.22, bendY, hiddenGateX + 4, hiddenGateY + Math.sin(now * 9 + k) * 8);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    drawBin(findingsRect, "Open Findings", {
+      shell0: "rgba(255, 247, 246, 0.96)",
+      shell1: "rgba(255, 234, 230, 0.94)",
+      stroke: "rgba(221, 108, 96, 0.42)",
+      sweep: "rgba(226, 103, 84, 0.16)",
+      fill0: "rgba(214, 59, 71, 0.9)",
+      fill1: "rgba(241, 98, 74, 0.92)",
+      fill2: "rgba(255, 154, 77, 0.9)",
+      glowStart: "rgba(232, 90, 76,__A__)",
+      glowEnd: "rgba(232, 90, 76, 0)",
+      labelBg: "rgba(255, 240, 237, 0.94)",
+      labelStroke: "rgba(220, 109, 96, 0.42)",
+      labelText: "#94342e"
+    }, findingsFillHeight, findingsWobble, viz.detectedImpact);
+
+    drawBin(resolvedRect, "Resolved", {
+      shell0: "rgba(245, 255, 251, 0.96)",
+      shell1: "rgba(233, 250, 241, 0.94)",
+      stroke: "rgba(82, 170, 129, 0.38)",
+      sweep: "rgba(95, 180, 138, 0.15)",
+      fill0: "rgba(28, 169, 87, 0.86)",
+      fill1: "rgba(52, 190, 126, 0.88)",
+      fill2: "rgba(113, 214, 171, 0.86)",
+      glowStart: "rgba(42, 186, 121,__A__)",
+      glowEnd: "rgba(42, 186, 121, 0)",
+      labelBg: "rgba(231, 252, 242, 0.94)",
+      labelStroke: "rgba(79, 165, 124, 0.4)",
+      labelText: "#1a6b49"
+    }, resolvedFillHeight, resolvedWobble, viz.resolvedImpact);
+
+    const badgeBottom = height - 6;
+    const badgeGap = 8;
+    const badgeRows = [badgeBottom - 22, badgeBottom - 50];
+    const badgeCursorsLeft = [flowX + 8, flowX + 8];
+    const drawStatusBadges = () => {
+      for (let i = 0; i < badges.length; i += 1) {
+        const badge = badges[i];
+        const rowIndex = i === 0 ? 0 : 1;
+        const badgeX = badgeCursorsLeft[rowIndex];
+        const badgeY = badgeRows[rowIndex] + (badge.height === 20 ? 1 : 0);
+        ctx.save();
+        ctx.shadowColor = "rgba(15, 47, 69, 0.16)";
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 4;
+        roundRectPath(ctx, badgeX, badgeY, badge.width, badge.height, badge.radius);
+        ctx.fillStyle = badge.fill;
+        ctx.fill();
+        ctx.restore();
+        roundRectPath(ctx, badgeX, badgeY, badge.width, badge.height, badge.radius);
+        ctx.strokeStyle = badge.stroke;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = badge.textColor;
+        ctx.font = badge.font;
+        ctx.fillText(badge.text, badgeX + 12, badgeY + badge.textY);
+        badgeCursorsLeft[rowIndex] = badgeX + badge.width + badgeGap;
+      }
+    };
+
+    const stillParticles = [];
+    const particles = viz.particles;
+
+    ctx.save();
+    roundRectPath(ctx, flowX, flowY, flowW + sideW + 10, flowH, 14);
+    ctx.clip();
+
+    if (auditFlash > 0.01 || drainAlpha > 0.01) {
+      const beamOuter = ctx.createLinearGradient(lineX, flowY, hiddenGateX + 8, hiddenGateY);
+      beamOuter.addColorStop(0, "rgba(255, 244, 232,0)");
+      beamOuter.addColorStop(0.3, "rgba(255, 216, 150," + (0.08 + auditFlash * 0.22).toFixed(3) + ")");
+      beamOuter.addColorStop(0.72, "rgba(255, 140, 96," + (0.14 + drainAlpha * 0.32).toFixed(3) + ")");
+      beamOuter.addColorStop(1, "rgba(255, 90, 88,0)");
+      ctx.strokeStyle = beamOuter;
+      ctx.lineWidth = 14 + auditFlash * 18;
+      ctx.beginPath();
+      ctx.moveTo(lineX, flowY + 16);
+      ctx.quadraticCurveTo(lineX + 28, flowY + flowH * 0.26, hiddenGateX + 6, hiddenGateY);
+      ctx.stroke();
+
+      const beamCore = ctx.createLinearGradient(lineX, flowY, hiddenGateX + 8, hiddenGateY);
+      beamCore.addColorStop(0, "rgba(255, 255, 255,0)");
+      beamCore.addColorStop(0.32, "rgba(255, 243, 208," + (0.16 + auditFlash * 0.3).toFixed(3) + ")");
+      beamCore.addColorStop(0.78, "rgba(255, 116, 98," + (0.2 + drainAlpha * 0.38).toFixed(3) + ")");
+      beamCore.addColorStop(1, "rgba(255, 116, 98,0)");
+      ctx.strokeStyle = beamCore;
+      ctx.lineWidth = 3 + auditFlash * 4.5;
+      ctx.beginPath();
+      ctx.moveTo(lineX, flowY + 16);
+      ctx.quadraticCurveTo(lineX + 24, flowY + flowH * 0.26, hiddenGateX + 6, hiddenGateY);
+      ctx.stroke();
+
+      const impactGlow = ctx.createRadialGradient(hiddenGateX + 4, hiddenGateY, 3, hiddenGateX + 4, hiddenGateY, 38 + auditFlash * 22);
+      impactGlow.addColorStop(0, "rgba(255, 255, 240," + (0.26 + auditFlash * 0.3).toFixed(3) + ")");
+      impactGlow.addColorStop(0.42, "rgba(255, 160, 100," + (0.18 + drainAlpha * 0.28).toFixed(3) + ")");
+      impactGlow.addColorStop(1, "rgba(255, 160, 100,0)");
+      ctx.fillStyle = impactGlow;
+      ctx.fillRect(hiddenGateX - 52, hiddenGateY - 46, 104, 92);
+    }
+
+    const corridorWide = ctx.createLinearGradient(hiddenEntryX, hiddenEntryY, hiddenGateX, hiddenGateY);
+    corridorWide.addColorStop(0, "rgba(255, 182, 74, 0.03)");
+    corridorWide.addColorStop(0.5, "rgba(255, 144, 70, 0.12)");
+    corridorWide.addColorStop(1, "rgba(229, 84, 67, 0.2)");
+    ctx.strokeStyle = corridorWide;
+    ctx.lineWidth = 14 + viz.stackImpact * 6;
+    ctx.beginPath();
+    ctx.moveTo(hiddenPath.p0.x, hiddenPath.p0.y);
+    ctx.bezierCurveTo(hiddenPath.p1.x, hiddenPath.p1.y, hiddenPath.p2.x, hiddenPath.p2.y, hiddenPath.p3.x, hiddenPath.p3.y);
+    ctx.stroke();
+
+    const corridorCore = ctx.createLinearGradient(hiddenEntryX, hiddenEntryY, hiddenGateX, hiddenGateY);
+    corridorCore.addColorStop(0, "rgba(255, 176, 32, 0.16)");
+    corridorCore.addColorStop(0.5, "rgba(255, 136, 56, 0.35)");
+    corridorCore.addColorStop(1, "rgba(231, 80, 62, 0.52)");
+    ctx.strokeStyle = corridorCore;
+    ctx.lineWidth = 5 + viz.stackImpact * 2;
+    ctx.beginPath();
+    ctx.moveTo(hiddenPath.p0.x, hiddenPath.p0.y);
+    ctx.bezierCurveTo(hiddenPath.p1.x, hiddenPath.p1.y, hiddenPath.p2.x, hiddenPath.p2.y, hiddenPath.p3.x, hiddenPath.p3.y);
+    ctx.stroke();
+
+    const findingsWide = ctx.createLinearGradient(findingPath.p0.x, findingPath.p0.y, findingPath.p3.x, findingPath.p3.y);
+    findingsWide.addColorStop(0, "rgba(241, 103, 80, 0.04)");
+    findingsWide.addColorStop(0.6, "rgba(230, 79, 72, 0.16)");
+    findingsWide.addColorStop(1, "rgba(214, 52, 70, 0.22)");
+    ctx.strokeStyle = findingsWide;
+    ctx.lineWidth = 12 + viz.detectedImpact * 5;
+    ctx.beginPath();
+    ctx.moveTo(findingPath.p0.x, findingPath.p0.y);
+    ctx.bezierCurveTo(findingPath.p1.x, findingPath.p1.y, findingPath.p2.x, findingPath.p2.y, findingPath.p3.x, findingPath.p3.y);
+    ctx.stroke();
+
+    const findingsCore = ctx.createLinearGradient(findingPath.p0.x, findingPath.p0.y, findingPath.p3.x, findingPath.p3.y);
+    findingsCore.addColorStop(0, "rgba(241, 103, 80, 0.14)");
+    findingsCore.addColorStop(0.5, "rgba(229, 76, 70, 0.3)");
+    findingsCore.addColorStop(1, "rgba(214, 52, 70, 0.44)");
+    ctx.strokeStyle = findingsCore;
+    ctx.lineWidth = 4 + viz.detectedImpact * 2;
+    ctx.beginPath();
+    ctx.moveTo(findingPath.p0.x, findingPath.p0.y);
+    ctx.bezierCurveTo(findingPath.p1.x, findingPath.p1.y, findingPath.p2.x, findingPath.p2.y, findingPath.p3.x, findingPath.p3.y);
+    ctx.stroke();
+
+    const remediationWide = ctx.createLinearGradient(remediationPath.p0.x, remediationPath.p0.y, remediationPath.p3.x, remediationPath.p3.y);
+    remediationWide.addColorStop(0, isAutomated
+      ? "rgba(126, 232, 205," + (0.06 + remediationFlowStrength * 0.14).toFixed(3) + ")"
+      : "rgba(255, 178, 112," + (0.05 + remediationFlowStrength * 0.12).toFixed(3) + ")");
+    remediationWide.addColorStop(0.55, isAutomated
+      ? "rgba(90, 219, 176," + (0.08 + remediationFlowStrength * 0.18).toFixed(3) + ")"
+      : "rgba(108, 212, 156," + (0.08 + remediationFlowStrength * 0.14).toFixed(3) + ")");
+    remediationWide.addColorStop(1, "rgba(52, 190, 126," + (0.12 + remediationFlowStrength * 0.22).toFixed(3) + ")");
+    ctx.strokeStyle = remediationWide;
+    ctx.lineWidth = 7 + remediationFlowStrength * 4.5;
+    ctx.beginPath();
+    ctx.moveTo(remediationPath.p0.x, remediationPath.p0.y);
+    ctx.bezierCurveTo(remediationPath.p1.x, remediationPath.p1.y, remediationPath.p2.x, remediationPath.p2.y, remediationPath.p3.x, remediationPath.p3.y);
+    ctx.stroke();
+
+    const remediationCore = ctx.createLinearGradient(remediationPath.p0.x, remediationPath.p0.y, remediationPath.p3.x, remediationPath.p3.y);
+    remediationCore.addColorStop(0, isAutomated
+      ? "rgba(198, 255, 239," + (0.14 + remediationFlowStrength * 0.12).toFixed(3) + ")"
+      : "rgba(255, 217, 164," + (0.12 + remediationFlowStrength * 0.1).toFixed(3) + ")");
+    remediationCore.addColorStop(0.55, "rgba(108, 224, 173," + (0.16 + remediationFlowStrength * 0.2).toFixed(3) + ")");
+    remediationCore.addColorStop(1, "rgba(44, 184, 118," + (0.22 + remediationFlowStrength * 0.24).toFixed(3) + ")");
+    ctx.strokeStyle = remediationCore;
+    ctx.lineWidth = 2.2 + remediationFlowStrength * 1.6;
+    ctx.beginPath();
+    ctx.moveTo(remediationPath.p0.x, remediationPath.p0.y);
+    ctx.bezierCurveTo(remediationPath.p1.x, remediationPath.p1.y, remediationPath.p2.x, remediationPath.p2.y, remediationPath.p3.x, remediationPath.p3.y);
+    ctx.stroke();
+
+    const resolverPulse = 1 + 0.16 * Math.sin(now * 5.6);
+    const resolverGlow = ctx.createRadialGradient(remediationEndX, remediationEndY, 2, remediationEndX, remediationEndY, 24 * resolverPulse);
+    resolverGlow.addColorStop(0, "rgba(214, 255, 236," + (0.18 + remediationFlowStrength * 0.24).toFixed(3) + ")");
+    resolverGlow.addColorStop(0.52, "rgba(72, 204, 137," + (0.1 + remediationFlowStrength * 0.2).toFixed(3) + ")");
+    resolverGlow.addColorStop(1, "rgba(72, 204, 137,0)");
+    ctx.fillStyle = resolverGlow;
+    ctx.fillRect(remediationEndX - 32, remediationEndY - 28, 64, 56);
+
+    const remediationPackets = Math.min(
+      quality.remediationPacketCap,
+      3 + Math.round(remediationFlowStrength * (isAutomated ? 4 : 3))
+    );
+    for (let k = 0; k < remediationPackets; k += 1) {
+      const t = (((now * (isAutomated ? 0.62 : 0.48)) + k * (1 / remediationPackets)) % 1 + 1) % 1;
+      const tailT = clamp(t - 0.11 - remediationFlowStrength * 0.04, 0, 1);
+      const pt = cubicPoint(remediationPath.p0, remediationPath.p1, remediationPath.p2, remediationPath.p3, t);
+      const tail = cubicPoint(remediationPath.p0, remediationPath.p1, remediationPath.p2, remediationPath.p3, tailT);
+      ctx.save();
+      ctx.strokeStyle = isAutomated
+        ? "rgba(162, 255, 229," + (0.18 + remediationFlowStrength * 0.22).toFixed(3) + ")"
+        : "rgba(208, 245, 204," + (0.16 + remediationFlowStrength * 0.18).toFixed(3) + ")";
+      ctx.lineWidth = 1.2 + remediationFlowStrength * 0.9;
+      ctx.shadowColor = isAutomated ? "rgba(116, 238, 192, 0.38)" : "rgba(120, 215, 160, 0.34)";
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(tail.x, tail.y);
+      ctx.quadraticCurveTo((tail.x + pt.x) * 0.5, (tail.y + pt.y) * 0.5 - 3, pt.x, pt.y);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = isAutomated
+        ? "rgba(130, 247, 207," + (0.52 + remediationFlowStrength * 0.26).toFixed(3) + ")"
+        : "rgba(122, 226, 170," + (0.48 + remediationFlowStrength * 0.22).toFixed(3) + ")";
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 2.2 + remediationFlowStrength * 1.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(235, 255, 246," + (0.2 + remediationFlowStrength * 0.14).toFixed(3) + ")";
+      ctx.lineWidth = 0.9;
+      ctx.beginPath();
+      ctx.moveTo(pt.x - 2.8, pt.y);
+      ctx.lineTo(pt.x + 2.8, pt.y);
+      ctx.stroke();
+    }
+
+    for (let k = 0; k < quality.hiddenFlowPulseCount; k += 1) {
+      const t = (((now * 0.35) + k * 0.16) % 1 + 1) % 1;
+      const pt = cubicPoint(hiddenPath.p0, hiddenPath.p1, hiddenPath.p2, hiddenPath.p3, t);
+      const pulse = 1 + 0.25 * Math.sin(now * 5 + k * 0.8);
+      const glow = ctx.createRadialGradient(pt.x, pt.y, 1, pt.x, pt.y, 11 * pulse);
+      glow.addColorStop(0, "rgba(255, 198, 92, 0.38)");
+      glow.addColorStop(1, "rgba(255, 198, 92, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(pt.x - 14, pt.y - 14, 28, 28);
+    }
+
+    for (let k = 0; k < quality.findingFlowPulseCount; k += 1) {
+      const t = (((now * 0.28) + k * 0.19) % 1 + 1) % 1;
+      const pt = cubicPoint(findingPath.p0, findingPath.p1, findingPath.p2, findingPath.p3, t);
+      const pulse = 1 + 0.18 * Math.sin(now * 4.5 + k * 0.9);
+      const glow = ctx.createRadialGradient(pt.x, pt.y, 1, pt.x, pt.y, 10 * pulse);
+      glow.addColorStop(0, "rgba(255, 146, 98, 0.32)");
+      glow.addColorStop(1, "rgba(255, 146, 98, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(pt.x - 12, pt.y - 12, 24, 24);
+    }
+
+    const funnelPulse = 1 + 0.24 * Math.sin(now * 6);
+    const funnelCore = ctx.createRadialGradient(hiddenGateX, hiddenGateY, 1, hiddenGateX, hiddenGateY, 30 * funnelPulse);
+    funnelCore.addColorStop(0, "rgba(255, 132, 78, 0.38)");
+    funnelCore.addColorStop(0.6, "rgba(255, 132, 78, 0.12)");
+    funnelCore.addColorStop(1, "rgba(255, 132, 78, 0)");
+    ctx.fillStyle = funnelCore;
+    ctx.fillRect(hiddenGateX - 38, hiddenGateY - 38, 76, 76);
+
+    ctx.strokeStyle = "rgba(241, 98, 74, 0.5)";
+    ctx.lineWidth = 1.35;
+    ctx.beginPath();
+    ctx.arc(hiddenGateX, hiddenGateY, 10 + 6 * funnelPulse, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const liveExposures = [];
+    for (let i = 0; i < viz.exposures.length; i += 1) {
+      const exposure = viz.exposures[i];
+      if (exposure.delay > 0) {
+        exposure.delay -= dt;
+        liveExposures.push(exposure);
+        continue;
+      }
+      exposure.progress += dt * 0.001 * exposure.speed;
+      const t = clamp(exposure.progress, 0, 1);
+      const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      const prevT = clamp(t - (exposure.tail || 0.2), 0, 1);
+      const prevEased = prevT < 0.5 ? 2 * prevT * prevT : 1 - Math.pow(-2 * prevT + 2, 2) / 2;
+      const fromX = hiddenRect.x + hiddenRect.w * 0.18;
+      const toX = findingsRect.x + findingsRect.w * 0.18;
+      const fromY = hiddenRect.y + hiddenRect.h * (0.78 - exposure.fromRatio * 0.5);
+      const toY = findingsRect.y + findingsRect.h * (0.74 - exposure.toRatio * 0.48);
+      const arcHeight = exposure.arcHeight || 18;
+      const x = lerp(fromX, toX, eased);
+      const y = lerp(fromY, toY, eased) - Math.sin(eased * Math.PI) * arcHeight;
+      const prevX = lerp(fromX, toX, prevEased);
+      const prevY = lerp(fromY, toY, prevEased) - Math.sin(prevEased * Math.PI) * arcHeight;
+      ctx.save();
+      ctx.strokeStyle = "rgba(255, 132, 102," + (0.3 + (1 - eased) * 0.28).toFixed(3) + ")";
+      ctx.lineWidth = 1.8 + (1 - eased) * 1.3;
+      ctx.shadowColor = "rgba(255, 132, 102, 0.45)";
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(prevX, prevY);
+      ctx.quadraticCurveTo((prevX + x) * 0.5, Math.min(prevY, y) - 8, x, y);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = "rgba(255, 98, 86," + (0.48 + (1 - eased) * 0.38).toFixed(3) + ")";
+      ctx.beginPath();
+      ctx.arc(x, y, (exposure.size || 3.5) + Math.sin(exposure.phase + now * 4.8) * 0.55, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(255, 226, 192," + (0.28 + (1 - eased) * 0.22).toFixed(3) + ")";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x - 4.5, y);
+      ctx.lineTo(x + 4.5, y);
+      ctx.moveTo(x, y - 4.5);
+      ctx.lineTo(x, y + 4.5);
+      ctx.stroke();
+
+      if (t >= 1) {
+        viz.bursts.push({ kind: "finding", x: findingsRect.x + 8, y: toY, radius: 4, alpha: 1, life: 0, phase: exposure.phase });
+        trimArray(viz.bursts, quality.maxActiveBursts);
+        viz.detectedImpact = Math.min(1, viz.detectedImpact + 0.16);
+        continue;
+      }
+      liveExposures.push(exposure);
+    }
+    viz.exposures = liveExposures;
+
+    for (let i = 0; i < particles.length; i += 1) {
+      const p = particles[i];
+      p.age += dt;
+      if (p.age < p.delay) {
+        stillParticles.push(p);
+        continue;
+      }
+
+      const speedFactor = dt / 1000;
+      if (p.type === "clean") {
+        p.x += p.speed * speedFactor;
+      } else if (p.type === "finding") {
+        p.x += p.speed * speedFactor * 0.88;
+        const findingProgress = clamp((p.x - findingPath.p0.x) / Math.max(12, findingGateX - findingPath.p0.x), 0, 1);
+        const curvePt = cubicPoint(findingPath.p0, findingPath.p1, findingPath.p2, findingPath.p3, findingProgress);
+        const targetY = curvePt.y + p.drift * 0.12 * (1 - findingProgress);
+        p.y += (targetY - p.y) * (0.12 + findingProgress * 0.06);
+        p.alpha = Math.max(0.3, p.alpha - 0.0006 * dt);
+      } else {
+        p.x += (p.speed * 0.9) * speedFactor;
+        const hiddenProgress = clamp((p.x - hiddenEntryX) / Math.max(12, hiddenGateX - hiddenEntryX), 0, 1);
+        const curvePt = cubicPoint(hiddenPath.p0, hiddenPath.p1, hiddenPath.p2, hiddenPath.p3, hiddenProgress);
+        const stackTargetY = hiddenGateY + p.drift * 0.2;
+        const targetY = curvePt.y * (1 - hiddenProgress * 0.55) + stackTargetY * (hiddenProgress * 0.55) + p.drift * (1 - hiddenProgress);
+        p.y += (targetY - p.y) * (0.12 + hiddenProgress * 0.06);
+
+        if (p.trail) {
+          p.trail.push({ x: p.x, y: p.y, a: 0.95 });
+          if (p.trail.length > quality.maxTrailPoints) {
+            p.trail.shift();
+          }
+        }
+      }
+
+      if (p.type === "hidden" && p.x >= stackX + 6) {
+        viz.bursts.push({ kind: "hidden", x: stackX + 6, y: p.y, radius: 5, alpha: 1, life: 0, phase: Math.random() * Math.PI * 2 });
+        trimArray(viz.bursts, quality.maxActiveBursts);
+        viz.stackImpact = Math.min(1, viz.stackImpact + 0.2);
+        continue;
+      }
+
+      if (p.type === "finding" && p.x >= findingGateX) {
+        viz.bursts.push({ kind: "finding", x: findingsRect.x + 8, y: p.y, radius: 4, alpha: 1, life: 0, phase: Math.random() * Math.PI * 2 });
+        trimArray(viz.bursts, quality.maxActiveBursts);
+        viz.detectedImpact = Math.min(1, viz.detectedImpact + 0.18);
+        continue;
+      }
+
+      if (p.x > stackX + stackW + 20 || p.y < flowY + 6) {
+        continue;
+      }
+
+      if (p.type === "clean" && p.x > flowEndX + 16) {
+        continue;
+      }
+
+      stillParticles.push(p);
+
+      ctx.save();
+      const pulse = 1 + 0.08 * Math.sin(now * 8 + p.x * 0.04);
+      const radius = p.size * pulse;
+      if (p.type === "clean") {
+        ctx.fillStyle = isAutomated ? "rgba(74, 220, 168, 0.9)" : "rgba(75, 180, 255, 0.9)";
+        ctx.shadowColor = isAutomated ? "rgba(55, 173, 130, 0.5)" : "rgba(79, 173, 231, 0.5)";
+        ctx.shadowBlur = 11;
+      } else if (p.type === "finding") {
+        ctx.fillStyle = "rgba(241, 98, 74," + p.alpha.toFixed(3) + ")";
+        ctx.shadowColor = "rgba(241, 98, 74, 0.45)";
+        ctx.shadowBlur = 12;
+      } else {
+        ctx.fillStyle = isAutomated ? "rgba(112, 194, 161, 0.74)" : "rgba(255, 176, 32, 0.8)";
+        ctx.shadowColor = isAutomated ? "rgba(112, 194, 161, 0.38)" : "rgba(255, 176, 32, 0.4)";
+        ctx.shadowBlur = 12;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.62)";
+      ctx.beginPath();
+      ctx.arc(p.x - radius * 0.25, p.y - radius * 0.25, Math.max(0.8, radius * 0.35), 0, Math.PI * 2);
+      ctx.fill();
+
+      if (p.type === "finding") {
+        ctx.strokeStyle = "rgba(241, 98, 74, 0.62)";
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius + 2.2, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(241, 98, 74, 0.46)";
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.moveTo(p.x - radius * 1.8, p.y - radius * 1.3);
+        ctx.lineTo(p.x + radius * 1.4, p.y + radius * 1.3);
+        ctx.stroke();
+      } else if (p.type === "hidden") {
+        if (p.trail && p.trail.length > 1) {
+          ctx.lineWidth = 1.25;
+          for (let j = 1; j < p.trail.length; j += 1) {
+            const prev = p.trail[j - 1];
+            const curr = p.trail[j];
+            prev.a *= 0.87;
+            curr.a *= 0.9;
+            ctx.strokeStyle = "rgba(255, 150, 48," + (curr.a * 0.72).toFixed(3) + ")";
+            ctx.beginPath();
+            ctx.moveTo(prev.x, prev.y);
+            ctx.lineTo(curr.x, curr.y);
+            ctx.stroke();
+          }
+        }
+
+        ctx.strokeStyle = "rgba(255, 165, 48, 0.58)";
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius + 2.5, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(255, 146, 42, 0.45)";
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.moveTo(p.x - radius * 1.8, p.y - radius * 0.2);
+        ctx.lineTo(p.x + radius * 0.2, p.y + radius * 0.8);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    viz.particles = stillParticles;
+
+    const liveBursts = [];
+    for (let i = 0; i < viz.bursts.length; i += 1) {
+      const b = viz.bursts[i];
+      b.life = (b.life || 0) + dt;
+      if (b.kind === "finding" || b.kind === "resolved") {
+        b.radius += 0.055 * dt;
+        b.alpha -= 0.0021 * dt;
+      } else if (b.kind === "audit") {
+        b.radius += 0.068 * dt;
+        b.alpha -= 0.0025 * dt;
+      } else {
+        b.radius += 0.058 * dt;
+        b.alpha -= 0.0019 * dt;
+      }
+      if (b.alpha <= 0) {
+        continue;
+      }
+
+      if (b.kind === "audit") {
+        const bx = hiddenRect.x + hiddenRect.w * b.xRatio - b.life * 0.01;
+        const by = hiddenRect.y + hiddenRect.h * b.yRatio + Math.sin((b.phase || 0) + b.life * 0.01) * 4;
+        const glow = ctx.createRadialGradient(bx, by, 2, bx, by, b.radius * 2.1);
+        glow.addColorStop(0, "rgba(255, 238, 188," + (b.alpha * 0.42).toFixed(3) + ")");
+        glow.addColorStop(0.4, "rgba(255, 146, 102," + (b.alpha * 0.24).toFixed(3) + ")");
+        glow.addColorStop(1, "rgba(255, 146, 102,0)");
+        ctx.fillStyle = glow;
+        ctx.fillRect(bx - b.radius * 2.4, by - b.radius * 2.4, b.radius * 4.8, b.radius * 4.8);
+
+        ctx.strokeStyle = "rgba(255, 118, 96," + b.alpha.toFixed(3) + ")";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(bx, by, b.radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(255, 225, 168," + (b.alpha * 0.8).toFixed(3) + ")";
+        ctx.lineWidth = 1.1;
+        for (let j = 0; j < quality.auditBurstRayCount; j += 1) {
+          const a = (b.phase || 0) + j * (Math.PI * 2 / quality.auditBurstRayCount);
+          const inner = b.radius * 0.25;
+          const outer = b.radius * 1.45;
+          ctx.beginPath();
+          ctx.moveTo(bx + Math.cos(a) * inner, by + Math.sin(a) * inner);
+          ctx.lineTo(bx + Math.cos(a) * outer, by + Math.sin(a) * outer);
+          ctx.stroke();
+        }
+      } else if (b.kind === "finding") {
+        ctx.strokeStyle = "rgba(241, 98, 74," + b.alpha.toFixed(3) + ")";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(241, 98, 74," + (b.alpha * 0.7).toFixed(3) + ")";
+        ctx.lineWidth = 1.1;
+        for (let j = 0; j < quality.findingBurstRayCount; j += 1) {
+          const a = (b.phase || 0) + j * (Math.PI * 2 / quality.findingBurstRayCount);
+          const inner = b.radius * 0.45;
+          const outer = b.radius * 1.4;
+          ctx.beginPath();
+          ctx.moveTo(b.x + Math.cos(a) * inner, b.y + Math.sin(a) * inner);
+          ctx.lineTo(b.x + Math.cos(a) * outer, b.y + Math.sin(a) * outer);
+          ctx.stroke();
+        }
+      } else if (b.kind === "resolved") {
+        const bx = resolvedRect.x + resolvedRect.w * b.xRatio;
+        const by = resolvedRect.y + resolvedRect.h * b.yRatio;
+        const glow = ctx.createRadialGradient(bx, by, 2, bx, by, b.radius * 1.8);
+        glow.addColorStop(0, "rgba(55, 192, 132," + (b.alpha * 0.42).toFixed(3) + ")");
+        glow.addColorStop(1, "rgba(55, 192, 132,0)");
+        ctx.fillStyle = glow;
+        ctx.fillRect(bx - b.radius * 2, by - b.radius * 2, b.radius * 4, b.radius * 4);
+
+        ctx.strokeStyle = "rgba(40, 182, 120," + b.alpha.toFixed(3) + ")";
+        ctx.lineWidth = 1.45;
+        ctx.beginPath();
+        ctx.arc(bx, by, b.radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(40, 182, 120," + (b.alpha * 0.72).toFixed(3) + ")";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(bx - b.radius * 0.9, by);
+        ctx.lineTo(bx - b.radius * 0.2, by + b.radius * 0.7);
+        ctx.lineTo(bx + b.radius * 1.1, by - b.radius * 0.7);
+        ctx.stroke();
+      } else {
+        const glow = ctx.createRadialGradient(b.x, b.y, 2, b.x, b.y, b.radius * 1.9);
+        glow.addColorStop(0, "rgba(255, 131, 80," + (b.alpha * 0.42).toFixed(3) + ")");
+        glow.addColorStop(1, "rgba(255, 131, 80,0)");
+        ctx.fillStyle = glow;
+        ctx.fillRect(b.x - b.radius * 2.1, b.y - b.radius * 2.1, b.radius * 4.2, b.radius * 4.2);
+
+        ctx.strokeStyle = "rgba(255, 102, 85," + b.alpha.toFixed(3) + ")";
+        ctx.lineWidth = 1.55;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(255, 176, 44," + (b.alpha * 0.78).toFixed(3) + ")";
+        ctx.lineWidth = 1.1;
+        for (let j = 0; j < quality.hiddenBurstRayCount; j += 1) {
+          const a = (b.phase || 0) + j * (Math.PI * 2 / quality.hiddenBurstRayCount);
+          const inner = b.radius * 0.5;
+          const outer = b.radius * 1.25;
+          ctx.beginPath();
+          ctx.moveTo(b.x + Math.cos(a) * inner, b.y + Math.sin(a) * inner);
+          ctx.lineTo(b.x + Math.cos(a) * outer, b.y + Math.sin(a) * outer);
+          ctx.stroke();
+        }
+
+        ctx.strokeStyle = "rgba(255, 214, 130," + (b.alpha * 0.66).toFixed(3) + ")";
+        ctx.lineWidth = 1;
+        const diamond = b.radius * 0.95;
+        ctx.beginPath();
+        ctx.moveTo(b.x, b.y - diamond);
+        ctx.lineTo(b.x + diamond, b.y);
+        ctx.lineTo(b.x, b.y + diamond);
+        ctx.lineTo(b.x - diamond, b.y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+      liveBursts.push(b);
+    }
+    viz.bursts = liveBursts;
+    ctx.restore();
+
+    if (auditAlpha > 0.01) {
+      const labelW = 54;
+      const glow = ctx.createLinearGradient(lineX, flowY, lineX, flowY + flowH);
+      glow.addColorStop(0, "rgba(255, 140, 120,0)");
+      glow.addColorStop(0.5, "rgba(255, 140, 120," + (0.12 + auditAlpha * 0.2).toFixed(3) + ")");
+      glow.addColorStop(1, "rgba(255, 140, 120,0)");
+      ctx.strokeStyle = glow;
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(lineX, flowY + 8);
+      ctx.lineTo(lineX, flowY + flowH - 8);
+      ctx.stroke();
+
+      ctx.strokeStyle = "rgba(232, 92, 92," + (0.28 + auditAlpha * 0.46).toFixed(3) + ")";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(lineX, flowY + 8);
+      ctx.lineTo(lineX, flowY + flowH - 8);
+      ctx.stroke();
+
+      if (auditFlash > 0.01) {
+        const markerCount = Math.max(2, quality.auditMarkerCount);
+        for (let k = 0; k < markerCount; k += 1) {
+          const offsetY = flowY + 34 + k * ((flowH - 70) / Math.max(1, markerCount - 1));
+          ctx.strokeStyle = "rgba(255, 222, 178," + (0.08 + auditFlash * 0.12).toFixed(3) + ")";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(lineX - 16, offsetY);
+          ctx.lineTo(lineX + 16, offsetY);
+          ctx.stroke();
+        }
+      }
+
+      roundRectPath(ctx, lineX - labelW * 0.5, flowY + 8, labelW, 20, 10);
+      ctx.fillStyle = "rgba(255, 245, 243, 0.96)";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(226, 112, 98, 0.48)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillStyle = "#9d3933";
+      ctx.font = "700 10.5px Space Grotesk";
+      ctx.textAlign = "center";
+      ctx.fillText("AUDIT", lineX, flowY + 22);
+      ctx.textAlign = "left";
+    }
+
+    drawStatusBadges();
+  }
+
+  function renderFrame(dt, now) {
+    const controls = readControls();
+    renderScenarioFrame(scenarios.manual, controls, dt, now);
+    renderScenarioFrame(scenarios.automated, controls, dt, now);
+  }
+
+  function frame(ts) {
+    rafId = 0;
+    if (!canAnimate()) {
+      lastTs = 0;
+      runtime.lastRenderTs = 0;
+      return;
+    }
+    const quality = getQuality();
+    if (!lastTs) {
+      lastTs = ts;
+    }
+    if (!runtime.lastRenderTs) {
+      runtime.lastRenderTs = ts - quality.frameIntervalMs;
+    }
+    if (quality.frameIntervalMs > 0 && ts - runtime.lastRenderTs < quality.frameIntervalMs) {
+      ensureFrameLoop();
+      return;
+    }
+    const dt = Math.min(quality.maxFrameStepMs, ts - lastTs);
+    lastTs = ts;
+    runtime.lastRenderTs = ts;
+
+    if (runtime.running) {
+      runtime.visualTimeMs += dt;
+      if (runtime.auditPauseMsRemaining > 0) {
+        runtime.auditPauseMsRemaining = Math.max(0, runtime.auditPauseMsRemaining - dt);
+      } else {
+        dayAccumulator += dt;
+        while (dayAccumulator >= MODEL.dayMs && runtime.day < MODEL.totalDays) {
+          runOneDay();
+          dayAccumulator -= MODEL.dayMs;
+        }
+      }
+    }
+
+    const renderDt = runtime.running ? dt : 0;
+    renderFrame(renderDt, runtime.visualTimeMs * 0.001);
+    ensureFrameLoop();
+  }
+
+  function attachEvents() {
+    [ui.teamSize, ui.checksPerDay, ui.auditFrequency].forEach((el) => {
+      el.addEventListener("input", () => {
+        syncControlLabels();
+        updateUI();
+      });
+      el.addEventListener("change", () => {
+        syncControlLabels();
+        updateUI();
+      });
+    });
+
+    ui.startPause.addEventListener("click", () => {
+      if (runtime.day >= MODEL.totalDays) {
+        resetState();
+        runtime.running = true;
+        ui.startPause.textContent = "Pause";
+        updateUI();
+        return;
+      }
+
+      runtime.running = !runtime.running;
+      ui.startPause.textContent = runtime.running ? "Pause" : "Resume";
+      updateUI();
+    });
+
+    ui.reset.addEventListener("click", () => {
+      resetState();
+      runtime.running = true;
+      ui.startPause.textContent = "Pause";
+      updateUI();
+    });
+
+    ui.simStatsClose.addEventListener("click", () => {
+      runtime.statsDismissed = true;
+      updateUI();
+    });
+
+    ui.simStatsModal.addEventListener("click", (event) => {
+      if (event.target === ui.simStatsModal) {
+        runtime.statsDismissed = true;
+        updateUI();
+      }
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && ui.simStatsModal.classList.contains("show")) {
+        runtime.statsDismissed = true;
+        updateUI();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      syncPerformanceProfile();
+      syncVizHeight();
+      scheduleEmbedHeightSync();
+      ensureFrameLoop();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      runtime.isDocumentVisible = !document.hidden;
+      if (runtime.isDocumentVisible) {
+        ensureFrameLoop();
+      } else {
+        stopFrameLoop();
+      }
+      scheduleEmbedHeightSync();
+    });
+
+    window.addEventListener("message", (event) => {
+      const data = event.data;
+      if (!data || typeof data !== "object") {
+        return;
+      }
+      if (
+        data.type === "widget:request-height"
+        || data.type === EMBED_WIDGET_ID + ":request-height"
+        || data.type === "simfluence-widget:request-height"
+      ) {
+        scheduleEmbedHeightSync();
+      }
+    }, { passive: true });
+
+    window.addEventListener("load", scheduleEmbedHeightSync);
+  }
+
+  function measureEmbedHeight() {
+    const rootEl = ui.widget;
+    const html = document.documentElement;
+    const body = document.body;
+    const docHeight = Math.ceil(Math.max(
+      html ? html.scrollHeight : 0,
+      html ? html.offsetHeight : 0,
+      body ? body.scrollHeight : 0,
+      body ? body.offsetHeight : 0
+    ));
+    let appHeight = 0;
+    if (rootEl) {
+      const rectHeight = rootEl.getBoundingClientRect().height;
+      const styles = getComputedStyle(rootEl);
+      const marginTop = parseFloat(styles.marginTop) || 0;
+      const marginBottom = parseFloat(styles.marginBottom) || 0;
+      appHeight = Math.ceil(rectHeight + marginTop + marginBottom);
+    }
+    return appHeight > 0 ? appHeight : docHeight;
+  }
+
+  function postEmbedHeight() {
+    embedHeightRafId = 0;
+    if (window.parent === window) {
+      return;
+    }
+
+    const height = measureEmbedHeight();
+    if (Math.abs(height - lastEmbedHeight) < 1) {
+      return;
+    }
+    lastEmbedHeight = height;
+    document.documentElement.style.minHeight = height + "px";
+    document.body.style.minHeight = height + "px";
+    try {
+      const frame = window.frameElement;
+      if (frame) {
+        frame.style.height = height + "px";
+        frame.setAttribute("height", String(height));
+      }
+    } catch (_) {
+      // Ignore frame access errors.
+    }
+    try {
+      window.parent.postMessage({ type: "widget:resize", widget: EMBED_WIDGET_ID, height: height }, "*");
+      window.parent.postMessage({ type: EMBED_WIDGET_ID + ":height", height: height }, "*");
+      window.parent.postMessage({ type: "simfluence-widget:resize", widget: EMBED_WIDGET_ID, height: height, mode: "default" }, "*");
+    } catch (_) {
+      // Ignore cross-origin communication errors.
+    }
+  }
+
+  function scheduleEmbedHeightSync() {
+    if (!embedHeightRafId) {
+      embedHeightRafId = requestAnimationFrame(postEmbedHeight);
+    }
+  }
+
+  function boot() {
+    syncPerformanceProfile();
+    syncControlLabels();
+    resetState();
+    updateUI();
+    syncVizHeight();
+    attachEvents();
+
+    if ("ResizeObserver" in window) {
+      const ro = new ResizeObserver(() => {
+        syncVizHeight();
+        scheduleEmbedHeightSync();
+      });
+      if (ui.controlsPanel) {
+        ro.observe(ui.controlsPanel);
+      }
+      if (ui.storyShell) {
+        ro.observe(ui.storyShell);
+      }
+      if (!ui.controlsPanel && !ui.storyShell) {
+        ro.observe(ui.widget);
+      }
+    }
+
+    if ("IntersectionObserver" in window && ui.widget) {
+      const io = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        runtime.isInViewport = !!entry && (entry.isIntersecting || entry.intersectionRatio > 0.08);
+        if (runtime.isInViewport) {
+          ensureFrameLoop();
+        } else {
+          stopFrameLoop();
+        }
+      }, { threshold: [0, 0.08, 0.2] });
+      io.observe(ui.widget);
+    }
+
+    scheduleEmbedHeightSync();
+    setTimeout(scheduleEmbedHeightSync, 60);
+    setTimeout(scheduleEmbedHeightSync, 240);
+    setTimeout(scheduleEmbedHeightSync, 900);
+    stopFrameLoop();
+    ensureFrameLoop();
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

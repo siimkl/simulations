@@ -1,0 +1,1036 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stock Profit Calculator | ROI, Fees, Dividends & Break-Even</title>
+  <meta name="description" content="Use this stock profit calculator to estimate profit, ROI, fees, dividends, taxes, and break-even price across a share-price range.">
+  <meta name="theme-color" content="#0A2540">
+  <style>
+    :root{--bg1:#e6eef8;--bg2:#f6eee2;--panel:#f7fbff;--text:#102438;--muted:#516b86;--stroke:rgba(15,36,56,.12);--accent:#1e96ec;--accent2:#8fd7ff;--gold:#ff7f22;--profit:#37d07e;--loss:#ff7474;--shadow:0 26px 56px rgba(13,34,54,.16);--soft:0 16px 32px rgba(13,34,54,.11);--radius-xl:30px;--radius-lg:22px;--radius-md:16px;--font:"Sora","Manrope","Avenir Next","Segoe UI",sans-serif}
+    *{box-sizing:border-box}html,body{margin:0;padding:0;min-height:100%}body{font-family:var(--font);color:var(--text);background:radial-gradient(circle at 12% 14%,rgba(79,159,255,.18),transparent 26%),radial-gradient(circle at 82% 16%,rgba(255,177,95,.16),transparent 24%),linear-gradient(180deg,var(--bg1),var(--bg2));padding:18px}button,input,select,output{font:inherit}button{color:inherit}[hidden]{display:none!important}
+    .shell{width:min(100%,1360px);margin:0 auto}.widget{position:relative;overflow:hidden;border-radius:var(--radius-xl);border:1px solid rgba(15,36,56,.14);background:linear-gradient(180deg,rgba(248,251,255,.96),rgba(240,246,251,.9));box-shadow:0 34px 84px rgba(12,27,43,.17);backdrop-filter:blur(18px)}.widget:before,.widget:after{content:"";position:absolute;border-radius:999px;pointer-events:none}.widget:before{width:460px;height:460px;top:-260px;right:-140px;background:radial-gradient(circle,rgba(79,159,255,.18),transparent 68%)}.widget:after{width:380px;height:380px;bottom:-210px;left:-110px;background:radial-gradient(circle,rgba(255,177,95,.16),transparent 68%)}
+    .header,.main{position:relative;z-index:1}.header{display:flex;justify-content:space-between;gap:24px;padding:30px 30px 18px}.badge{display:inline-flex;align-items:center;gap:8px;margin:0;padding:8px 12px;border-radius:999px;background:rgba(79,159,255,.1);color:#255997;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.badge:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px rgba(79,159,255,.14)}h1{margin:16px 0 0;font-size:clamp(30px,4vw,52px);line-height:1.03;letter-spacing:-.05em}.subtitle{margin:14px 0 0;max-width:720px;color:var(--muted);font-size:15px;line-height:1.7}.header-side{display:flex;align-items:flex-start;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+    .currency-pick{appearance:none;min-width:196px;min-height:42px;padding:0 38px 0 14px;border-radius:18px;border:1px solid rgba(15,36,56,.1);background:linear-gradient(180deg,rgba(248,251,255,.96),rgba(239,246,252,.92));box-shadow:0 14px 26px rgba(13,34,54,.08);color:var(--text);font-size:12px;font-weight:800;letter-spacing:.02em;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#5a7b9a 50%),linear-gradient(135deg,#5a7b9a 50%,transparent 50%);background-position:calc(100% - 18px) calc(50% - 2px),calc(100% - 12px) calc(50% - 2px);background-size:6px 6px,6px 6px;background-repeat:no-repeat}
+    .progress{margin:0 30px;height:12px;border-radius:999px;overflow:hidden;background:linear-gradient(90deg,rgba(79,159,255,.12),rgba(255,177,95,.12));border:1px solid rgba(15,36,56,.06)}.progress-fill{width:0;height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .08s linear}
+    .main{display:grid;grid-template-columns:minmax(360px,.92fr) minmax(0,1.82fr);gap:18px;padding:20px 30px 30px;align-items:stretch}.panel{display:flex;flex-direction:column;border-radius:var(--radius-lg);border:1px solid var(--stroke);background:rgba(247,251,255,.95);box-shadow:var(--shadow);overflow:hidden;align-self:stretch;margin-top:0}.chart-panel{grid-column:2;grid-row:1;min-width:0;align-self:stretch}.inputs{grid-column:1;grid-row:1;min-width:0;align-self:stretch}.panel-head{padding:20px 20px 16px;border-bottom:1px solid rgba(15,36,56,.09)}.chart-panel .panel-head{display:grid;grid-template-columns:minmax(0,.85fr) minmax(540px,1.15fr);gap:18px;align-items:center}.panel-title{min-width:0}.kicker{margin:0;color:#4d6781;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.panel h2{margin:8px 0 0;font-size:22px;line-height:1.12;letter-spacing:-.03em}.panel-copy{margin:10px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+    .view-switcher{display:flex;align-items:center;gap:8px;padding:14px 20px 0}.view-pill{appearance:none;min-height:38px;padding:0 14px;border-radius:999px;border:1px solid rgba(15,36,56,.1);background:rgba(247,251,255,.72);color:#5a7086;font-size:12px;font-weight:800;letter-spacing:.02em;cursor:pointer;transition:all .18s ease}.view-pill[aria-selected="true"]{background:linear-gradient(135deg,rgba(79,159,255,.16),rgba(79,159,255,.08));border-color:rgba(79,159,255,.3);color:#1f5e98;box-shadow:0 10px 22px rgba(16,36,56,.08),inset 0 0 0 1px rgba(79,159,255,.08)}.view-pill:hover{transform:translateY(-1px)}
+    .surface{position:relative;margin:20px 20px 0;min-height:470px;border-radius:24px;overflow:hidden;background:radial-gradient(circle at 14% 16%,rgba(31,151,237,.2),transparent 24%),radial-gradient(circle at 88% 10%,rgba(255,127,34,.16),transparent 21%),linear-gradient(140deg,#0d3156 0%,#0a2540 52%,#081c31 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}.empty{position:absolute;inset:18px;z-index:4;display:grid;place-items:center;padding:24px;border-radius:18px;background:rgba(6,15,25,.5);border:1px dashed rgba(255,255,255,.16);color:rgba(245,249,255,.86);text-align:center;font-size:14px;line-height:1.6}
+    svg,.chart-canvas{position:absolute;inset:0;display:block;width:100%;height:100%;min-height:470px}.chart-canvas{z-index:2;opacity:0;pointer-events:none}.grid line{stroke:rgba(255,255,255,.1)}.grid .v{stroke:rgba(255,255,255,.06)}.axes text{fill:rgba(255,255,255,.74);font-size:12px;font-weight:800}.axes line{stroke:rgba(255,255,255,.26);stroke-width:1.2}.zone{fill:rgba(255,255,255,.46);font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.profit-area{fill:url(#profitGradient)}.loss-area{fill:url(#lossGradient)}.line{fill:none;stroke-linecap:round;stroke-linejoin:round}.value-line{stroke:url(#lineGlowValue);stroke-width:4;filter:drop-shadow(0 0 16px rgba(31,151,237,.26))}.invest-line{stroke:url(#lineGlowInvest);stroke-width:4;filter:drop-shadow(0 0 16px rgba(255,127,34,.22))}.cursor-line{stroke:rgba(255,255,255,.1);stroke-width:1.2;stroke-dasharray:5 9}.halo,.point{opacity:0;pointer-events:none}.halo.value{fill:rgba(31,151,237,.18);stroke:rgba(143,215,255,.48);stroke-width:1.5}.halo.invest{fill:rgba(255,127,34,.16);stroke:rgba(255,196,156,.44);stroke-width:1.5}.point.value{fill:#8fd7ff;stroke:rgba(255,255,255,.9);stroke-width:2.5}.point.invest{fill:#ff9f5e;stroke:rgba(255,250,242,.92);stroke-width:2.5}.break-line,.hover-line{stroke-linecap:round}.break-line{stroke:rgba(255,255,255,.5);stroke-width:1.3;stroke-dasharray:6 7;opacity:0}.hover-line{stroke:rgba(255,255,255,.28);stroke-width:1.2;stroke-dasharray:4 8;opacity:0}.break-pulse,.hover-dot{fill:#fff;stroke-width:2.5;opacity:0}.hover-dot{stroke:var(--accent2)}.callout{fill:rgba(255,255,255,.94);font-size:13px;font-weight:700;opacity:0}.marker-line{stroke-width:1.2;stroke-dasharray:5 8}.marker-line.buy{stroke:rgba(255,127,34,.52)}.marker-line.current{stroke:rgba(31,151,237,.52)}.marker-line.predicted{stroke:rgba(143,215,255,.56)}
+    .badge-chart rect{stroke-width:1}.badge-chart text.title{fill:rgba(255,255,255,.96);font-size:10.5px;font-weight:800;letter-spacing:.14em}.badge-chart text.sub{fill:rgba(255,255,255,.72);font-size:10px;font-weight:700}.badge-chart.buy rect{fill:rgba(255,127,34,.12);stroke:rgba(255,127,34,.3)}.badge-chart.current rect{fill:rgba(31,151,237,.12);stroke:rgba(143,215,255,.28)}.badge-chart.predicted rect{fill:rgba(143,215,255,.12);stroke:rgba(143,215,255,.28)}
+    .tooltip{display:none!important}
+    .timeline-axis{stroke:rgba(255,255,255,.18);stroke-width:1.4}.timeline-arrow{fill:rgba(255,255,255,.34)}.journey-road{stroke:rgba(255,255,255,.08);stroke-width:18;stroke-linecap:round}.journey-progress{stroke:url(#routeProgress);stroke-width:8;stroke-linecap:round;stroke-dasharray:18 14;animation:roadFlow 7.5s linear infinite;filter:drop-shadow(0 0 12px rgba(31,151,237,.26))}.journey-future{stroke:rgba(143,215,255,.52);stroke-width:5;stroke-linecap:round;stroke-dasharray:8 11;animation:futureFlow 10s linear infinite;filter:drop-shadow(0 0 10px rgba(143,215,255,.2))}.timeline-node{stroke-width:2.2}.timeline-node.buy{fill:#ffb072;stroke:#fff1e4}.timeline-node.current{fill:#4fb3f3;stroke:#eef8ff}.timeline-node.predicted{fill:#9edcff;stroke:#f3fbff}.baseline-line{stroke:rgba(255,127,34,.88);stroke-width:2.4;stroke-dasharray:9 10}.stage-stem{stroke:rgba(255,255,255,.08);stroke-width:2}.stage-aura{mix-blend-mode:screen;pointer-events:none}.stage-aura.buy{fill:url(#stageAuraBuy)}.stage-aura.current{fill:url(#stageAuraCurrent)}.stage-aura.predicted{fill:url(#stageAuraPredicted)}.stage-beam{pointer-events:none}.stage-beam.buy{fill:url(#beamBuy)}.stage-beam.current{fill:url(#beamCurrent)}.stage-beam.predicted{fill:url(#beamPredicted)}.stage-bar{stroke:rgba(255,255,255,.16);stroke-width:1.4}.stage-bar.buy{fill:url(#barBuyFill)}.stage-bar.current{fill:url(#barCurrentFill)}.stage-bar.predicted{fill:url(#barPredictedFill)}.delta-band.pos{fill:url(#deltaGain)}.delta-band.neg{fill:url(#deltaLoss)}.stage-connector{fill:none;stroke:rgba(112,195,249,.82);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}.stage-value,.stage-caption,.stage-price{paint-order:stroke fill;stroke:rgba(9,24,39,.72);stroke-width:4px;stroke-linejoin:round;text-anchor:middle}.stage-value{fill:#f7fbff;font-size:17px;font-weight:800;letter-spacing:-.04em}.stage-caption{fill:rgba(255,255,255,.96);font-size:12px;font-weight:800}.stage-price{fill:rgba(234,243,251,.74);font-size:11px;font-weight:700}.stage-pulse,.goal-ring{fill:none;transform-box:fill-box;transform-origin:center;pointer-events:none}.stage-pulse.buy{stroke:rgba(255,176,114,.62);stroke-width:1.8;animation:startPulse 3.6s ease-out infinite}.stage-pulse.current{stroke:rgba(79,179,243,.74);stroke-width:2;animation:stagePulse 2.7s ease-out infinite}.stage-pulse.predicted{stroke:rgba(143,215,255,.78);stroke-width:2;animation:stagePulse 2.5s ease-out infinite}.stage-pulse.delay,.goal-ring.delay{animation-delay:.95s}.goal-ring{stroke:rgba(143,215,255,.72);stroke-width:1.6;stroke-dasharray:3 5;animation:stagePulse 3.2s ease-out infinite}.stage-core{stroke:rgba(255,255,255,.92);stroke-width:1.4}.stage-core.buy{fill:#ff7f22}.stage-core.current{fill:#1e96ec}.stage-core.predicted{fill:#8fd7ff}.stage-focus{fill:none;stroke:rgba(255,255,255,.42);stroke-width:2;stroke-dasharray:5 8}.current-spotlight{fill:url(#currentSpotlight);mix-blend-mode:screen;pointer-events:none}.current-guide{fill:none;stroke:rgba(143,215,255,.56);stroke-width:1.35;stroke-dasharray:6 8;pointer-events:none}.current-bar-frame{fill:none;stroke:rgba(143,215,255,.88);stroke-width:2.1;filter:drop-shadow(0 0 16px rgba(31,151,237,.3));pointer-events:none}.current-node-halo{fill:rgba(31,151,237,.16);stroke:rgba(143,215,255,.88);stroke-width:2.2;pointer-events:none}.current-node-ring{fill:none;stroke:rgba(143,215,255,.74);stroke-width:1.75;pointer-events:none;animation:stagePulse 3s ease-out infinite}.current-node-ring.delay{animation-delay:1.05s}.current-orbit{fill:none;stroke:rgba(143,215,255,.5);stroke-width:1.15;stroke-dasharray:4 7;pointer-events:none;animation:roadFlow 8s linear infinite}
+    @keyframes roadFlow{from{stroke-dashoffset:0}to{stroke-dashoffset:-96}}@keyframes futureFlow{from{stroke-dashoffset:0}to{stroke-dashoffset:108}}@keyframes stagePulse{0%{opacity:.84;transform:scale(.78)}70%{opacity:0;transform:scale(1.7)}100%{opacity:0;transform:scale(1.82)}}@keyframes startPulse{0%{opacity:.7;transform:scale(.84)}70%{opacity:0;transform:scale(1.5)}100%{opacity:0;transform:scale(1.62)}}@keyframes mistFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-10px,-8px,0) scale(1.06)}}@keyframes mistFloatAlt{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(12px,6px,0) scale(.96)}}@keyframes boostPulse{0%{opacity:.68;transform:scale(.9)}70%{opacity:0;transform:scale(1.18)}100%{opacity:0;transform:scale(1.24)}}@keyframes tensionPulse{0%{opacity:.72;transform:scale(.82)}70%{opacity:0;transform:scale(1.28)}100%{opacity:0;transform:scale(1.36)}}
+    .start-platform,.route-probe,.bar-scan,.ground-pool{pointer-events:none}.start-pad.outer{fill:rgba(255,127,34,.16);stroke:rgba(255,196,156,.4);stroke-width:1.5}.start-pad.inner{fill:rgba(255,159,94,.34);stroke:rgba(255,240,215,.52);stroke-width:1.1}.launch-ring{fill:none;stroke:rgba(255,176,114,.48);stroke-width:1.5;animation:startPulse 3.2s ease-out infinite}.launch-ring.delay{animation-delay:1.1s}.ground-pool.buy .pool-core{fill:url(#groundGlowBuy)}.ground-pool.current .pool-core{fill:url(#groundGlowCurrent)}.ground-pool.predicted .pool-core{fill:url(#groundGlowPredicted)}.ground-pool .pool-ring{fill:none;stroke:rgba(255,255,255,.18);stroke-width:1.15}.route-probe .probe-trail{opacity:.72}.route-probe .probe-glow{filter:blur(1.2px)}.route-probe .probe-core{stroke-width:1.25}.route-probe.progress .probe-trail{fill:rgba(31,151,237,.34)}.route-probe.progress .probe-glow{fill:rgba(31,151,237,.36)}.route-probe.progress .probe-core{fill:#eef9ff;stroke:#8fd7ff}.route-probe.progress .probe-spark{fill:#8fd7ff}.bar-scan line{stroke-linecap:round;stroke-width:2.2;filter:drop-shadow(0 0 8px rgba(255,255,255,.24))}.bar-scan.current line{stroke:rgba(225,244,255,.9)}.bar-scan.predicted line{stroke:rgba(211,240,255,.94)}
+    .scene-haze{mix-blend-mode:screen;filter:blur(18px);pointer-events:none;transform-box:fill-box;transform-origin:center}.scene-haze.back{animation:mistFloat 16s ease-in-out infinite}.scene-haze.front{animation:mistFloatAlt 11s ease-in-out infinite}.scene-haze.buy .mist-core{fill:url(#mistBuy)}.scene-haze.current .mist-core{fill:url(#mistCurrent)}.scene-haze.predicted .mist-core{fill:url(#mistPredicted)}.scene-haze .mist-halo{fill:rgba(255,255,255,.12)}.stage-shell{stroke:none;filter:blur(16px);mix-blend-mode:screen;pointer-events:none}.stage-shell.buy{fill:url(#shellBuy)}.stage-shell.current{fill:url(#shellCurrent)}.stage-shell.predicted{fill:url(#shellPredicted)}.stage-bar{stroke:rgba(255,255,255,.3);stroke-width:1.25;filter:drop-shadow(0 16px 24px rgba(8,18,32,.26)) drop-shadow(0 0 18px rgba(255,255,255,.08))}.stage-glass{fill:url(#glassSkin);stroke:rgba(255,255,255,.22);stroke-width:1;mix-blend-mode:screen;pointer-events:none}.stage-edge{stroke:rgba(255,255,255,.56);stroke-width:1.35;stroke-linecap:round;pointer-events:none}.delta-band.neg{fill:url(#deltaLoss)}.tension-veil{fill:url(#tensionVeil);mix-blend-mode:screen;filter:blur(10px);pointer-events:none}.tension-ring{fill:none;stroke:rgba(255,127,34,.74);stroke-width:1.45;stroke-dasharray:5 7;animation:tensionPulse 4.8s ease-out infinite;pointer-events:none}.tension-ring.delay{animation-delay:1.2s}.micro-boost{fill:none;stroke-width:1.6;transform-box:fill-box;transform-origin:center;animation:boostPulse 2.4s ease-out infinite;pointer-events:none}.micro-boost.buy{stroke:rgba(255,176,114,.76)}.micro-boost.current{stroke:rgba(143,215,255,.84)}.micro-boost.predicted{stroke:rgba(182,231,255,.86)}.stage-focus{fill:url(#focusWash);stroke:rgba(255,255,255,.46);stroke-width:2;stroke-dasharray:5 8;filter:drop-shadow(0 0 18px rgba(255,255,255,.08))}
+    .snap-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.snap-grid article{border-radius:16px;border:1px solid rgba(15,36,56,.11);background:rgba(246,250,254,.92);padding:12px;box-shadow:var(--soft)}.snap-grid span{display:block;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.snap-grid strong{display:block;margin-top:8px;font-size:24px;line-height:1;letter-spacing:-.04em}.chart-panel .snap-grid{grid-template-columns:repeat(4,minmax(0,1fr));align-self:center;justify-self:end;width:100%}.chart-panel .snap-grid article{padding:10px 12px;min-width:0;border-radius:14px;text-align:center}.chart-panel .snap-grid span{font-size:10px;letter-spacing:.1em}.chart-panel .snap-grid strong{font-size:18px}.explainer{margin:24px 20px 20px;padding:16px 18px;border-radius:18px;border:1px solid rgba(15,36,56,.11);background:linear-gradient(180deg,rgba(245,249,253,.96),rgba(238,244,249,.92));box-shadow:var(--soft)}.explainer p{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.6}.explainer h3{margin:8px 0 0;font-size:18px;line-height:1.2;letter-spacing:-.02em}
+    .presets{display:flex;gap:8px;padding:14px 20px 10px}.preset{appearance:none;flex:1 1 0;min-width:0;min-height:54px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:rgba(15,36,56,.055);border:1px solid rgba(15,36,56,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.45);padding:12px 14px;color:#667c92;cursor:pointer;text-align:center;transition:all .18s ease}.preset:hover,.btn:hover{transform:translateY(-1px)}.preset strong{font-size:12.5px;font-weight:800;line-height:1.1}.preset.is-active{background:linear-gradient(135deg,rgba(55,208,126,.22),rgba(55,208,126,.1));border-color:rgba(55,208,126,.38);color:#127347;box-shadow:inset 0 0 0 1px rgba(55,208,126,.08),0 0 0 4px rgba(55,208,126,.14)}
+    .actions{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,.9fr) minmax(128px,1.2fr);gap:8px;padding:0 20px 14px}.btn,.speed{width:100%;min-height:44px;border-radius:14px;font-size:14px;font-weight:800}.btn{appearance:none;border:0;padding:11px 16px;cursor:pointer;transition:all .18s ease}.btn.primary{background:linear-gradient(135deg,rgba(79,159,255,.14),rgba(79,159,255,.08));border:1px solid rgba(79,159,255,.28);color:#225a92;box-shadow:inset 0 0 0 1px rgba(79,159,255,.06),0 0 0 3px rgba(79,159,255,.12)}.btn.ghost{background:linear-gradient(135deg,rgba(79,159,255,.09),rgba(79,159,255,.04));border:1px solid rgba(79,159,255,.18);color:#225a92;box-shadow:inset 0 0 0 1px rgba(79,159,255,.04)}.btn.complete.primary{background:linear-gradient(135deg,rgba(55,208,126,.24),rgba(55,208,126,.12));border-color:rgba(55,208,126,.4);color:#127347;box-shadow:inset 0 0 0 1px rgba(55,208,126,.08),0 0 0 3px rgba(55,208,126,.14)}.btn.complete.ghost{background:linear-gradient(135deg,rgba(55,208,126,.12),rgba(55,208,126,.06));border-color:rgba(55,208,126,.22);color:#127347}.speed{appearance:none;border:1px solid rgba(15,36,56,.12);background:rgba(244,249,253,.94);box-shadow:var(--soft);color:var(--text);padding:0 34px 0 12px;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#5a7b9a 50%),linear-gradient(135deg,#5a7b9a 50%,transparent 50%);background-position:calc(100% - 18px) calc(50% - 2px),calc(100% - 12px) calc(50% - 2px);background-size:6px 6px,6px 6px;background-repeat:no-repeat}
+    .controls{display:grid;gap:12px;padding:0 20px 20px}.control{display:grid;gap:10px;padding:14px;border-radius:18px;border:1px solid rgba(15,36,56,.08);background:rgba(255,255,255,.6);box-shadow:var(--soft)}.control-top{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700}.grid2,.grid3{display:grid;gap:10px}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.field{display:grid;gap:6px;min-width:0}.field>span{color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.field input,.field select{width:100%;min-width:0;min-height:44px;padding:10px 12px;border-radius:14px;border:1px solid rgba(15,36,56,.1);background:rgba(247,251,255,.96);color:var(--text);outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.75);transition:all .18s ease}.field input:focus,.field select:focus{border-color:rgba(79,159,255,.4);box-shadow:0 0 0 4px rgba(79,159,255,.12)}.field.invalid input,.field.invalid select{border-color:rgba(194,70,70,.42);background:rgba(255,242,242,.92);box-shadow:0 0 0 4px rgba(194,70,70,.08)}.error{min-height:18px;margin:0;color:#c24646;font-size:12.5px;font-weight:700;line-height:1.45}.pos{color:#178954}.neg{color:#c24646}
+    .btn:focus-visible,.preset:focus-visible,.speed:focus-visible,.currency-pick:focus-visible,.view-pill:focus-visible,.field input:focus-visible,.field select:focus-visible{outline:3px solid rgba(79,159,255,.28);outline-offset:2px}
+    @media (max-width:1140px){.main{grid-template-columns:1fr}.chart-panel,.inputs{grid-column:auto;grid-row:auto}.panel.inputs{max-width:none}.chart-panel .panel-head{grid-template-columns:minmax(0,.9fr) minmax(520px,1.1fr)}}@media (max-width:860px){body{padding:12px}.header{padding:22px 20px 16px;flex-direction:column}.header-side{width:100%;justify-content:flex-start}.progress{margin:0 20px}.main{padding:18px 20px 22px}.chart-panel .panel-head{grid-template-columns:1fr}.snap-grid{grid-template-columns:repeat(2,minmax(0,1fr))}svg,.chart-canvas,.surface{min-height:420px}.tooltip-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:768px){body{padding:10px}.widget{border-radius:24px}.header{gap:16px;padding:20px 16px 14px}.header h1{font-size:clamp(28px,9vw,38px)}.subtitle{font-size:14px;line-height:1.55}.header-side{width:100%;flex-direction:column;align-items:stretch}.currency-pick{width:100%;min-height:44px;padding-top:12px;padding-bottom:12px;font-size:12px}.progress{margin:0 16px;height:10px}.main{gap:14px;padding:16px 16px 18px}.inputs{order:1}.chart-panel{order:2}.panel{border-radius:20px}.panel h2{font-size:20px}.panel-copy,.explainer p{font-size:13px;line-height:1.5}.panel-head,.controls,.presets,.actions,.view-switcher{padding-left:14px;padding-right:14px}.chart-panel .panel-head{gap:14px}.surface{margin:12px 14px 0;min-height:clamp(320px,88vw,390px);border-radius:20px;touch-action:pan-y}svg,.chart-canvas{min-height:clamp(320px,88vw,390px)}.view-switcher{gap:6px;overflow:auto;padding-top:12px}.view-pill{min-height:40px;padding:0 12px;white-space:nowrap}.snap-grid{gap:8px}.snap-grid article{border-radius:14px;padding:10px}.snap-grid strong{font-size:20px}.explainer{margin:18px 14px 14px;padding:14px;border-radius:16px}.explainer h3{font-size:16px}.presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-top:14px;padding-bottom:12px}.preset{min-height:50px;border-radius:14px;padding:10px 10px;white-space:normal}.actions{grid-template-columns:repeat(2,minmax(0,1fr));padding-bottom:12px}.speed{grid-column:1/-1}.controls{gap:10px;padding-bottom:14px}.control{padding:12px;gap:8px}.controls .grid2,.controls .grid3{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.controls .field>span{font-size:10px}.controls .field input,.controls .field select{min-height:42px;padding:9px 10px}.tooltip{display:none}}@media (max-width:480px){.snap-grid,.tooltip-grid{grid-template-columns:1fr}.control-top{flex-direction:column;align-items:flex-start}}@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}.btn,.preset,.journey-progress,.journey-future,.stage-pulse,.goal-ring,.launch-ring,.scene-haze,.micro-boost,.tension-ring{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="widget" id="stockWidget">
+      <header class="header">
+        <div>
+          <p class="badge">Stock Profit Calculator</p>
+          <h1>Estimate stock profit, ROI, fees, and break-even.</h1>
+          <p class="subtitle">Use this stock profit calculator to compare your investment, sale value, dividends, taxes, and projected return in one clear browser tool.</p>
+        </div>
+        <div class="header-side">
+          <select class="currency-pick" id="currency" name="currency" aria-label="Choose currency">
+            <option value="USD">Choose currency - USD</option>
+            <option value="EUR">Choose currency - EUR</option>
+            <option value="GBP">Choose currency - GBP</option>
+          </select>
+        </div>
+      </header>
+
+      <div class="progress" aria-label="Animation progress"><div class="progress-fill" id="progressBar"></div></div>
+
+      <div class="main">
+        <section class="panel chart-panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <p class="kicker">Profit chart</p>
+              <h2>Scenario timeline</h2>
+            </div>
+            <div class="snap-grid" aria-live="polite">
+              <article><span>Investment</span><strong id="snapInvestment">$0</strong></article>
+              <article><span>Net value</span><strong id="snapValue">$0</strong></article>
+              <article><span>Net profit</span><strong id="snapProfit">$0</strong></article>
+              <article><span>Return</span><strong id="snapRoi">0%</strong></article>
+            </div>
+          </div>
+
+          <div class="view-switcher" id="viewSwitcher" role="tablist" aria-label="Canvas view">
+            <button class="view-pill" type="button" role="tab" aria-selected="false" data-view="classic" tabindex="-1">Classic</button>
+            <button class="view-pill" type="button" role="tab" aria-selected="true" data-view="orb" tabindex="0">Orbital</button>
+          </div>
+
+          <div class="surface" id="chartSurface">
+            <div class="empty" id="emptyState" hidden>Enter shares, buy price, and current price to calculate your result.</div>
+            <svg id="chart" viewBox="0 0 960 560" preserveAspectRatio="none" aria-hidden="true" role="presentation" focusable="false">
+              <defs>
+                <linearGradient id="barBuyFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#fff0e2" stop-opacity=".96"></stop><stop offset="22%" stop-color="#ffd2af" stop-opacity=".9"></stop><stop offset="68%" stop-color="#ff9b56" stop-opacity=".82"></stop><stop offset="100%" stop-color="#ff7f22" stop-opacity=".72"></stop></linearGradient>
+                <linearGradient id="barCurrentFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#eef8ff" stop-opacity=".96"></stop><stop offset="22%" stop-color="#d0ebff" stop-opacity=".9"></stop><stop offset="68%" stop-color="#66bdf7" stop-opacity=".82"></stop><stop offset="100%" stop-color="#1e96ec" stop-opacity=".72"></stop></linearGradient>
+                <linearGradient id="barPredictedFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#f4fbff" stop-opacity=".96"></stop><stop offset="22%" stop-color="#def2ff" stop-opacity=".9"></stop><stop offset="68%" stop-color="#9edcff" stop-opacity=".82"></stop><stop offset="100%" stop-color="#58baf4" stop-opacity=".72"></stop></linearGradient>
+                <linearGradient id="deltaGain" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#8fd7ff" stop-opacity=".88"></stop><stop offset="100%" stop-color="#1e96ec" stop-opacity=".24"></stop></linearGradient>
+                <linearGradient id="deltaLoss" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#ffd4b4" stop-opacity=".18"></stop><stop offset="54%" stop-color="#ff7f22" stop-opacity=".56"></stop><stop offset="100%" stop-color="#ff7f22" stop-opacity=".86"></stop></linearGradient>
+                <linearGradient id="routeProgress" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="#ff7f22"></stop><stop offset="52%" stop-color="#1e96ec"></stop><stop offset="100%" stop-color="#8fd7ff"></stop></linearGradient>
+                <linearGradient id="currentSpotlight" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#8fd7ff" stop-opacity="0"></stop><stop offset="18%" stop-color="#8fd7ff" stop-opacity=".12"></stop><stop offset="52%" stop-color="#1e96ec" stop-opacity=".22"></stop><stop offset="100%" stop-color="#8fd7ff" stop-opacity="0"></stop></linearGradient>
+                <radialGradient id="stageAuraBuy" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#ffb072" stop-opacity=".44"></stop><stop offset="100%" stop-color="#ffb072" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="stageAuraCurrent" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#6cc3f8" stop-opacity=".38"></stop><stop offset="100%" stop-color="#6cc3f8" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="stageAuraPredicted" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#9edcff" stop-opacity=".38"></stop><stop offset="100%" stop-color="#9edcff" stop-opacity="0"></stop></radialGradient>
+                <linearGradient id="beamBuy" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#ffb072" stop-opacity="0"></stop><stop offset="100%" stop-color="#ffb072" stop-opacity=".22"></stop></linearGradient>
+                <linearGradient id="beamCurrent" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#6cc3f8" stop-opacity="0"></stop><stop offset="100%" stop-color="#6cc3f8" stop-opacity=".2"></stop></linearGradient>
+                <linearGradient id="beamPredicted" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#9edcff" stop-opacity="0"></stop><stop offset="100%" stop-color="#9edcff" stop-opacity=".22"></stop></linearGradient>
+                <radialGradient id="shellBuy" cx="50%" cy="28%" r="78%"><stop offset="0%" stop-color="#ffd3af" stop-opacity=".44"></stop><stop offset="100%" stop-color="#ff7f22" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="shellCurrent" cx="50%" cy="28%" r="78%"><stop offset="0%" stop-color="#c6e8ff" stop-opacity=".42"></stop><stop offset="100%" stop-color="#1e96ec" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="shellPredicted" cx="50%" cy="28%" r="78%"><stop offset="0%" stop-color="#def2ff" stop-opacity=".44"></stop><stop offset="100%" stop-color="#74cbff" stop-opacity="0"></stop></radialGradient>
+                <linearGradient id="glassSkin" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="#ffffff" stop-opacity="0"></stop><stop offset="18%" stop-color="#ffffff" stop-opacity=".52"></stop><stop offset="42%" stop-color="#ffffff" stop-opacity=".16"></stop><stop offset="70%" stop-color="#ffffff" stop-opacity=".06"></stop><stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop></linearGradient>
+                <radialGradient id="mistBuy" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#ffb072" stop-opacity=".32"></stop><stop offset="100%" stop-color="#ffb072" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="mistCurrent" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#6cc3f8" stop-opacity=".28"></stop><stop offset="100%" stop-color="#6cc3f8" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="mistPredicted" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#9edcff" stop-opacity=".3"></stop><stop offset="100%" stop-color="#9edcff" stop-opacity="0"></stop></radialGradient>
+                <linearGradient id="tensionVeil" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#ffb072" stop-opacity="0"></stop><stop offset="30%" stop-color="#ff7f22" stop-opacity=".24"></stop><stop offset="100%" stop-color="#ff7f22" stop-opacity=".06"></stop></linearGradient>
+                <radialGradient id="focusWash" cx="50%" cy="50%" r="72%"><stop offset="0%" stop-color="#ffffff" stop-opacity=".08"></stop><stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="groundGlowBuy" cx="50%" cy="50%" r="66%"><stop offset="0%" stop-color="#ffb072" stop-opacity=".48"></stop><stop offset="100%" stop-color="#ffb072" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="groundGlowCurrent" cx="50%" cy="50%" r="66%"><stop offset="0%" stop-color="#8fd7ff" stop-opacity=".44"></stop><stop offset="100%" stop-color="#8fd7ff" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="groundGlowPredicted" cx="50%" cy="50%" r="66%"><stop offset="0%" stop-color="#b6e7ff" stop-opacity=".5"></stop><stop offset="100%" stop-color="#b6e7ff" stop-opacity="0"></stop></radialGradient>
+              </defs>
+              <g class="grid" id="gridLayer"></g>
+              <g class="axes" id="axisLayer"></g>
+              <g id="annotationLayer"></g>
+            </svg>
+            <canvas id="chartCanvas" class="chart-canvas" aria-hidden="true"></canvas>
+            <div class="tooltip" id="tooltip" hidden>
+              <p class="tooltip-title" id="tipTitle">Current stage</p>
+              <p class="tooltip-meta" id="tipMeta">Share price $0.00</p>
+              <div class="tooltip-grid">
+                <p><span>Investment</span><strong id="tipInvestment">$0</strong></p>
+                <p><span>Net value</span><strong id="tipValue">$0</strong></p>
+                <p><span>Fees</span><strong id="tipFees">$0</strong></p>
+                <p><span>Dividends</span><strong id="tipDividends">$0</strong></p>
+                <p><span>Tax</span><strong id="tipTax">$0</strong></p>
+                <p><span>Net profit</span><strong id="tipProfit">$0</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <article class="explainer">
+            <p class="kicker">How it works</p>
+            <h3>What the timeline shows</h3>
+            <p>The timeline moves from buy to current to predicted. Hover any stage to see the fee, dividend, tax, and return details behind it. Buy shows your starting position, current shows where the holding stands now, and predicted shows where the scenario could end up next.</p>
+          </article>
+        </section>
+
+        <section class="panel inputs" aria-labelledby="controlsTitle">
+          <div class="panel-head">
+            <p class="kicker">Inputs</p>
+            <h2 id="controlsTitle">Scenario inputs</h2>
+            <p class="panel-copy">Run different scenarios and compare the outputs.</p>
+          </div>
+
+          <div class="presets" aria-label="Scenario slots">
+            <button class="preset" type="button" data-slot="0"></button>
+            <button class="preset" type="button" data-slot="1"></button>
+            <button class="preset" type="button" data-slot="2"></button>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" id="runButton" type="button" aria-pressed="false">Run</button>
+            <button class="btn ghost" id="resetButton" type="button">Reset</button>
+            <select class="speed" id="speedSelect" aria-label="Simulation speed">
+              <option value="0.5" selected>Speed 0.5X</option>
+              <option value="1">Speed 1X</option>
+              <option value="2">Speed 2X</option>
+            </select>
+          </div>
+
+          <form class="controls" id="controls" novalidate>
+            <div class="control">
+              <div class="control-top"><span>Position</span></div>
+              <div class="grid2">
+                <label class="field" data-field="shares"><span>Shares</span><input id="shares" name="shares" type="number" min="0" step="0.0001" inputmode="decimal"></label>
+                <label class="field" data-field="buyPrice"><span>Buy price</span><input id="buyPrice" name="buyPrice" type="number" min="0" step="0.01" inputmode="decimal"></label>
+              </div>
+            </div>
+
+            <div class="control">
+              <div class="control-top"><span>Market prices</span></div>
+              <div class="grid2">
+                <label class="field" data-field="currentPrice"><span>Current price</span><input id="currentPrice" name="currentPrice" type="number" min="0" step="0.01" inputmode="decimal"></label>
+                <label class="field" data-field="predictedPrice"><span>Predicted price</span><input id="predictedPrice" name="predictedPrice" type="number" min="0" step="0.01" inputmode="decimal"></label>
+              </div>
+            </div>
+
+            <div class="control">
+              <div class="control-top"><span>Fees</span></div>
+              <div class="grid3">
+                <label class="field" data-field="buyFee"><span>Buy fee</span><input id="buyFee" name="buyFee" type="number" min="0" step="0.01" inputmode="decimal"></label>
+                <label class="field" data-field="sellFee"><span>Sell fee</span><input id="sellFee" name="sellFee" type="number" min="0" step="0.01" inputmode="decimal"></label>
+                <label class="field" data-field="otherFees"><span>Other fees</span><input id="otherFees" name="otherFees" type="number" min="0" step="0.01" inputmode="decimal"></label>
+              </div>
+            </div>
+
+            <div class="control">
+              <div class="control-top"><span>Income and tax</span></div>
+              <div class="grid2">
+                <label class="field" data-field="dividends"><span>Dividends</span><input id="dividends" name="dividends" type="number" min="0" step="0.01" inputmode="decimal"></label>
+                <label class="field" data-field="taxRate"><span>Tax rate</span><input id="taxRate" name="taxRate" type="number" min="0" max="100" step="0.1" inputmode="decimal"></label>
+              </div>
+            </div>
+
+            <p class="error" id="formError" aria-live="polite"></p>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="canvas/canvas-controller.js"></script>
+  <script src="canvas/renderers/orb-renderer.js"></script>
+  <script>
+    (() => {
+      const LOAD_MS = 18000;
+      const UPDATE_MS = 1800;
+      const EPS = 1e-9;
+      const SLOT_COUNT = 3;
+      const STORAGE_KEY = "sim22-stock-profit-simulations-v4";
+      const DEFAULTS = { shares: 120, buyPrice: 48.5, currentPrice: 59.4, predictedPrice: 70, buyFee: 9, sellFee: 9, otherFees: 0, dividends: 120, taxRate: 20, currency: "USD" };
+      const FIELDS = ["shares","buyPrice","currentPrice","predictedPrice","buyFee","sellFee","otherFees","dividends","taxRate","currency"];
+      const NUMERIC = ["shares","buyPrice","currentPrice","predictedPrice","buyFee","sellFee","otherFees","dividends","taxRate"];
+      const META = {
+        shares:{label:"Shares",required:true,min:0}, buyPrice:{label:"Buy price",required:true,min:0}, currentPrice:{label:"Current price",required:true,min:0}, predictedPrice:{label:"Predicted price",required:false,min:0}, buyFee:{label:"Buy fee",required:false,min:0}, sellFee:{label:"Sell fee",required:false,min:0}, otherFees:{label:"Other fees",required:false,min:0}, dividends:{label:"Dividends",required:false,min:0}, taxRate:{label:"Tax rate",required:false,min:0,max:100}
+      };
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const moneyCache = new Map();
+
+      const clamp = (v,min,max) => Math.min(max, Math.max(min, v));
+      const lerp = (a,b,t) => a + (b - a) * t;
+      const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      const abs = Math.abs;
+
+      function money(v, c, opts = {}) {
+        const digits = Object.prototype.hasOwnProperty.call(opts, "digits") ? opts.digits : abs(v) >= 100 ? 0 : 2;
+        const key = `${c}-${digits}`;
+        if (!moneyCache.has(key)) moneyCache.set(key, new Intl.NumberFormat("en-US", { style:"currency", currency:c, minimumFractionDigits:digits, maximumFractionDigits:digits }));
+        const out = moneyCache.get(key).format(abs(v));
+        if (opts.signed) return abs(v) < EPS ? moneyCache.get(key).format(0) : `${v > 0 ? "+" : "-"}${out}`;
+        return v < 0 ? `-${out}` : out;
+      }
+
+      function moneyCompact(v, c, opts = {}) {
+        const f = new Intl.NumberFormat("en-US", { style:"currency", currency:c, notation:"compact", maximumFractionDigits:1, minimumFractionDigits:0 });
+        const out = f.format(abs(v));
+        if (opts.signed && abs(v) >= EPS) return `${v > 0 ? "+" : "-"}${out}`;
+        return v < 0 ? `-${out}` : out;
+      }
+
+      const pct = (v, opts = {}) => `${v < 0 ? "-" : opts.signed && v > 0 ? "+" : ""}${abs(v).toFixed(Object.prototype.hasOwnProperty.call(opts, "digits") ? opts.digits : 1)}%`;
+      const rawOf = (src = DEFAULTS) => ({ shares:String(src.shares), buyPrice:String(src.buyPrice), currentPrice:String(src.currentPrice), predictedPrice:src.predictedPrice ? String(src.predictedPrice) : "", buyFee:src.buyFee ? String(src.buyFee) : "", sellFee:src.sellFee ? String(src.sellFee) : "", otherFees:src.otherFees ? String(src.otherFees) : "", dividends:src.dividends ? String(src.dividends) : "", taxRate:src.taxRate ? String(src.taxRate) : "", currency:src.currency || "USD" });
+      const zeroRaw = (currency = DEFAULTS.currency) => ({ shares:"0", buyPrice:"0", currentPrice:"0", predictedPrice:"0", buyFee:"0", sellFee:"0", otherFees:"0", dividends:"0", taxRate:"0", currency });
+
+      function createEmbedResizer(root) {
+        if (!root || window.parent === window) return { request() {}, disconnect() {} };
+        let raf = 0;
+        let lastHeight = 0;
+        let resizeObserver = null;
+        let handleMessage = null;
+
+        const measure = () => {
+          const doc = document.documentElement;
+          const body = document.body;
+          return Math.ceil(Math.max(
+            root.getBoundingClientRect().height,
+            doc ? doc.scrollHeight : 0,
+            doc ? doc.offsetHeight : 0,
+            body ? body.scrollHeight : 0,
+            body ? body.offsetHeight : 0
+          ));
+        };
+
+        const post = () => {
+          raf = 0;
+          const height = measure();
+          if (Math.abs(height - lastHeight) < 1) return;
+          lastHeight = height;
+          try {
+            if (window.frameElement) {
+              window.frameElement.style.height = `${height}px`;
+              window.frameElement.setAttribute("height", String(height));
+            }
+          } catch {}
+          window.parent.postMessage({ type:"simfluence-widget:resize", height }, "*");
+        };
+
+        const request = () => {
+          if (raf) return;
+          raf = requestAnimationFrame(post);
+        };
+
+        const observe = () => {
+          if ("ResizeObserver" in window) {
+            resizeObserver = new ResizeObserver(() => request());
+            resizeObserver.observe(root);
+          }
+          handleMessage = (event) => {
+            const data = event.data;
+            if (!data || typeof data !== "object") return;
+            if (data.type === "widget:request-height" || data.type === "widget:request-resize" || data.type === "simfluence-widget:request-height" || data.type === "simfluence-widget:request-resize") request();
+          };
+          addEventListener("load", request, { passive:true });
+          addEventListener("resize", request, { passive:true });
+          addEventListener("orientationchange", request, { passive:true });
+          addEventListener("message", handleMessage);
+          if (document.fonts && document.fonts.ready) document.fonts.ready.then(request).catch(() => {});
+          request();
+          setTimeout(request, 60);
+          setTimeout(request, 240);
+          setTimeout(request, 900);
+        };
+
+        observe();
+        return {
+          request,
+          disconnect() {
+            if (resizeObserver) resizeObserver.disconnect();
+            if (handleMessage) removeEventListener("message", handleMessage);
+            if (raf) cancelAnimationFrame(raf);
+          }
+        };
+      }
+
+      function parseNum(name, raw) {
+        const meta = META[name];
+        const text = String(raw ?? "").trim();
+        if (!text) return meta.required ? { ok:false, value:0, empty:true, error:`Enter ${meta.label.toLowerCase()}.` } : { ok:true, value:0, empty:true, error:"" };
+        const value = Number(text);
+        if (!Number.isFinite(value)) return { ok:false, value:0, empty:false, error:`${meta.label} must be a number.` };
+        if (value < meta.min - EPS) return { ok:false, value, empty:false, error:`${meta.label} cannot be negative.` };
+        if (Object.prototype.hasOwnProperty.call(meta, "max") && value > meta.max + EPS) return { ok:false, value, empty:false, error:`${meta.label} must be ${meta.max}% or less.` };
+        return { ok:true, value, empty:false, error:"" };
+      }
+
+      function readRaw(raw) {
+        const values = {};
+        const errors = [];
+        for (const key of NUMERIC) {
+          const parsed = parseNum(key, raw[key]);
+          values[key] = parsed.value;
+          if (!parsed.ok) errors.push(parsed.error);
+        }
+        values.currency = ["USD","EUR","GBP"].includes(raw.currency) ? raw.currency : DEFAULTS.currency;
+        return { ok: errors.length === 0, values, errors };
+      }
+
+      function computeAtPrice(inputs, price) {
+        const sale = Math.max(0, price);
+        const grossCost = inputs.shares * inputs.buyPrice;
+        const totalInvestment = grossCost + inputs.buyFee + inputs.otherFees;
+        const grossProceeds = inputs.shares * sale;
+        const netProceeds = grossProceeds - inputs.sellFee;
+        const preTaxProfit = netProceeds - totalInvestment + inputs.dividends;
+        const estimatedTax = Math.max(0, preTaxProfit) * (inputs.taxRate / 100);
+        const netValue = netProceeds + inputs.dividends - estimatedTax;
+        const netProfit = netValue - totalInvestment;
+        const roiPercent = totalInvestment > EPS ? netProfit / totalInvestment * 100 : 0;
+        const breakEvenPrice = inputs.shares > EPS ? (totalInvestment + inputs.sellFee - inputs.dividends) / inputs.shares : 0;
+        return { price:sale, grossCost, totalInvestment, grossProceeds, netProceeds, preTaxProfit, estimatedTax, netValue, netProfit, roiPercent, breakEvenPrice, profitPerShare: inputs.shares > EPS ? netProfit / inputs.shares : 0, totalFees: inputs.buyFee + inputs.sellFee + inputs.otherFees, distance: sale - breakEvenPrice, investment: totalInvestment };
+      }
+
+      function compute(inputs) {
+        const current = computeAtPrice(inputs, inputs.currentPrice);
+        const predicted = inputs.predictedPrice > 0 ? computeAtPrice(inputs, inputs.predictedPrice) : null;
+        const buyFees = inputs.buyFee + inputs.otherFees;
+        const stages = [
+          {
+            key: "buy",
+            title: "Buy",
+            timelineLabel: "Buy",
+            priceLabel: "Entry price",
+            description: "All-in cost basis",
+            tone: "buy",
+            price: inputs.buyPrice,
+            totalInvestment: current.totalInvestment,
+            netValue: current.totalInvestment,
+            netProfit: 0,
+            roiPercent: 0,
+            totalFees: buyFees,
+            dividends: 0,
+            estimatedTax: 0
+          },
+          {
+            key: "current",
+            title: "Current",
+            timelineLabel: "Current",
+            priceLabel: "Current price",
+            description: "If you sold today",
+            tone: "current",
+            price: inputs.currentPrice,
+            totalInvestment: current.totalInvestment,
+            netValue: current.netValue,
+            netProfit: current.netProfit,
+            roiPercent: current.roiPercent,
+            totalFees: current.totalFees,
+            dividends: inputs.dividends,
+            estimatedTax: current.estimatedTax
+          }
+        ];
+        if (predicted) {
+          stages.push({
+            key: "predicted",
+            title: "Predicted",
+            timelineLabel: "Predicted",
+            priceLabel: "Predicted price",
+            description: "If the target price is reached",
+            tone: "predicted",
+            price: inputs.predictedPrice,
+            totalInvestment: predicted.totalInvestment,
+            netValue: predicted.netValue,
+            netProfit: predicted.netProfit,
+            roiPercent: predicted.roiPercent,
+            totalFees: predicted.totalFees,
+            dividends: inputs.dividends,
+            estimatedTax: predicted.estimatedTax
+          });
+        }
+        const values = stages.map((stage) => stage.netValue).concat([current.totalInvestment, 0]);
+        const domain = { min: Math.min(...values), max: Math.max(...values) };
+        return { inputs, stages, domain, metrics:{ current, predicted, breakEvenPrice: current.breakEvenPrice, totalInvestment: current.totalInvestment, totalFees: current.totalFees } };
+      }
+
+      function niceStep(step) {
+        const exp = Math.floor(Math.log10(step));
+        const frac = step / Math.pow(10, exp);
+        const nice = frac <= 1 ? 1 : frac <= 2 ? 2 : frac <= 5 ? 5 : 10;
+        return nice * Math.pow(10, exp);
+      }
+
+      function buildTicks(min, max, count, includeZero = false) {
+        if (!Number.isFinite(min) || !Number.isFinite(max)) return [0];
+        if (abs(max - min) < EPS) return [min];
+        const step = niceStep((max - min) / Math.max(count - 1, 1));
+        const start = Math.floor(min / step) * step;
+        const end = Math.ceil(max / step) * step;
+        const values = [];
+        for (let v = start; v <= end + step * .5; v += step) values.push(Number(v.toFixed(10)));
+        if (includeZero && !values.some((v) => abs(v) < EPS)) values.push(0), values.sort((a,b) => a - b);
+        return values;
+      }
+
+      function pathFromPoints(points) {
+        if (points.length < 2) return "";
+        let d = `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
+        for (let i = 1; i < points.length; i++) d += ` L ${points[i].x.toFixed(2)} ${points[i].y.toFixed(2)}`;
+        return d;
+      }
+
+      function stageRevealWindow(index, total) {
+        if (total <= 2) return index === 0 ? [0.02, 0.34] : [0.42, 0.82];
+        return [[0.02, 0.26], [0.30, 0.62], [0.66, 0.96]][index] || [0, 1];
+      }
+
+      function stagePositions(total, plot) {
+        if (total <= 2) return [plot.left + plot.width * 0.28, plot.left + plot.width * 0.72];
+        return [plot.left + plot.width * 0.16, plot.left + plot.width * 0.50, plot.left + plot.width * 0.84];
+      }
+
+      function routeProbe(path, tone, opacity, options = {}) {
+        const scale = options.scale || 1;
+        const duration = options.duration || 5.4;
+        const begin = options.begin || "0s";
+        const trailRx = (options.trail || 12) * scale;
+        const trailRy = 4 * scale;
+        const glowRadius = 7 * scale;
+        const coreRadius = 3.25 * scale;
+        const sparkRadius = 1.55 * scale;
+        return `<g class="route-probe ${tone}" style="opacity:${opacity.toFixed(3)}"><ellipse class="probe-trail" cx="${(-trailRx * 0.88).toFixed(2)}" cy="0" rx="${trailRx.toFixed(2)}" ry="${trailRy.toFixed(2)}"></ellipse><circle class="probe-glow" cx="0" cy="0" r="${glowRadius.toFixed(2)}"></circle><circle class="probe-core" cx="0" cy="0" r="${coreRadius.toFixed(2)}"></circle><circle class="probe-spark" cx="${(glowRadius + 1.8 * scale).toFixed(2)}" cy="0" r="${sparkRadius.toFixed(2)}"></circle><animateMotion dur="${duration}s" begin="${begin}" repeatCount="indefinite" rotate="auto" path="${path}"></animateMotion></g>`;
+      }
+
+      function startPlatform(x, y, opacity, motion) {
+        return `<g class="start-platform" transform="translate(${x.toFixed(2)} ${y.toFixed(2)})" style="opacity:${opacity.toFixed(3)}"><ellipse class="start-pad outer" cx="0" cy="0" rx="42" ry="14"></ellipse><ellipse class="start-pad inner" cx="0" cy="0" rx="19" ry="6.5"></ellipse>${motion ? `<ellipse class="launch-ring" cx="0" cy="0" rx="27" ry="9"></ellipse><ellipse class="launch-ring delay" cx="0" cy="0" rx="27" ry="9"></ellipse>` : ""}</g>`;
+      }
+
+      function groundPool(x, y, tone, opacity, motion, rx = 54) {
+        const ry = rx * 0.26;
+        return `<g class="ground-pool ${tone}" transform="translate(${x.toFixed(2)} ${y.toFixed(2)})" style="opacity:${opacity.toFixed(3)}"><ellipse class="pool-core" cx="0" cy="0" rx="${rx.toFixed(2)}" ry="${ry.toFixed(2)}"></ellipse><ellipse class="pool-ring" cx="0" cy="0" rx="${(rx * 0.62).toFixed(2)}" ry="${(ry * 0.72).toFixed(2)}"></ellipse>${motion ? `<ellipse class="pool-ring" cx="0" cy="0" rx="${(rx * 0.78).toFixed(2)}" ry="${(ry * 0.86).toFixed(2)}"><animate attributeName="rx" values="${(rx * 0.72).toFixed(2)};${(rx * 0.96).toFixed(2)};${(rx * 0.72).toFixed(2)}" dur="4.8s" repeatCount="indefinite"></animate><animate attributeName="ry" values="${(ry * 0.8).toFixed(2)};${(ry * 1.02).toFixed(2)};${(ry * 0.8).toFixed(2)}" dur="4.8s" repeatCount="indefinite"></animate><animate attributeName="opacity" values=".34;.08;.34" dur="4.8s" repeatCount="indefinite"></animate></ellipse>` : ""}</g>`;
+      }
+
+      function sceneMist(x, y, rx, ry, tone, opacity, layer = "back") {
+        return `<g class="scene-haze ${tone} ${layer}" style="opacity:${opacity.toFixed(3)}"><ellipse class="mist-core" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" rx="${rx.toFixed(2)}" ry="${ry.toFixed(2)}"></ellipse><ellipse class="mist-halo" cx="${x.toFixed(2)}" cy="${(y - ry * 0.14).toFixed(2)}" rx="${(rx * 0.52).toFixed(2)}" ry="${(ry * 0.4).toFixed(2)}"></ellipse></g>`;
+      }
+
+      function barScan(x, top, height, width, tone, opacity, motion, begin = "0s") {
+        if (!motion || height < 54) return "";
+        const inset = width * 0.22;
+        const x1 = x - width / 2 + inset;
+        const x2 = x + width / 2 - inset;
+        const low = top + height - 10;
+        const high = top + 12;
+        return `<g class="bar-scan ${tone}" style="opacity:${opacity.toFixed(3)}"><line x1="${x1.toFixed(2)}" y1="${low.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${(low - 2).toFixed(2)}"><animate attributeName="y1" values="${low.toFixed(2)};${high.toFixed(2)};${low.toFixed(2)}" dur="4.4s" begin="${begin}" repeatCount="indefinite"></animate><animate attributeName="y2" values="${(low - 2).toFixed(2)};${(high - 2).toFixed(2)};${(low - 2).toFixed(2)}" dur="4.4s" begin="${begin}" repeatCount="indefinite"></animate></line></g>`;
+      }
+
+      class Chart {
+        constructor(root) {
+          this.surface = document.getElementById("chartSurface");
+          this.svg = document.getElementById("chart");
+          this.grid = document.getElementById("gridLayer");
+          this.axes = document.getElementById("axisLayer");
+          this.ann = document.getElementById("annotationLayer");
+          this.tip = document.getElementById("tooltip");
+          this.tipTitle = document.getElementById("tipTitle");
+          this.tipMeta = document.getElementById("tipMeta");
+          this.tipValue = document.getElementById("tipValue");
+          this.tipInvestment = document.getElementById("tipInvestment");
+          this.tipFees = document.getElementById("tipFees");
+          this.tipDividends = document.getElementById("tipDividends");
+          this.tipTax = document.getElementById("tipTax");
+          this.tipProfit = document.getElementById("tipProfit");
+          this.data = null;
+          this.geo = null;
+          this.interactive = true;
+          this.hoverStageKey = null;
+          this.onHover = null;
+          this.onRender = null;
+          this.renderState = null;
+          this.surface.addEventListener("pointermove", (e) => this.pointerMove(e));
+          this.surface.addEventListener("pointerleave", () => this.pointerLeave());
+        }
+
+        clear() {
+          this.geo = null;
+          this.renderState = null;
+          this.grid.innerHTML = "";
+          this.axes.innerHTML = "";
+          this.ann.innerHTML = "";
+          this.tip.hidden = true;
+        }
+
+        setInteractive(value) {
+          this.interactive = !!value;
+          if (!this.interactive) {
+            this.hoverStageKey = null;
+            this.tip.hidden = true;
+          }
+        }
+
+        setData(data) { this.data = data; if (!data) return this.clear(); this.build(); }
+
+        build() {
+          if (!this.data) return;
+          const compact = matchMedia("(max-width: 768px)").matches;
+          const width = 960, height = 560;
+          const padding = compact ? { top: 54, right: 41, bottom: 124, left: 41 } : { top: 50, right: 55, bottom: 132, left: 55 };
+          const plot = { left: padding.left, right: width - padding.right, top: padding.top, bottom: height - padding.bottom };
+          plot.width = plot.right - plot.left;
+          plot.height = plot.bottom - plot.top;
+          let minValue = Math.min(0, this.data.domain.min);
+          let maxValue = Math.max(this.data.domain.max, this.data.metrics.totalInvestment);
+          const range = Math.max(maxValue - minValue, Math.abs(maxValue) || 1);
+          const topPad = Math.max(range * 0.16, maxValue > 0 ? maxValue * 0.08 : 60, 60);
+          const bottomPad = minValue < 0 ? Math.max(range * 0.12, 40) : 0;
+          maxValue += topPad;
+          minValue -= bottomPad;
+          const yScale = (value) => plot.bottom - ((value - minValue) / (maxValue - minValue || 1)) * plot.height;
+          const yTicks = buildTicks(minValue, maxValue, compact ? 4 : 5, true);
+          this.grid.innerHTML = yTicks.map((v) => `<line x1="${plot.left}" y1="${yScale(v)}" x2="${plot.right}" y2="${yScale(v)}"></line>`).join("");
+          this.axes.innerHTML = "";
+          const positions = stagePositions(this.data.stages.length, plot);
+          this.geo = {
+            width,
+            height,
+            compact,
+            plot,
+            zeroY: yScale(0),
+            baselineY: yScale(this.data.metrics.totalInvestment),
+            timelineY: plot.bottom + (compact ? 74 : 82),
+            barWidth: compact ? 64 : 78,
+            yScale,
+            stages: this.data.stages.map((stage, index) => ({ ...stage, x: positions[index] }))
+          };
+          this.tip.hidden = true;
+        }
+
+        render(progress, now = performance.now()) {
+          if (!this.geo || !this.data) return;
+          const currency = this.data.inputs.currency;
+          const motion = !reduced.matches;
+          const idle = motion ? ((now % 18000) / 18000) : 0;
+          const stageStates = this.geo.stages.map((stage, index) => {
+            const [start, end] = stageRevealWindow(index, this.geo.stages.length);
+            const reveal = ease(clamp((progress - start) / Math.max(end - start, 0.001), 0, 1));
+            const displayValue = stage.netValue * reveal;
+            const displayY = this.geo.yScale(displayValue);
+            const topY = Math.min(displayY, this.geo.zeroY);
+            const height = Math.max(Math.abs(this.geo.zeroY - displayY), reveal > 0.02 ? 4 : 0);
+            const deltaTop = Math.min(this.geo.baselineY, this.geo.yScale(stage.netValue));
+            const deltaHeight = Math.abs(this.geo.baselineY - this.geo.yScale(stage.netValue));
+            return { ...stage, reveal, displayValue, displayY, topY, height, barX: stage.x - this.geo.barWidth / 2, deltaTop, deltaHeight, hitWidth: Math.max(this.geo.barWidth + 42, 108) };
+          });
+          const visiblePoints = stageStates.filter((stage) => stage.reveal > 0.05).map((stage) => ({ x: stage.x, y: this.geo.yScale(stage.displayValue) }));
+          const connectorPath = visiblePoints.length > 1 ? pathFromPoints(visiblePoints) : "";
+          const defaultKey = stageStates.some((stage) => stage.key === "current") ? "current" : stageStates[stageStates.length - 1].key;
+          const autoKey = progress < 0.34 ? "buy" : progress < (stageStates.length === 3 ? 0.74 : 0.72) ? "current" : (stageStates.some((stage) => stage.key === "predicted") ? "predicted" : "current");
+          const hoverStage = stageStates.find((stage) => stage.key === this.hoverStageKey && stage.reveal > 0.22) || null;
+          const focusStage = hoverStage || stageStates.find((stage) => stage.key === (progress >= 1 ? defaultKey : autoKey)) || stageStates.find((stage) => stage.reveal > 0.18) || stageStates[0];
+          const baselineProgress = clamp((progress - 0.06) / 0.84, 0, 1);
+          const firstX = stageStates[0].x;
+          const lastX = stageStates[stageStates.length - 1].x;
+          const stageByKey = Object.fromEntries(stageStates.map((stage) => [stage.key, stage]));
+          const currentStage = stageByKey.current || stageStates[Math.min(1, stageStates.length - 1)] || stageStates[0];
+          const predictedStage = stageByKey.predicted || null;
+          const endX = lerp(firstX, lastX, baselineProgress);
+          const journeyProgressX = currentStage ? lerp(firstX, currentStage.x, Math.max(currentStage.reveal, 0.04)) : endX;
+          const futureRoadEnd = predictedStage ? lerp(currentStage.x, predictedStage.x, Math.max(predictedStage.reveal, 0.12)) : currentStage ? currentStage.x : endX;
+          const progressPath = `M ${firstX.toFixed(2)} ${this.geo.timelineY.toFixed(2)} L ${journeyProgressX.toFixed(2)} ${this.geo.timelineY.toFixed(2)}`;
+          const parts = [
+            sceneMist(this.geo.plot.left + this.geo.plot.width * 0.22, this.geo.plot.top + this.geo.plot.height * 0.26, this.geo.plot.width * 0.15, 52, "buy", 0.18 + idle * 0.05, "back"),
+            sceneMist(this.geo.plot.left + this.geo.plot.width * 0.54, this.geo.plot.top + this.geo.plot.height * 0.18, this.geo.plot.width * 0.18, 58, "current", 0.14 + idle * 0.05, "front"),
+            sceneMist(this.geo.plot.left + this.geo.plot.width * 0.82, this.geo.plot.top + this.geo.plot.height * 0.22, this.geo.plot.width * 0.16, 56, "predicted", 0.16 + idle * 0.05, "back"),
+            `<line class="journey-road" x1="${firstX.toFixed(2)}" y1="${this.geo.timelineY.toFixed(2)}" x2="${lastX.toFixed(2)}" y2="${this.geo.timelineY.toFixed(2)}" style="opacity:${Math.max(baselineProgress * 0.64, 0.12).toFixed(3)}"></line>`,
+            `<line class="journey-progress" x1="${firstX.toFixed(2)}" y1="${this.geo.timelineY.toFixed(2)}" x2="${journeyProgressX.toFixed(2)}" y2="${this.geo.timelineY.toFixed(2)}" style="opacity:${Math.max(currentStage ? currentStage.reveal : baselineProgress, 0.18).toFixed(3)}"></line>`,
+            `<line class="baseline-line" x1="${firstX.toFixed(2)}" y1="${this.geo.baselineY.toFixed(2)}" x2="${endX.toFixed(2)}" y2="${this.geo.baselineY.toFixed(2)}" style="opacity:${baselineProgress.toFixed(3)}"></line>`,
+            `<line class="timeline-axis" x1="${firstX.toFixed(2)}" y1="${this.geo.timelineY.toFixed(2)}" x2="${endX.toFixed(2)}" y2="${this.geo.timelineY.toFixed(2)}" style="opacity:${baselineProgress.toFixed(3)}"></line>`
+          ];
+          parts.push(groundPool(firstX, this.geo.timelineY + 24, "buy", Math.max(stageStates[0].reveal * 0.9, 0.22), motion, 54));
+          if (currentStage) parts.push(groundPool(currentStage.x, this.geo.timelineY + 22, "current", Math.max(currentStage.reveal * 0.82, 0.14), motion, 68));
+          if (predictedStage) parts.push(groundPool(predictedStage.x, this.geo.timelineY + 20, "predicted", Math.max(predictedStage.reveal * 0.88, 0.16), motion, 76));
+          if (predictedStage && currentStage && currentStage.reveal > 0.16) parts.push(`<line class="journey-future" x1="${currentStage.x.toFixed(2)}" y1="${this.geo.timelineY.toFixed(2)}" x2="${futureRoadEnd.toFixed(2)}" y2="${this.geo.timelineY.toFixed(2)}" style="opacity:${Math.max(predictedStage.reveal * 0.88, 0.14).toFixed(3)}"></line>`);
+          parts.push(startPlatform(firstX, this.geo.timelineY + 28, Math.max(stageStates[0].reveal, 0.3), motion));
+          if (motion && Math.abs(journeyProgressX - firstX) > 26) {
+            parts.push(routeProbe(progressPath, "progress", Math.max((currentStage?.reveal || baselineProgress) * 0.98, 0.2), { duration: 5.1, begin: "-2.2s", scale: 1.22, trail: 15 }));
+          }
+          if (currentStage && currentStage.reveal > 0.08) {
+            const currentBandWidth = this.geo.barWidth + (this.geo.compact ? 56 : 76);
+            const currentBandX = currentStage.x - currentBandWidth / 2;
+            const currentBandY = this.geo.plot.top + 8;
+            const currentBandHeight = this.geo.timelineY - this.geo.plot.top + 28;
+            parts.push(`<rect class="current-spotlight" x="${currentBandX.toFixed(2)}" y="${currentBandY.toFixed(2)}" width="${currentBandWidth.toFixed(2)}" height="${currentBandHeight.toFixed(2)}" rx="${(this.geo.compact ? 24 : 30)}" ry="${(this.geo.compact ? 24 : 30)}" style="opacity:${(0.28 + currentStage.reveal * 0.46).toFixed(3)}"></rect>`);
+            parts.push(`<line class="current-guide" x1="${currentStage.x.toFixed(2)}" y1="${(this.geo.plot.top + 8).toFixed(2)}" x2="${currentStage.x.toFixed(2)}" y2="${(this.geo.timelineY - 18).toFixed(2)}" style="opacity:${(0.22 + currentStage.reveal * 0.5).toFixed(3)}"></line>`);
+          }
+          if (baselineProgress > 0.96) parts.push(`<polygon class="timeline-arrow" points="${(lastX + 10).toFixed(2)},${this.geo.timelineY.toFixed(2)} ${(lastX - 4).toFixed(2)},${(this.geo.timelineY - 6).toFixed(2)} ${(lastX - 4).toFixed(2)},${(this.geo.timelineY + 6).toFixed(2)}"></polygon>`);
+          if (visiblePoints.length > 1) parts.push(`<path class="stage-connector" d="${connectorPath}" style="opacity:${clamp(progress / 0.55, 0, 1).toFixed(3)}"></path>`);
+          for (const stage of stageStates) {
+            const opacity = stage.reveal;
+            const hoverBoost = this.hoverStageKey === stage.key ? 1 : focusStage && focusStage.key === stage.key ? 0.34 : 0;
+            const currentHighlight = stage.key === "current" ? 1 : 0;
+            const tension = stage.key !== "buy" && (stage.netProfit < -EPS || stage.price + EPS < this.data.metrics.breakEvenPrice);
+            const auraRx = this.geo.barWidth * (stage.key === "predicted" ? 1.18 : stage.key === "current" ? 1.04 : 0.88) * (1 + hoverBoost * 0.08);
+            const auraRy = (stage.key === "current" ? 34 : 28) * (1 + hoverBoost * 0.06);
+            const beamTop = Math.max(this.geo.plot.top + 10, stage.topY - 24);
+            const beamHeight = Math.max(this.geo.timelineY - beamTop - 24, 28);
+            const nodeRadius = stage.key === "predicted" ? 8.8 : stage.key === "current" ? 7.8 : 7.2;
+            const shellX = stage.barX - 8 - hoverBoost * 3;
+            const shellY = stage.topY - 10 - hoverBoost * 4;
+            const shellWidth = this.geo.barWidth + 16 + hoverBoost * 6;
+            const shellHeight = stage.height + 18 + hoverBoost * 8;
+            parts.push(sceneMist(stage.x + (stage.key === "buy" ? -18 : stage.key === "predicted" ? 18 : 8), stage.topY + stage.height * 0.34, this.geo.barWidth * (1.02 + hoverBoost * 0.08), 28 + hoverBoost * 8, stage.tone, opacity * (0.22 + hoverBoost * 0.08), stage.key === "current" ? "front" : "back"));
+            parts.push(`<ellipse class="stage-aura ${stage.tone}" cx="${stage.x.toFixed(2)}" cy="${(this.geo.timelineY - 8).toFixed(2)}" rx="${auraRx.toFixed(2)}" ry="${auraRy.toFixed(2)}" style="opacity:${(opacity * (0.84 + hoverBoost * 0.24)).toFixed(3)}"></ellipse>`);
+            parts.push(`<rect class="stage-beam ${stage.tone}" x="${(stage.x - this.geo.barWidth * 0.44).toFixed(2)}" y="${beamTop.toFixed(2)}" width="${(this.geo.barWidth * 0.88).toFixed(2)}" height="${beamHeight.toFixed(2)}" rx="24" ry="24" style="opacity:${(opacity * (0.68 + hoverBoost * 0.16)).toFixed(3)}"></rect>`);
+            parts.push(`<line class="stage-stem" x1="${stage.x.toFixed(2)}" y1="${(this.geo.plot.top + 10).toFixed(2)}" x2="${stage.x.toFixed(2)}" y2="${(this.geo.timelineY - 16).toFixed(2)}" style="opacity:${(opacity * (0.4 + hoverBoost * 0.12)).toFixed(3)}"></line>`);
+            parts.push(`<rect class="stage-shell ${stage.tone}" x="${shellX.toFixed(2)}" y="${shellY.toFixed(2)}" width="${shellWidth.toFixed(2)}" height="${shellHeight.toFixed(2)}" rx="${(24 + hoverBoost * 2).toFixed(2)}" ry="${(24 + hoverBoost * 2).toFixed(2)}" style="opacity:${(0.2 + opacity * 0.28 + hoverBoost * 0.14).toFixed(3)}"></rect>`);
+            if (tension) parts.push(`<rect class="tension-veil" x="${(stage.barX - 10).toFixed(2)}" y="${(stage.topY - 8).toFixed(2)}" width="${(this.geo.barWidth + 20).toFixed(2)}" height="${(stage.height + 30).toFixed(2)}" rx="26" ry="26" style="opacity:${(opacity * (0.38 + hoverBoost * 0.12)).toFixed(3)}"></rect>`);
+            if (stage.key !== "buy" && stage.deltaHeight > 3) parts.push(`<rect class="delta-band ${stage.netProfit >= 0 ? "pos" : "neg"}" x="${(stage.x - this.geo.barWidth * 0.33).toFixed(2)}" y="${stage.deltaTop.toFixed(2)}" width="${(this.geo.barWidth * 0.66).toFixed(2)}" height="${stage.deltaHeight.toFixed(2)}" rx="16" ry="16" style="opacity:${(opacity * 0.84).toFixed(3)}"></rect>`);
+            if (opacity > 0) {
+              parts.push(`<rect class="stage-bar ${stage.tone}" x="${stage.barX.toFixed(2)}" y="${stage.topY.toFixed(2)}" width="${this.geo.barWidth.toFixed(2)}" height="${stage.height.toFixed(2)}" rx="${(this.geo.compact ? 18 : 22)}" ry="${(this.geo.compact ? 18 : 22)}" style="opacity:${(0.26 + opacity * 0.72 + hoverBoost * 0.08).toFixed(3)}"></rect>`);
+              if (currentHighlight) parts.push(`<rect class="current-bar-frame" x="${(stage.barX - 8).toFixed(2)}" y="${(stage.topY - 8).toFixed(2)}" width="${(this.geo.barWidth + 16).toFixed(2)}" height="${(stage.height + 16).toFixed(2)}" rx="${(this.geo.compact ? 22 : 26)}" ry="${(this.geo.compact ? 22 : 26)}" style="opacity:${(0.34 + opacity * 0.54).toFixed(3)}"></rect>`);
+              parts.push(`<rect class="stage-glass" x="${(stage.barX + this.geo.barWidth * 0.14).toFixed(2)}" y="${(stage.topY + 9).toFixed(2)}" width="${(this.geo.barWidth * 0.28).toFixed(2)}" height="${Math.max(stage.height - 22, 18).toFixed(2)}" rx="18" ry="18" style="opacity:${(0.18 + opacity * 0.22 + hoverBoost * 0.2).toFixed(3)}"></rect>`);
+              parts.push(`<line class="stage-edge" x1="${(stage.barX + this.geo.barWidth * 0.18).toFixed(2)}" y1="${(stage.topY + 12).toFixed(2)}" x2="${(stage.barX + this.geo.barWidth * 0.74).toFixed(2)}" y2="${(stage.topY + 12).toFixed(2)}" style="opacity:${(0.26 + opacity * 0.22 + hoverBoost * 0.18).toFixed(3)}"></line>`);
+            }
+            if (stage.key !== "buy") parts.push(barScan(stage.x, stage.topY, stage.height, this.geo.barWidth, stage.tone, opacity * 0.9, motion, stage.key === "predicted" ? "-1.6s" : "-0.7s"));
+            if (opacity > 0.14) {
+              const valueLabelY = stage.netValue >= 0
+                ? clamp(stage.topY - 14, this.geo.plot.top + 22, this.geo.plot.bottom - 14)
+                : clamp(stage.topY + stage.height + 20, this.geo.plot.top + 22, this.geo.timelineY - 72);
+              parts.push(`<text class="stage-value" x="${stage.x.toFixed(2)}" y="${valueLabelY.toFixed(2)}" style="opacity:${opacity.toFixed(3)}">${moneyCompact(stage.netValue, currency)}</text>`);
+            }
+            if (stage.key === "predicted") {
+              parts.push(`<circle class="goal-ring" cx="${stage.x.toFixed(2)}" cy="${this.geo.timelineY.toFixed(2)}" r="${(nodeRadius + 5.5).toFixed(2)}" style="opacity:${(opacity * 0.78).toFixed(3)}"></circle>`);
+              parts.push(`<circle class="goal-ring delay" cx="${stage.x.toFixed(2)}" cy="${this.geo.timelineY.toFixed(2)}" r="${(nodeRadius + 10).toFixed(2)}" style="opacity:${(opacity * 0.58).toFixed(3)}"></circle>`);
+            } else {
+              parts.push(`<circle class="stage-pulse ${stage.tone}" cx="${stage.x.toFixed(2)}" cy="${this.geo.timelineY.toFixed(2)}" r="${(nodeRadius + 4.5).toFixed(2)}" style="opacity:${(opacity * 0.72).toFixed(3)}"></circle>`);
+              if (stage.key === "current") parts.push(`<circle class="stage-pulse ${stage.tone} delay" cx="${stage.x.toFixed(2)}" cy="${this.geo.timelineY.toFixed(2)}" r="${(nodeRadius + 9).toFixed(2)}" style="opacity:${(opacity * 0.52).toFixed(3)}"></circle>`);
+            }
+            if (hoverBoost > 0.08) parts.push(`<ellipse class="micro-boost ${stage.tone}" cx="${stage.x.toFixed(2)}" cy="${(this.geo.timelineY - 8).toFixed(2)}" rx="${(auraRx * 0.72).toFixed(2)}" ry="${(auraRy * 0.9).toFixed(2)}" style="opacity:${(0.34 + hoverBoost * 0.26).toFixed(3)}"></ellipse>`);
+            if (currentHighlight) {
+              parts.push(`<ellipse class="current-orbit" cx="${stage.x.toFixed(2)}" cy="${(this.geo.timelineY - 8).toFixed(2)}" rx="${(this.geo.barWidth * 0.88).toFixed(2)}" ry="${(24 + hoverBoost * 3).toFixed(2)}" style="opacity:${(0.28 + opacity * 0.42).toFixed(3)}"></ellipse>`);
+              parts.push(`<circle class="current-node-halo" cx="${stage.x.toFixed(2)}" cy="${this.geo.timelineY.toFixed(2)}" r="${(nodeRadius + 7.5).toFixed(2)}" style="opacity:${(0.2 + opacity * 0.58).toFixed(3)}"></circle>`);
+              parts.push(`<circle class="current-node-ring" cx="${stage.x.toFixed(2)}" cy="${this.geo.timelineY.toFixed(2)}" r="${(nodeRadius + 10.5).toFixed(2)}" style="opacity:${(0.22 + opacity * 0.5).toFixed(3)}"></circle>`);
+              parts.push(`<circle class="current-node-ring delay" cx="${stage.x.toFixed(2)}" cy="${this.geo.timelineY.toFixed(2)}" r="${(nodeRadius + 16).toFixed(2)}" style="opacity:${(0.14 + opacity * 0.34).toFixed(3)}"></circle>`);
+            }
+            if (tension) {
+              parts.push(`<ellipse class="tension-ring" cx="${stage.x.toFixed(2)}" cy="${(this.geo.timelineY - 10).toFixed(2)}" rx="${(this.geo.barWidth * 0.72).toFixed(2)}" ry="${(18 + hoverBoost * 2).toFixed(2)}" style="opacity:${(opacity * 0.5).toFixed(3)}"></ellipse>`);
+              parts.push(`<ellipse class="tension-ring delay" cx="${stage.x.toFixed(2)}" cy="${(this.geo.timelineY - 10).toFixed(2)}" rx="${(this.geo.barWidth * 0.9).toFixed(2)}" ry="${(24 + hoverBoost * 3).toFixed(2)}" style="opacity:${(opacity * 0.34).toFixed(3)}"></ellipse>`);
+            }
+            parts.push(`<circle class="timeline-node ${stage.tone}" cx="${stage.x.toFixed(2)}" cy="${this.geo.timelineY.toFixed(2)}" r="${(opacity > 0.04 ? nodeRadius : 0).toFixed(2)}" style="opacity:${opacity.toFixed(3)}"></circle>`);
+            parts.push(`<circle class="stage-core ${stage.tone}" cx="${stage.x.toFixed(2)}" cy="${this.geo.timelineY.toFixed(2)}" r="${(opacity > 0.08 ? Math.max(nodeRadius - 4.2, 2.8) : 0).toFixed(2)}" style="opacity:${Math.min(opacity + 0.18, 1).toFixed(3)}"></circle>`);
+            parts.push(`<text class="stage-caption" x="${stage.x.toFixed(2)}" y="${(this.geo.plot.bottom + 28).toFixed(2)}" style="opacity:${opacity.toFixed(3)}">${stage.timelineLabel}</text>`);
+            parts.push(`<text class="stage-price" x="${stage.x.toFixed(2)}" y="${(this.geo.plot.bottom + 45).toFixed(2)}" style="opacity:${opacity.toFixed(3)}">${money(stage.price, currency, { digits: 2 })}</text>`);
+          }
+          if (focusStage) parts.push(`<rect class="stage-focus" x="${(focusStage.x - this.geo.barWidth / 2 - 14).toFixed(2)}" y="${(this.geo.plot.top + 18).toFixed(2)}" width="${(this.geo.barWidth + 28).toFixed(2)}" height="${(this.geo.timelineY - this.geo.plot.top + 34).toFixed(2)}" rx="28" ry="28" style="opacity:${(this.hoverStageKey ? 1 : 0.42).toFixed(3)}"></rect>`);
+          this.ann.innerHTML = parts.join("");
+          this.renderState = { stages: stageStates, focusStage };
+          this.tip.hidden = true;
+          if (this.onRender) this.onRender(focusStage);
+        }
+
+        pointerMove(event) {
+          if (!this.interactive) return;
+          if (!this.renderState || !this.geo) return;
+          const rect = this.svg.getBoundingClientRect();
+          const px = clamp(event.clientX - rect.left, 0, rect.width);
+          const py = clamp(event.clientY - rect.top, 0, rect.height);
+          const vx = (px / rect.width) * this.geo.width;
+          const vy = (py / rect.height) * this.geo.height;
+          let candidate = null;
+          let bestScore = Infinity;
+          for (const stage of this.renderState.stages) {
+            if (stage.reveal <= 0.22) continue;
+            const dx = abs(vx - stage.x);
+            const dy = abs(vy - (stage.topY + stage.height * 0.5));
+            const score = dx + dy * 0.22;
+            if (score < bestScore) {
+              bestScore = score;
+              candidate = stage;
+            }
+          }
+          const nextKey = candidate && abs(vx - candidate.x) <= candidate.hitWidth ? candidate.key : null;
+          if (nextKey !== this.hoverStageKey) {
+            this.hoverStageKey = nextKey;
+            if (this.onHover) this.onHover(nextKey);
+          } else if (nextKey && this.onHover) this.onHover(nextKey);
+        }
+
+        pointerLeave() {
+          if (!this.interactive) return;
+          this.hoverStageKey = null;
+          this.tip.hidden = true;
+          if (this.onHover) this.onHover(null);
+        }
+
+        showTip(stage) {
+          const s = this.surface.getBoundingClientRect();
+          const svg = this.svg.getBoundingClientRect();
+          const anchorY = stage.netValue >= 0 ? stage.topY : stage.topY + stage.height;
+          const x = svg.left - s.left + (stage.x / this.geo.width) * svg.width;
+          const y = svg.top - s.top + (anchorY / this.geo.height) * svg.height;
+          const currency = this.data.inputs.currency;
+          this.tipTitle.textContent = `${stage.title} stage`;
+          const metaParts = [`${stage.priceLabel} ${money(stage.price, currency, { digits: 2 })}`];
+          if (stage.key === "buy") metaParts.push(this.data.metrics.breakEvenPrice < 0 ? "break-even already covered" : `break-even ${money(this.data.metrics.breakEvenPrice, currency, { digits: 2 })}`);
+          else {
+            const breakEvenInfo = this.data.metrics.breakEvenPrice < 0 ? "break-even already covered" : `${money(stage.price - this.data.metrics.breakEvenPrice, currency, { signed:true, digits:2 })} vs break-even`;
+            metaParts.push(`ROI ${pct(stage.roiPercent, { signed:true, digits:1 })}`);
+            metaParts.push(breakEvenInfo);
+          }
+          this.tipMeta.textContent = metaParts.join(" • ");
+          this.tipInvestment.textContent = money(stage.totalInvestment, currency, { digits: 0 });
+          this.tipValue.textContent = money(stage.netValue, currency, { digits: 0 });
+          this.tipFees.textContent = money(-stage.totalFees, currency, { signed: true, digits: 0 });
+          this.tipDividends.textContent = stage.dividends > EPS ? money(stage.dividends, currency, { signed: true, digits: 0 }) : money(0, currency, { digits: 0 });
+          this.tipTax.textContent = stage.estimatedTax > EPS ? money(-stage.estimatedTax, currency, { signed: true, digits: 0 }) : money(0, currency, { digits: 0 });
+          this.tipProfit.textContent = money(stage.netProfit, currency, { signed: true, digits: 0 });
+          this.tip.hidden = false;
+          const w = this.tip.offsetWidth, h = this.tip.offsetHeight;
+          this.tip.style.left = `${clamp(x - w / 2, 12, s.width - w - 12)}px`;
+          this.tip.style.top = `${clamp(y - h - 18, 12, s.height - h - 12)}px`;
+        }
+      }
+
+      class Widget {
+        constructor(root) {
+          this.root = root;
+          this.isReduced = reduced.matches;
+          this.el = {
+            progress: document.getElementById("progressBar"), runButton: document.getElementById("runButton"), resetButton: document.getElementById("resetButton"), speed: document.getElementById("speedSelect"), empty: document.getElementById("emptyState"), formError: document.getElementById("formError"), snapValue: document.getElementById("snapValue"), snapInvestment: document.getElementById("snapInvestment"), snapProfit: document.getElementById("snapProfit"), snapRoi: document.getElementById("snapRoi"), buttons: Array.from(root.querySelectorAll("[data-slot]")), viewButtons: Array.from(root.querySelectorAll("[data-view]")), switcher: document.getElementById("viewSwitcher"), surface: document.getElementById("chartSurface"), svg: document.getElementById("chart"), canvas: document.getElementById("chartCanvas")
+          };
+          this.slots = this.loadSlots();
+          this.activeId = this.slots[0].id;
+          this.raw = { ...this.slots[0].raw };
+          this.setCurrencyForAll(this.raw.currency);
+          this.raw = { ...this.currentSlot().raw };
+          this.progress = 0;
+          this.running = false;
+          this.speed = .5;
+          this.raf = 0;
+          this.timer = 0;
+          this.anim = { from:this.progress, to:this.progress, elapsed:0, duration:0, last:0 };
+          this.chart = new Chart(root);
+          const CanvasController = window.StockCanvasViews && window.StockCanvasViews.CanvasController;
+          this.canvasViews = CanvasController ? new CanvasController({
+            surface: this.el.surface,
+            svg: this.el.svg,
+            canvas: this.el.canvas,
+            switcher: this.el.switcher,
+            buttons: this.el.viewButtons,
+            reducedMotion: this.isReduced,
+            requestRender: () => {
+              this.renderFrame(performance.now());
+              this.loop();
+            }
+          }) : null;
+          if (this.canvasViews) {
+            this.canvasViews.attachClassic(this.chart);
+            this.canvasViews.setFocusListener((point) => this.updateSnapshot(point));
+          }
+          this.chart.onHover = () => this.renderFrame(performance.now());
+          this.chart.onRender = (point) => {
+            if (!this.canvasViews || (this.canvasViews.state.activeView === "classic" && this.canvasViews.state.transitionPhase === "idle")) this.updateSnapshot(point);
+          };
+          const snap = readRaw(this.raw);
+          this.data = snap.ok ? compute(snap.values) : null;
+          this.progress = this.data ? 1 : 0;
+          this.bind();
+          this.syncForm();
+          this.validate(snap);
+          this.updatePanels(snap.ok ? "" : snap.errors[0]);
+          if (this.canvasViews) this.canvasViews.setData(this.data);
+          else this.chart.setData(this.data);
+          this.renderFrame(performance.now());
+          this.syncButtons();
+        }
+
+        bind() {
+          for (const key of FIELDS) {
+            const input = document.getElementById(key);
+            if (!input) continue;
+            if (key === "currency") {
+              input.addEventListener("change", () => {
+                this.setCurrencyForAll(input.value);
+                this.commit();
+                this.syncForm();
+              });
+              continue;
+            }
+            input.addEventListener("input", () => { this.raw[key] = input.value; this.validate(); this.draft(); this.schedule(); });
+            input.addEventListener("change", () => { this.raw[key] = input.value; this.commit(); });
+          }
+          this.el.buttons.forEach((btn, i) => btn.addEventListener("click", () => this.loadSlot(this.slots[i].id)));
+          this.el.runButton.addEventListener("click", () => { if (this.running) this.pause(); else if (this.progress < 1) this.resume(); else this.restart(); });
+          this.el.resetButton.addEventListener("click", () => this.reset());
+          this.el.speed.addEventListener("change", () => { this.speed = clamp(Number(this.el.speed.value) || .5, .5, 2); });
+          addEventListener("resize", () => { this.chart.build(); this.renderFrame(performance.now()); }, { passive:true });
+          reduced.addEventListener("change", (e) => { this.isReduced = e.matches; if (this.canvasViews) this.canvasViews.setReducedMotion(this.isReduced); if (this.isReduced) { this.running = false; this.progress = this.data ? 1 : 0; this.stop(); } this.renderFrame(performance.now()); this.syncButtons(); });
+        }
+
+        slot(index, saved = {}) { return { id: saved.id || `simulation-${index}`, title: `Scenario ${index}`, raw: rawOf(saved.raw || DEFAULTS), dirty: !!saved.dirty, completed: !!saved.completed, outcome: saved.outcome || null }; }
+        loadSlots() { try { const raw = localStorage.getItem(STORAGE_KEY); const parsed = raw ? JSON.parse(raw) : null; if (!Array.isArray(parsed)) throw new Error(); return Array.from({ length:SLOT_COUNT }, (_, i) => this.slot(i + 1, parsed[i] || {})); } catch { return Array.from({ length:SLOT_COUNT }, (_, i) => this.slot(i + 1)); } }
+        saveSlots() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.slots.map((s) => ({ id:s.id, raw:s.raw, dirty:s.dirty, completed:s.completed, outcome:s.outcome })))); } catch {} }
+        currentSlot() { return this.slots.find((s) => s.id === this.activeId); }
+        updateSlot(id, updates) { this.slots = this.slots.map((s) => s.id === id ? { ...s, ...updates, raw: updates.raw ? rawOf(updates.raw) : s.raw } : s); this.saveSlots(); }
+        normalizeCurrency(value) { return ["USD","EUR","GBP"].includes(value) ? value : DEFAULTS.currency; }
+        setCurrencyForAll(value) {
+          const currency = this.normalizeCurrency(value);
+          this.raw = { ...this.raw, currency };
+          this.slots = this.slots.map((s) => ({ ...s, raw:{ ...rawOf(s.raw), currency } }));
+          this.saveSlots();
+        }
+
+        syncForm() { for (const key of FIELDS) { const input = document.getElementById(key); if (input) input.value = this.raw[key] ?? ""; } this.syncButtons(); }
+
+        validate(snapshot = null) {
+          const parsed = snapshot || readRaw(this.raw);
+          for (const key of NUMERIC) {
+            const field = this.root.querySelector(`[data-field="${key}"]`);
+            const input = document.getElementById(key);
+            const r = parseNum(key, this.raw[key]);
+            const invalid = !r.ok && (!r.empty || META[key].required);
+            field.classList.toggle("invalid", invalid);
+            input.setAttribute("aria-invalid", invalid ? "true" : "false");
+          }
+          return parsed;
+        }
+        draft() {
+          this.updateSlot(this.activeId, { raw:this.raw, dirty:true, completed:false, outcome:null });
+          this.syncButtons();
+        }
+
+        schedule() {
+          if (this.timer) clearTimeout(this.timer);
+          this.timer = setTimeout(() => { this.timer = 0; this.commit(); }, 140);
+        }
+
+        commit() {
+          if (this.timer) clearTimeout(this.timer), this.timer = 0;
+          const snapshot = this.validate();
+          this.el.formError.textContent = snapshot.ok ? "" : snapshot.errors[0];
+          if (!snapshot.ok) {
+            this.data = null;
+            this.updateSlot(this.activeId, { raw:this.raw, dirty:true, completed:false, outcome:null });
+            this.progress = 0; this.running = false; this.anim.duration = this.anim.elapsed = this.anim.last = 0; this.stop();
+            this.updatePanels(snapshot.errors[0]);
+            if (this.canvasViews) this.canvasViews.setData(null);
+            else this.chart.setData(null);
+            this.renderFrame(performance.now());
+            this.syncButtons();
+            return;
+          }
+          this.data = compute(snapshot.values);
+          this.updateSlot(this.activeId, { raw:this.raw, dirty:false, completed:true, outcome:{ breakEvenPrice:Number(this.data.metrics.breakEvenPrice.toFixed(4)), currentProfit:Math.round(this.data.metrics.current.netProfit), currentRoi:Number(this.data.metrics.current.roiPercent.toFixed(2)) } });
+          this.updatePanels("");
+          if (this.canvasViews) this.canvasViews.setData(this.data);
+          else this.chart.setData(this.data);
+          if (this.isReduced) { this.progress = 1; this.running = false; this.renderFrame(performance.now()); this.syncButtons(); return; }
+          this.progress = 0;
+          this.playTo(1, UPDATE_MS);
+        }
+
+        loadSlot(id) {
+          const current = this.currentSlot();
+          if (current && (current.dirty || this.running || this.timer)) this.commit();
+          this.stop();
+          const slot = this.slots.find((s) => s.id === id);
+          if (!slot) return;
+          this.activeId = slot.id;
+          this.raw = { ...slot.raw };
+          this.running = false;
+          this.progress = 0;
+          const snapshot = this.validate(readRaw(this.raw));
+          this.el.formError.textContent = snapshot.ok ? "" : snapshot.errors[0];
+          this.data = snapshot.ok ? compute(snapshot.values) : null;
+          this.progress = this.data ? 1 : 0;
+          this.syncForm();
+          this.updatePanels(snapshot.ok ? "" : snapshot.errors[0]);
+          if (this.canvasViews) this.canvasViews.setData(this.data);
+          else this.chart.setData(this.data);
+          this.renderFrame(performance.now());
+          this.syncButtons();
+        }
+
+        syncButtons() {
+          this.el.buttons.forEach((btn, i) => {
+            const slot = this.slots[i];
+            const isActive = slot.id === this.activeId;
+            btn.classList.toggle("is-active", isActive);
+            btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+            if (isActive) btn.setAttribute("aria-current", "true");
+            else btn.removeAttribute("aria-current");
+            btn.innerHTML = `<strong>${slot.title}</strong>`;
+          });
+          const active = this.currentSlot();
+          const completeTone = !!(active && active.completed);
+          this.el.runButton.classList.toggle("complete", completeTone);
+          this.el.resetButton.classList.toggle("complete", completeTone);
+          if (this.isReduced || !this.data) {
+            this.el.runButton.textContent = "Run";
+            this.el.runButton.setAttribute("aria-pressed", "false");
+            return;
+          }
+          if (this.running) {
+            this.el.runButton.textContent = "Pause";
+            this.el.runButton.setAttribute("aria-pressed", "true");
+          } else {
+            this.el.runButton.textContent = "Run";
+            this.el.runButton.setAttribute("aria-pressed", "false");
+          }
+        }
+
+        updatePanels(error = "") {
+          if (!this.data) {
+            this.el.empty.hidden = false;
+            this.resetSnapshot();
+            this.syncButtons();
+            return;
+          }
+          this.el.empty.hidden = true;
+          this.syncButtons();
+        }
+
+        resetSnapshot() {
+          this.el.snapValue.textContent = "$0";
+          this.el.snapInvestment.textContent = "$0";
+          this.el.snapProfit.textContent = "$0";
+          this.el.snapRoi.textContent = "0%";
+          this.el.snapProfit.className = "";
+          this.el.snapRoi.className = "";
+        }
+
+        updateSnapshot(point) {
+          if (!this.data) return this.resetSnapshot();
+          const c = this.data.inputs.currency;
+          this.el.snapValue.textContent = moneyCompact(point.netValue, c);
+          this.el.snapInvestment.textContent = moneyCompact(point.totalInvestment, c);
+          this.el.snapProfit.textContent = moneyCompact(point.netProfit, c, { signed: true });
+          this.el.snapRoi.textContent = pct(point.roiPercent, { signed: true, digits: 1 });
+          this.el.snapProfit.className = point.netProfit >= 0 ? "pos" : "neg";
+          this.el.snapRoi.className = point.roiPercent >= 0 ? "pos" : "neg";
+        }
+
+        playTo(target, duration) { this.anim = { from:this.progress, to:target, duration, elapsed:0, last:performance.now() }; this.running = true; this.syncButtons(); this.loop(); }
+        restart() { if (!this.data) return; if (this.isReduced) { this.progress = 1; this.running = false; this.renderFrame(performance.now()); return this.syncButtons(); } this.progress = 0; this.playTo(1, UPDATE_MS); }
+        reset() {
+          if (this.timer) clearTimeout(this.timer), this.timer = 0;
+          this.running = false;
+          this.anim.duration = this.anim.elapsed = this.anim.last = 0;
+          this.stop();
+          const currency = this.normalizeCurrency(this.raw.currency);
+          this.raw = zeroRaw(currency);
+          const snapshot = this.validate(readRaw(this.raw));
+          this.el.formError.textContent = snapshot.ok ? "" : snapshot.errors[0];
+          this.data = snapshot.ok ? compute(snapshot.values) : null;
+          if (this.data) {
+            this.updateSlot(this.activeId, {
+              raw: this.raw,
+              dirty: false,
+              completed: true,
+              outcome: {
+                breakEvenPrice: Number(this.data.metrics.breakEvenPrice.toFixed(4)),
+                currentProfit: Math.round(this.data.metrics.current.netProfit),
+                currentRoi: Number(this.data.metrics.current.roiPercent.toFixed(2))
+              }
+            });
+          } else {
+            this.updateSlot(this.activeId, { raw: this.raw, dirty: false, completed: false, outcome: null });
+          }
+          this.progress = this.data ? 1 : 0;
+          this.syncForm();
+          this.updatePanels(snapshot.ok ? "" : snapshot.errors[0]);
+          if (this.canvasViews) this.canvasViews.setData(this.data);
+          else this.chart.setData(this.data);
+          this.renderFrame(performance.now());
+          this.syncButtons();
+        }
+        pause() { this.running = false; this.anim.duration = this.anim.elapsed = this.anim.last = 0; this.stop(); this.syncButtons(); }
+        resume() { if (!this.data) return; if (this.isReduced) { this.progress = 1; this.running = false; this.renderFrame(performance.now()); return this.syncButtons(); } if (this.progress <= EPS || this.progress >= 1) return this.restart(); this.playTo(1, Math.max((1 - this.progress) * LOAD_MS, 600)); }
+        loop() { if (this.raf) return; this.raf = requestAnimationFrame((t) => this.frame(t)); }
+        stop() { if (!this.raf) return; cancelAnimationFrame(this.raf); this.raf = 0; }
+
+        frame(now) {
+          if (this.running && this.anim.duration > 0) {
+            if (!this.anim.last) this.anim.last = now;
+            const delta = Math.max(0, now - this.anim.last);
+            this.anim.last = now;
+            this.anim.elapsed += delta * this.speed;
+            const raw = clamp(this.anim.elapsed / this.anim.duration, 0, 1);
+            this.progress = lerp(this.anim.from, this.anim.to, ease(raw));
+            if (raw >= 1) { this.progress = this.anim.to; this.running = false; this.anim.duration = 0; this.anim.last = 0; this.syncButtons(); }
+          }
+          this.renderFrame(now);
+          if (this.running || (this.canvasViews && this.canvasViews.needsFrames())) this.raf = requestAnimationFrame((t) => this.frame(t));
+          else this.raf = 0;
+        }
+
+        renderFrame(now) {
+          const progress = this.data ? this.progress : 0;
+          this.el.progress.style.width = `${(progress * 100).toFixed(1)}%`;
+          if (this.canvasViews) {
+            this.canvasViews.setRuntime({ isRunning:this.running, speedMultiplier:this.speed, animationProgress:progress });
+            this.canvasViews.render(now);
+          } else if (this.data) this.chart.render(progress, now);
+        }
+      }
+
+      const root = document.getElementById("stockWidget");
+      if (root) {
+        const embedResizer = createEmbedResizer(root);
+        new Widget(root);
+        embedResizer.request();
+      }
+    })();
+  </script>
+</body>
+</html>

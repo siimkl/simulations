@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="et">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Siim Klaisi interaktiivsed simulatsioonid ja selgitajad. Leia teema ning ava simulatsioon otse brauseris.">
+  <meta name="theme-color" content="#f5f7f7">
+  <title>Simulations &amp; Explainers · Siim Klais</title>
+  <link rel="stylesheet" href="./site.css">
+  <script src="./catalog.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="intro">
+      <a class="author" href="https://github.com/siimkl">Siim Klais</a>
+      <h1>Simulations<br>&amp; Explainers</h1>
+      <p>Interaktiivsed mudelid õppimiseks ja katsetamiseks. Vali teema või ava mõni simulatsioon otse.</p>
+    </header>
+
+    <section class="catalog" aria-label="Simulatsioonide kataloog">
+      <div class="tools">
+        <label class="search">
+          <span>Otsi kataloogist</span>
+          <input id="search" type="search" placeholder="Pealkiri, teema või märksõna" autocomplete="off" disabled>
+        </label>
+        <div class="filters" id="filters" role="group" aria-label="Teemafiltrid"></div>
+      </div>
+      <p class="status" id="status" role="status">Laadin kataloogi…</p>
+      <div class="grid" id="cards"></div>
+      <noscript>Kataloogi avamiseks luba brauseris JavaScript.</noscript>
+    </section>
+
+    <footer><span>Simulations &amp; Explainers</span><a href="https://github.com/siimkl">Siim Klais</a></footer>
+  </main>
+</body>
+</html>

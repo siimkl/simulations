@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How AI Assistants Work | ChatGPT, Claude & Gemini</title>
+  <meta
+    name="description"
+    content="Explore how ChatGPT, Claude, and Gemini use language models, context, tokens, transformer layers, and AI tools to answer questions and complete complex tasks."
+  >
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#eef3ff">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="How AI Assistants Work | ChatGPT, Claude & Gemini">
+  <meta property="og:description" content="A visual AI explainer showing how language models, context windows, tokens, transformer layers, and tools turn a request into a useful answer.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="How AI Assistants Work | ChatGPT, Claude & Gemini">
+  <meta name="twitter:description" content="Explore the visual process behind simple AI answers, tool use, and complex multi-step tasks.">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["WebApplication", "LearningResource"],
+      "name": "How AI Assistants Work: ChatGPT, Claude and Gemini Visual Explainer",
+      "description": "An interactive visual explanation of how AI assistants use language models, context windows, tokens, transformer layers, optional tools, and repeated work cycles.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any modern web browser",
+      "isAccessibleForFree": true,
+      "inLanguage": "en",
+      "learningResourceType": "Interactive simulation",
+      "educationalUse": "Explanation",
+      "teaches": [
+        "How AI assistants use context windows",
+        "How tokenization and embeddings represent a prompt",
+        "How transformer attention connects information",
+        "How AI tools support complex tasks",
+        "How language models generate responses token by token"
+      ],
+      "audience": {
+        "@type": "EducationalAudience",
+        "educationalRole": "general public"
+      },
+      "keywords": [
+        "how AI assistants work",
+        "how ChatGPT works",
+        "Claude AI",
+        "Google Gemini",
+        "large language model",
+        "transformer model",
+        "AI context window",
+        "AI tools"
+      ],
+      "about": [
+        { "@type": "Thing", "name": "Artificial intelligence assistants" },
+        { "@type": "Thing", "name": "Large language models" },
+        { "@type": "Thing", "name": "Transformer neural networks" },
+        { "@type": "Thing", "name": "ChatGPT" },
+        { "@type": "Thing", "name": "Claude" },
+        { "@type": "Thing", "name": "Gemini" }
+      ]
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="ai-shell" id="aiShell">
+    <section class="ai-widget" id="aiWidget" data-model="chatgpt" data-complexity="simple" aria-labelledby="pageTitle">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span aria-hidden="true"></span> Interactive AI explainer</p>
+          <h1 id="pageTitle">See how AI assistants <em>actually work.</em></h1>
+          <p class="hero-lede">
+            Explore how ChatGPT, Claude, and Gemini turn your request into an answer. Follow the context window,
+            tokens, transformer layers, optional AI tools, and work loops behind complex tasks.
+          </p>
+        </div>
+
+        <div class="hero-control">
+          <div class="assistant-picker" aria-labelledby="assistantPickerTitle">
+            <div class="control-heading">
+              <span id="assistantPickerTitle">Choose assistant lens</span>
+            </div>
+            <div class="assistant-options" role="group" aria-label="Assistant family">
+              <button class="model-button is-active" type="button" data-model="chatgpt" aria-label="Choose the ChatGPT lens" aria-pressed="true"><i>O</i> ChatGPT</button>
+              <button class="model-button" type="button" data-model="claude" aria-label="Choose the Claude lens" aria-pressed="false"><i>A</i> Claude</button>
+              <button class="model-button" type="button" data-model="gemini" aria-label="Choose the Gemini lens" aria-pressed="false"><i>G</i> Gemini</button>
+            </div>
+            <small>The exact internals differ by product. This visual AI explainer shows the shared high-level process.</small>
+          </div>
+        </div>
+      </header>
+
+      <section class="anatomy-strip" aria-labelledby="anatomyTitle">
+        <div class="anatomy-intro">
+          <p class="section-kicker">Language model vs. AI assistant</p>
+          <h2 id="anatomyTitle">How a language model becomes a complete AI assistant</h2>
+        </div>
+        <div class="anatomy-flow" role="img" aria-label="An AI assistant combines a trained language model, current context, optional tools, and product controls">
+          <article class="anatomy-card anatomy-card--learned info-card">
+            <span class="anatomy-time">Learned before</span>
+            <i class="anatomy-symbol" aria-hidden="true">M</i>
+            <div><strong>Language model</strong><small>Patterns stored in billions of learned weights</small></div>
+          </article>
+          <span class="anatomy-plus" aria-hidden="true">+</span>
+          <article class="anatomy-card anatomy-card--now info-card">
+            <span class="anatomy-time">Supplied now</span>
+            <i class="anatomy-symbol" aria-hidden="true">C</i>
+            <div><strong>Context</strong><small>Your request, chat, files, images, and instructions</small></div>
+          </article>
+          <span class="anatomy-plus" aria-hidden="true">+</span>
+          <article class="anatomy-card anatomy-card--tools info-card">
+            <span class="anatomy-time">Used if needed</span>
+            <i class="anatomy-symbol" aria-hidden="true">T</i>
+            <div><strong>AI tools</strong><small>Web search, calculator, code, apps, or file retrieval</small></div>
+          </article>
+          <span class="anatomy-equals" aria-hidden="true">=</span>
+          <article class="anatomy-card anatomy-card--assistant info-card">
+            <span class="anatomy-time">What you experience</span>
+            <i class="anatomy-symbol" id="anatomyAssistantMark" aria-hidden="true">O</i>
+            <div><strong id="anatomyAssistantName">ChatGPT</strong><small>UI, memory, safety, orchestration, and model output</small></div>
+          </article>
+        </div>
+        <div class="model-differences">
+          <span>Key product differences</span>
+          <div class="difference-chips" aria-label="Product differences">
+            <i>Model version</i><i>Context limits</i><i>Memory</i><i>Available tools</i><i>Safety rules</i><i>Interface + speed</i>
+          </div>
+          <p id="modelDifferenceText">OpenAI decides which model, memory behavior, tools, safety layers, and interface features make up each ChatGPT experience.</p>
+        </div>
+      </section>
+
+      <section class="route-compare" aria-labelledby="routeCompareTitle">
+        <div class="route-compare__copy">
+          <p class="section-kicker">Simple vs. complex AI tasks</p>
+          <h2 id="routeCompareTitle">How AI assistants answer simple questions and complete complex tasks</h2>
+        </div>
+        <div class="route-lanes">
+          <article class="route-lane info-card is-active" id="simpleLane">
+            <div class="route-lane__head"><span>Simple task</span><strong>Usually one main pass</strong></div>
+            <div class="mini-route" aria-hidden="true"><i>You ask</i><b></b><i>Model works</i><b></b><i>Answer</i></div>
+            <p>Explain, summarize, rewrite, brainstorm, or answer directly from the available context.</p>
+          </article>
+          <article class="route-lane info-card" id="complexLane">
+            <div class="route-lane__head"><span>Complex task</span><strong>May repeat several times</strong></div>
+            <div class="mini-route mini-route--loop" aria-hidden="true"><i>Plan</i><b></b><i>Use a tool</i><b></b><i>Check</i></div>
+            <div class="route-repeat"><span aria-hidden="true"></span><strong>Repeat with the new result as context</strong></div>
+            <p>Use AI tools to research, compare evidence, inspect files, calculate, and revise until the result is ready.</p>
+          </article>
+        </div>
+      </section>
+
+      <div class="workbench">
+        <aside class="task-panel card" aria-labelledby="taskTitle">
+          <div class="section-head">
+            <p class="section-kicker">Explore an AI workflow</p>
+            <h2 id="taskTitle">Choose a task to see how the AI assistant handles it</h2>
+            <p>Each example changes the context, AI tools, and number of work cycles.</p>
+          </div>
+
+          <div class="control-heading control-heading--section">
+            <span>1. Choose task type</span>
+          </div>
+          <div class="task-tabs" role="tablist" aria-label="Choose task complexity">
+            <button class="task-tab is-active" id="simpleTab" type="button" role="tab" aria-controls="scenarioList" aria-selected="true" data-task-filter="simple">Simple tasks</button>
+            <button class="task-tab" id="complexTab" type="button" role="tab" aria-controls="scenarioList" aria-selected="false" data-task-filter="complex">Complex tasks</button>
+          </div>
+
+          <div class="control-heading control-heading--section control-heading--examples">
+            <span>2. Choose an example</span>
+          </div>
+          <div class="scenario-list" id="scenarioList" aria-label="Example tasks"></div>
+
+          <div class="task-recipe info-card" aria-labelledby="taskRecipeTitle">
+            <div class="task-recipe__head">
+              <span id="taskRecipeTitle">What enters this task</span>
+              <strong id="complexityBadge">Simple</strong>
+            </div>
+            <div class="ingredient-list" id="ingredientList"></div>
+          </div>
+
+        </aside>
+
+        <section class="journey-column" aria-labelledby="journeyTitle">
+          <nav class="phase-map" id="phaseMap" aria-label="Six scenes explaining how an AI assistant processes a task"></nav>
+
+          <article class="stage-card card">
+            <div class="stage-head">
+              <div>
+                <p class="section-kicker"><span id="stageRouteLabel">Simple route</span> <span class="simulation-tag">animated high-level simulation</span></p>
+                <h2 id="journeyTitle">Build the AI context window</h2>
+                <p id="stageQuestion">What information does the assistant have for this request?</p>
+              </div>
+              <div class="stage-status" aria-live="polite"><span id="phaseNumber">Scene 1 of 6</span><strong id="phaseStatus">Ready</strong></div>
+            </div>
+
+            <div class="visual-stage" id="visualStage" role="img" aria-label="Visual simulation of how an AI assistant processes the selected task"></div>
+
+            <div class="watch-bar">
+              <span>Watch for</span>
+              <strong id="watchForText">The AI assistant can only use information that reaches its context window.</strong>
+              <button id="replaySceneButton" type="button" aria-label="Replay the current visual animation"><i aria-hidden="true"></i> Replay animation</button>
+            </div>
+          </article>
+
+          <div class="lesson-grid">
+            <article class="lesson-card card info-card">
+              <p class="section-kicker">In plain English</p>
+              <h3 id="plainTitle">It gathers the context for the task</h3>
+              <p id="plainBody">The product combines your request with higher-priority instructions and useful conversation history. Files or saved memory may be added when available.</p>
+              <div class="analogy-box"><span>Picture this</span><strong id="analogyText">A desk being prepared with the right brief, rules, and reference pages.</strong></div>
+            </article>
+            <article class="lesson-card lesson-card--technical card info-card">
+              <p class="section-kicker">One level deeper</p>
+              <h3 id="technicalTitle">This workspace is called the AI context window</h3>
+              <p id="technicalBody">It is different from training. Training shaped the model's weights earlier; context is the information supplied for this specific task.</p>
+              <div class="myth-box"><span>Common myth</span><strong id="mythText">The assistant does not automatically remember or search everything.</strong></div>
+            </article>
+          </div>
+
+        </section>
+      </div>
+
+      <footer class="footer-note">
+        <p><strong>Reality check:</strong> This visual AI explainer is an educational high-level model, not a live trace or a claim that the three products have identical internals. Internal reasoning is represented as a task-level work plan, not private chain-of-thought.</p>
+        <p class="source-links"><strong>Official AI tool concepts:</strong> <a href="https://developers.openai.com/api/docs/guides/tools" target="_blank" rel="noreferrer">OpenAI tool-use documentation</a> &middot; <a href="https://docs.anthropic.com/en/docs/build-with-claude/tool-use/overview" target="_blank" rel="noreferrer">Claude tool-use documentation</a> &middot; <a href="https://ai.google.dev/gemini-api/docs/function-calling" target="_blank" rel="noreferrer">Gemini function-calling documentation</a></p>
+        <p>No prompt leaves this page.</p>
+      </footer>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
