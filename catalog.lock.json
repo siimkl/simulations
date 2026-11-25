@@ -127,16 +127,5 @@
   "simfluence-adoption": {
     "source": "Sim7_Simfluence",
     "revision": "4e2619fd9ad1e49c2a8a4eeb4bddf2256adc4c52440e51036d242d2ced2006b2"
-  },
-  "simfluence-hero-loop": {
-    "source": "Sim17_Simfluence_Hero",
-    "revision": "42ff4897959770c9e9cadedc65d2b4b4e0794e8d2a69ed2d163a966d5efebba0"
-  },
-  "agentide-suhtlus": {
-    "source": "Sim18_Simfluence",
-    "revision": "c696c5cb03044e0b6a24842286ec944b7992bd0948ce76a01e50fbc46da3c083"
-  },
-  "pausio": {
-    "url": "https://siimkl.github.io/pausio-preview/"
   }
 }

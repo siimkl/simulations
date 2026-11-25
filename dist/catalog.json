@@ -394,39 +394,5 @@
     "keywords": [],
     "href": "./labs/simfluence-adoption/",
     "image": "./thumbs/simfluence-adoption.webp"
-  },
-  {
-    "id": "simfluence-hero-loop",
-    "title": "Simfluence · Hero Loop",
-    "description": "Vaata Simfluence’i automatiseeritud sissejuhatavat visualiseeringut.",
-    "topics": [
-      "Organisatsioonid"
-    ],
-    "keywords": [],
-    "href": "./labs/simfluence-hero-loop/",
-    "image": "./thumbs/simfluence-hero-loop.webp"
-  },
-  {
-    "id": "agentide-suhtlus",
-    "title": "Simfluence · Agent Interaction Widget",
-    "description": "Vaata, kuidas osalejate omavaheline suhtlus kujundab süsteemi käitumist.",
-    "topics": [
-      "Organisatsioonid",
-      "Tehisaru"
-    ],
-    "keywords": [],
-    "href": "./labs/agentide-suhtlus/",
-    "image": "./thumbs/agentide-suhtlus.webp"
-  },
-  {
-    "id": "pausio",
-    "title": "Pausio · Lock distractions away",
-    "description": "Tutvu tähelepanu toetava toote interaktiivse veebieelvaatega.",
-    "topics": [
-      "Igapäevaelu"
-    ],
-    "keywords": [],
-    "href": "https://siimkl.github.io/pausio-preview/",
-    "image": "./thumbs/pausio.webp"
   }
 ]
