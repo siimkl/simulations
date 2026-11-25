@@ -6,6 +6,10 @@
     "topics": [
       "Andmepädevus"
     ],
+    "en": {
+      "description": "Build GET and POST requests, then learn to read and check the API response.",
+      "title": "API 1 · Send a Request. Read the Response."
+    },
     "keywords": [],
     "href": "https://siimkl.github.io/andmep/api1/",
     "image": "./thumbs/api-1.webp"
@@ -18,6 +22,10 @@
       "Tehisaru",
       "Organisatsioonid"
     ],
+    "en": {
+      "description": "Explore how work capacity and obligations change when AI assistance is interrupted.",
+      "title": "AI-Assisted Work and Organizational Resilience"
+    },
     "keywords": [],
     "href": "https://siimkl.github.io/sim32/",
     "image": "./thumbs/ai-toimepidevus.webp"
@@ -30,6 +38,9 @@
       "Ühiskond",
       "Majandus"
     ],
+    "en": {
+      "description": "Explore how public funds are allocated across different sectors."
+    },
     "keywords": [],
     "href": "./labs/avalik-raha/",
     "image": "./thumbs/avalik-raha.webp"
@@ -41,6 +52,10 @@
     "topics": [
       "Andmepädevus"
     ],
+    "en": {
+      "description": "Fetch official statistics, calculate a change in R, and interpret a chart.",
+      "title": "API 2 · Work with API Data in R"
+    },
     "keywords": [],
     "href": "https://siimkl.github.io/andmep/api2/",
     "image": "./thumbs/api-2.webp"
@@ -53,6 +68,10 @@
       "Andmepädevus",
       "Tehisaru"
     ],
+    "en": {
+      "description": "Follow statistics processed in R as they are sent to a language model for interpretation.",
+      "title": "API 3 · Connect an AI API to Your Application"
+    },
     "keywords": [],
     "href": "https://siimkl.github.io/andmep/api3/",
     "image": "./thumbs/api-3.webp"
@@ -64,6 +83,10 @@
     "topics": [
       "Andmepädevus"
     ],
+    "en": {
+      "description": "Find repeating records in HTML and turn them into a checked data table.",
+      "title": "Web Scraping in R"
+    },
     "keywords": [],
     "href": "https://siimkl.github.io/andmep/kraapimine/",
     "image": "./thumbs/veebikraapimine.webp"
@@ -76,6 +99,10 @@
       "Andmepädevus",
       "Tehisaru"
     ],
+    "en": {
+      "description": "Label job seeker records and see how your choices shape the model’s recommendations.",
+      "title": "Who Teaches AI?"
+    },
     "keywords": [],
     "href": "https://siimkl.github.io/andmep/ai-andmetoo/",
     "image": "./thumbs/ai-andmetoo.webp"
@@ -87,6 +114,9 @@
     "topics": [
       "Tehisaru"
     ],
+    "en": {
+      "description": "Follow how text is split into tokens and how an AI assistant generates a response."
+    },
     "keywords": [],
     "href": "./labs/ai-assistendid/",
     "image": "./thumbs/ai-assistendid.webp"
@@ -98,6 +128,9 @@
     "topics": [
       "Tehisaru"
     ],
+    "en": {
+      "description": "Explore how training text and next-token prediction shape a language model."
+    },
     "keywords": [],
     "href": "./labs/keelemudeli-treenimine/",
     "image": "./thumbs/keelemudeli-treenimine.webp"
@@ -110,6 +143,9 @@
       "Tehisaru",
       "Majandus"
     ],
+    "en": {
+      "description": "Explore how AI may change tasks and skill requirements across occupations."
+    },
     "keywords": [],
     "href": "./labs/ai-tooturg/",
     "image": "./thumbs/ai-tooturg.webp"
@@ -122,6 +158,9 @@
       "Tehisaru",
       "Ühiskond"
     ],
+    "en": {
+      "description": "Explore how the spread of generative AI changes the way people create and use knowledge."
+    },
     "keywords": [],
     "href": "./labs/generatiivne-ai/",
     "image": "./thumbs/generatiivne-ai.webp"
@@ -134,6 +173,9 @@
       "Tehisaru",
       "Tööprotsessid"
     ],
+    "en": {
+      "description": "See how AI agents change a business workflow and its workload."
+    },
     "keywords": [],
     "href": "./labs/ai-toovoog/",
     "image": "./thumbs/ai-toovoog.webp"
@@ -147,6 +189,9 @@
       "Tööprotsessid",
       "Majandus"
     ],
+    "en": {
+      "description": "Compare ways to automate customer support and use the staff time it frees up."
+    },
     "keywords": [],
     "href": "./labs/ai-klienditugi/",
     "image": "./thumbs/ai-klienditugi.webp"
@@ -159,6 +204,9 @@
       "Ühiskond",
       "Andmepädevus"
     ],
+    "en": {
+      "description": "See how policing decisions shape the data used for future forecasts."
+    },
     "keywords": [],
     "href": "./labs/ennustav-politseitoo/",
     "image": "./thumbs/ennustav-politseitoo.webp"
@@ -171,6 +219,10 @@
       "Ühiskond",
       "Andmepädevus"
     ],
+    "en": {
+      "description": "Explore a public safety forecasting example set in Tartu and see how it uses data.",
+      "title": "Public Safety Forecasting Demo"
+    },
     "keywords": [],
     "href": "https://siimkl.github.io/CDS_Crime_Prediction/",
     "image": "./thumbs/turvalisuse-prognoos.webp"
@@ -183,6 +235,9 @@
       "Tööprotsessid",
       "Majandus"
     ],
+    "en": {
+      "description": "Compare the time and cost of manual and automated work."
+    },
     "keywords": [],
     "href": "./labs/tookulu/",
     "image": "./thumbs/tookulu.webp"
@@ -195,6 +250,9 @@
       "Organisatsioonid",
       "Tööprotsessid"
     ],
+    "en": {
+      "description": "See how small gaps in controls can accumulate over time."
+    },
     "keywords": [],
     "href": "./labs/vastavusrisk/",
     "image": "./thumbs/vastavusrisk.webp"
@@ -207,6 +265,9 @@
       "Tööprotsessid",
       "Majandus"
     ],
+    "en": {
+      "description": "Change how a platform coordinates work and see how it affects waiting and idle time."
+    },
     "keywords": [],
     "href": "./labs/platvormide-tookorraldus/",
     "image": "./thumbs/platvormide-tookorraldus.webp"
@@ -219,6 +280,9 @@
       "Majandus",
       "Tööprotsessid"
     ],
+    "en": {
+      "description": "Change assumptions about the customer journey and find where the most customers drop off."
+    },
     "keywords": [],
     "href": "./labs/kliendivoog/",
     "image": "./thumbs/kliendivoog.webp"
@@ -231,6 +295,9 @@
       "Majandus",
       "Tööprotsessid"
     ],
+    "en": {
+      "description": "Follow sales leads through the stages of a sales funnel."
+    },
     "keywords": [],
     "href": "./labs/muugilehter/",
     "image": "./thumbs/muugilehter.webp"
@@ -243,6 +310,9 @@
       "Majandus",
       "Organisatsioonid"
     ],
+    "en": {
+      "description": "Compare how workflow and control decisions affect revenue stability."
+    },
     "keywords": [],
     "href": "./labs/tulude-stabiilsus/",
     "image": "./thumbs/tulude-stabiilsus.webp"
@@ -254,6 +324,9 @@
     "topics": [
       "Tööprotsessid"
     ],
+    "en": {
+      "description": "See how yard and dock operations affect queues and stability."
+    },
     "keywords": [],
     "href": "./labs/dockflow/",
     "image": "./thumbs/dockflow.webp"
@@ -265,6 +338,9 @@
     "topics": [
       "Organisatsioonid"
     ],
+    "en": {
+      "description": "Follow how conflicting team decisions affect the implementation of a strategy."
+    },
     "keywords": [],
     "href": "./labs/strateegiline-joondumine/",
     "image": "./thumbs/strateegiline-joondumine.webp"
@@ -277,6 +353,9 @@
       "Tööprotsessid",
       "Tehisaru"
     ],
+    "en": {
+      "description": "Compare how coordination affects production flow and bottlenecks."
+    },
     "keywords": [],
     "href": "./labs/tehase-koordineerimine/",
     "image": "./thumbs/tehase-koordineerimine.webp"
@@ -288,6 +367,9 @@
     "topics": [
       "Tööprotsessid"
     ],
+    "en": {
+      "description": "Test how service capacity affects queues and throughput in a store."
+    },
     "keywords": [],
     "href": "./labs/iseteenindus/",
     "image": "./thumbs/iseteenindus.webp"
@@ -300,6 +382,9 @@
       "Tööprotsessid",
       "Organisatsioonid"
     ],
+    "en": {
+      "description": "See how product traceability affects the scope of a recall."
+    },
     "keywords": [],
     "href": "./labs/toote-tagastuskutse/",
     "image": "./thumbs/toote-tagastuskutse.webp"
@@ -311,6 +396,9 @@
     "topics": [
       "Majandus"
     ],
+    "en": {
+      "description": "Explore how a new solution moves from early adopters to the wider market."
+    },
     "keywords": [],
     "href": "./labs/turu-omaksvott/",
     "image": "./thumbs/turu-omaksvott.webp"
@@ -322,6 +410,9 @@
     "topics": [
       "Majandus"
     ],
+    "en": {
+      "description": "Compare an investment’s costs and returns to find its break-even point."
+    },
     "keywords": [],
     "href": "./labs/investeeringu-tasuvus/",
     "image": "./thumbs/investeeringu-tasuvus.webp"
@@ -333,6 +424,9 @@
     "topics": [
       "Majandus"
     ],
+    "en": {
+      "description": "Calculate the return on a stock investment, including fees and dividends."
+    },
     "keywords": [],
     "href": "./labs/aktsiainvesteering/",
     "image": "./thumbs/aktsiainvesteering.webp"
@@ -344,6 +438,9 @@
     "topics": [
       "Keskkond"
     ],
+    "en": {
+      "description": "Test how growing conditions affect crop yields and quality."
+    },
     "keywords": [],
     "href": "./labs/saagikus/",
     "image": "./thumbs/saagikus.webp"
@@ -357,6 +454,9 @@
       "Majandus",
       "Keskkond"
     ],
+    "en": {
+      "description": "Compare the total cost of electric, hybrid, and gasoline cars under different assumptions."
+    },
     "keywords": [],
     "href": "./labs/auto-kogukulu/",
     "image": "./thumbs/auto-kogukulu.webp"
@@ -369,6 +469,9 @@
       "Igapäevaelu",
       "Ühiskond"
     ],
+    "en": {
+      "description": "Explore how screen habits may affect communication and social skills."
+    },
     "keywords": [],
     "href": "./labs/ekraaniharjumused/",
     "image": "./thumbs/ekraaniharjumused.webp"
@@ -380,6 +483,9 @@
     "topics": [
       "Igapäevaelu"
     ],
+    "en": {
+      "description": "Explore how an endless feed, attention, and repeated choices shape a habit."
+    },
     "keywords": [],
     "href": "./labs/scrollimise-harjumus/",
     "image": "./thumbs/scrollimise-harjumus.webp"
@@ -391,6 +497,9 @@
     "topics": [
       "Majandus"
     ],
+    "en": {
+      "description": "Watch a short visualization of how a new product spreads through a market."
+    },
     "keywords": [],
     "href": "./labs/simfluence-adoption/",
     "image": "./thumbs/simfluence-adoption.webp"

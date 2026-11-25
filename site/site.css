@@ -26,6 +26,9 @@ button, input { font: inherit; }
   border-bottom: 1px solid var(--border);
 }
 
+.intro-top { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.language { display: flex; gap: .3rem; }
+
 .author {
   font-size: .9375rem;
   font-weight: 800;
@@ -65,7 +68,7 @@ h1 {
 }
 
 .filters { display: flex; flex-wrap: wrap; gap: .5rem; }
-.filters button {
+:is(.filters, .language) button {
   min-height: 42px;
   padding: .45rem .85rem;
   border: 1px solid #9fb6b5;
@@ -76,8 +79,9 @@ h1 {
   font-weight: 800;
   cursor: pointer;
 }
-.filters button:hover { border-color: var(--accent); background: #e7f0ed; }
-.filters [aria-pressed="true"] { border-color: var(--accent); color: #fff; background: var(--accent); }
+:is(.filters, .language) button:hover { border-color: var(--accent); background: #e7f0ed; }
+:is(.filters, .language) [aria-pressed="true"] { border-color: var(--accent); color: #fff; background: var(--accent); }
+.language button { padding-inline: .7rem; }
 .status { margin: 1.3rem 0 .7rem; color: var(--muted); font-size: .9rem; font-weight: 700; }
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.05rem; }
 

@@ -361,7 +361,7 @@ def refresh(workspace, browser_path):
 
                     versions[slug] = chosen
                     cards.append({
-                        **{key: entry[key] for key in ("id", "title", "description", "topics")},
+                        **{key: entry[key] for key in ("id", "title", "description", "topics", "en")},
                         "keywords": entry.get("keywords", []), "href": href, "image": f"./thumbs/{thumbnail.name}",
                     })
                     print(f"OK {slug}: {chosen.get('source', chosen.get('url'))}", flush=True)

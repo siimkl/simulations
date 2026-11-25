@@ -1,33 +1,39 @@
 <!doctype html>
-<html lang="et">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Siim Klaisi interaktiivsed simulatsioonid ja selgitajad. Leia teema ning ava simulatsioon otse brauseris.">
+  <meta name="description" content="Interactive simulations and explainers by Siim Klais. Browse by topic and launch a simulation in your browser.">
   <meta name="theme-color" content="#f5f7f7">
   <title>Simulations &amp; Explainers · Siim Klais</title>
-  <link rel="stylesheet" href="./site.css">
-  <script src="./catalog.js" defer></script>
+  <link rel="stylesheet" href="./site.css?v=2">
+  <script src="./catalog.js?v=2" defer></script>
 </head>
 <body>
   <main class="shell">
     <header class="intro">
-      <a class="author" href="https://github.com/siimkl">Siim Klais</a>
+      <div class="intro-top">
+        <a class="author" href="https://github.com/siimkl">Siim Klais</a>
+        <div class="language" id="language" role="group" aria-label="Language">
+          <button type="button" lang="en" data-language="en" aria-pressed="true">English</button>
+          <button type="button" lang="et" data-language="et" aria-pressed="false">Eesti</button>
+        </div>
+      </div>
       <h1>Simulations<br>&amp; Explainers</h1>
-      <p>Interaktiivsed mudelid õppimiseks ja katsetamiseks. Vali teema või ava mõni simulatsioon otse.</p>
+      <p id="intro-copy">Interactive models for learning and exploring. Browse by topic or open a simulation directly.</p>
     </header>
 
-    <section class="catalog" aria-label="Simulatsioonide kataloog">
+    <section class="catalog" aria-label="Simulation catalog">
       <div class="tools">
         <label class="search">
-          <span>Otsi kataloogist</span>
-          <input id="search" type="search" placeholder="Pealkiri, teema või märksõna" autocomplete="off" disabled>
+          <span id="search-label">Search the catalog</span>
+          <input id="search" type="search" placeholder="Title, topic, or keyword" autocomplete="off" disabled>
         </label>
-        <div class="filters" id="filters" role="group" aria-label="Teemafiltrid"></div>
+        <div class="filters" id="filters" role="group" aria-label="Filter by topic"></div>
       </div>
-      <p class="status" id="status" role="status">Laadin kataloogi…</p>
+      <p class="status" id="status" role="status">Loading the catalog…</p>
       <div class="grid" id="cards"></div>
-      <noscript>Kataloogi avamiseks luba brauseris JavaScript.</noscript>
+      <noscript>Enable JavaScript to browse the catalog.</noscript>
     </section>
 
     <footer><span>Simulations &amp; Explainers</span><a href="https://github.com/siimkl">Siim Klais</a></footer>

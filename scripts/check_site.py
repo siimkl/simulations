@@ -17,9 +17,10 @@ assert (site / "site.css").is_file()
 assert (site / "manrope.woff2").is_file()
 assert [item["id"] for item in catalog] == [item["id"] for item in manifest]
 assert set(lock) == {item["id"] for item in catalog}
-for item in catalog:
+for item, source in zip(catalog, manifest):
     slug = item["id"]
     assert item["title"] and item["description"] and item["topics"], slug
+    assert item["en"] == source["en"] and item["en"]["description"], slug
     assert item["image"] == f"./thumbs/{slug}.webp", slug
     assert (site / "thumbs" / f"{slug}.webp").read_bytes()[:4] == b"RIFF", slug
     if "url" in lock[slug]:
