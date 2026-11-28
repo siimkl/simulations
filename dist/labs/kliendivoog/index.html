@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Customer Funnel Simulation | Conversion Leak Simulator</title>
+  <title>Customer Journey Stages and Drop-off</title>
   <meta
     name="description"
     content="Interactive customer funnel simulation showing how traffic moves through click, signup, demo, purchase, and repeat stages on a layered canvas."
@@ -16,12 +16,12 @@
       <header class="panel hero">
         <div class="hero-top">
           <div class="hero-copy">
-            <p class="eyebrow">Customer Funnel Simulation | Conversion Flow Canvas</p>
-            <h1>Customer Flow Engine: where funnel leaks compound</h1>
+            <p class="eyebrow">90-second customer-journey model</p>
+            <h1>Customer journey stages and drop-off</h1>
             <p class="hero-text">
-              Every dot is a prospect. Impressions drift through the ad cloud, collide with a click gate,
-              churn in signup, queue for demos, and either turn into buyers or fall into visible leak zones.
-              Small rate changes upstream produce outsized effects downstream.
+              Each dot represents a prospect moving through impression, click, signup, demonstration, purchase,
+              and repeat-purchase stages. Stage rates and demonstration capacity determine how many prospects
+              continue or leave the modeled journey.
             </p>
           </div>
           <div class="hero-actions">
@@ -39,7 +39,7 @@
               <strong id="clockLabel">00:00 / 01:30</strong>
             </div>
             <div class="progress-item progress-item-wide">
-              <span>Live Read</span>
+              <span>Current interpretation</span>
               <strong id="heroNarrative">Most traffic is leaking at the click gate.</strong>
             </div>
           </div>
@@ -153,8 +153,8 @@
           <section class="panel controls-panel" aria-labelledby="controlsTitle">
             <div class="section-head compact">
               <div class="section-copy-block">
-                <p class="section-kicker">Controls</p>
-                <h2 id="controlsTitle">What shapes this run</h2>
+                <p class="section-kicker">Scenario assumptions</p>
+                <h2 id="controlsTitle">Inputs used in the model</h2>
                 <p class="section-copy">
                   Traffic, stage rates, throughput, and revenue values all feed the live funnel.
                 </p>
@@ -296,10 +296,10 @@
         <section class="panel intelligence-panel" aria-labelledby="intelligenceTitle">
           <div class="section-head compact">
             <div class="section-copy-block">
-              <p class="section-kicker">Interpretation</p>
-              <h2 id="intelligenceTitle">What the run is telling you</h2>
+              <p class="section-kicker">Model interpretation</p>
+              <h2 id="intelligenceTitle">Measures calculated from the current run</h2>
               <p class="section-copy">
-                These cards turn the particle motion into business language.
+                These cards summarize the rates and capacity constraints represented by the moving particles.
               </p>
             </div>
           </div>
@@ -307,8 +307,8 @@
           <div class="intel-grid">
             <article class="intel-card">
               <span>Current bottleneck</span>
-              <strong id="bottleneckTitle">Click Gate</strong>
-              <p id="bottleneckCopy">The first leak is currently eliminating most future revenue.</p>
+              <strong id="bottleneckTitle">Initial calculation</strong>
+              <p id="bottleneckCopy">The largest stage-to-stage reduction will be shown here.</p>
             </article>
             <article class="intel-card">
               <span>Repeat buyers / impression</span>
@@ -392,8 +392,8 @@
       <div class="summary-backdrop" id="summaryBackdrop" hidden>
         <section class="summary-card" role="dialog" aria-modal="false" aria-labelledby="summaryTitle">
           <button class="summary-close" id="summaryCloseButton" type="button" aria-label="Close run summary">X</button>
-          <p class="summary-kicker">End of Run</p>
-          <h2 id="summaryTitle">Small leaks compounded into a very thin repeat-buyer stream.</h2>
+          <p class="summary-kicker">Run complete</p>
+          <h2 id="summaryTitle">Customer-journey results</h2>
           <p class="summary-lead" id="summaryLead">
             Out of 0 impressions, only 0 prospects reached purchase. The downstream multiplier stayed fragile because the
             largest leak formed earlier in the journey.

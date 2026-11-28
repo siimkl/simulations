@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Customer Support Automation Simulation | Workforce Redeployment ROI</title>
+  <title>Customer Support Automation and Staff Reallocation</title>
   <meta
     name="description"
-    content="Interactive AI customer support automation simulation showing faster resolution, reduced support effort, and how freed human workers move into higher-value growth roles."
+    content="A 90-day educational model comparing automated and manual customer support and one possible reallocation of staff time."
   >
   <meta name="theme-color" content="#eef5f1">
   <link rel="stylesheet" href="styles.css">
@@ -16,11 +16,11 @@
     <section class="automation-widget" id="automationWidget" aria-labelledby="pageTitle">
       <header class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Customer support use case</p>
-          <h1 id="pageTitle">AI automation that frees human workers for growth work</h1>
+          <p class="eyebrow">90-day support scenario</p>
+          <h1 id="pageTitle">Customer support automation and staff reallocation</h1>
           <p class="hero-lede">
-            Compare an automated customer support operation with a manual service workflow, then watch
-            freed employees move into retention, onboarding, knowledge, and expansion roles.
+            The model applies the same incoming cases to automated and manual support processes. It compares
+            resolution time and effort, then represents one possible use of the staff time released by automation.
           </p>
         </div>
 
@@ -44,8 +44,8 @@
           </div>
 
           <div class="playback-row">
-            <button class="button button--primary" id="toggleRun" type="button" aria-pressed="true">Pause</button>
-            <button class="button" id="resetRun" type="button">Replay</button>
+            <button class="button button--primary" id="toggleRun" type="button" aria-pressed="true">Pause simulation</button>
+            <button class="button" id="resetRun" type="button">Restart simulation</button>
             <label class="speed-field" for="speedSelect">
               <span>Speed</span>
               <select id="speedSelect" name="speedSelect">
@@ -68,8 +68,8 @@
           <small id="cycleDeltaMetric">Manual support: 0.0 days</small>
         </article>
         <article class="metric-card">
-          <span>Workforce capacity freed</span>
-          <em>Shifted to higher-value work</em>
+          <span>Estimated released capacity</span>
+          <em>Reallocated staff time in the scenario</em>
           <strong id="deliveredMetric">0 role-days</strong>
           <small id="throughputMetric">Capacity appears as automated cases resolve</small>
         </article>
@@ -80,10 +80,10 @@
           <small id="focusMetric">Fewer handoffs, reviews, and repeat updates</small>
         </article>
         <article class="metric-card">
-          <span>People moved to growth work</span>
-          <em>Freed team capacity</em>
+          <span>Modeled staff reallocation</span>
+          <em>Released support capacity</em>
           <strong id="exceptionMetric">0 people</strong>
-          <small id="qualityMetric">Growth roles open as capacity accumulates</small>
+          <small id="qualityMetric">The model reallocates capacity as automated cases are resolved</small>
         </article>
       </div>
 
@@ -93,8 +93,8 @@
           <div class="process-compare-grid">
             <article class="process-card process-card--agentic">
               <div class="process-card__head">
-                <span>Automated support operation</span>
-                <strong>AI-assisted customer support workflow</strong>
+                <span>Automated process</span>
+                <strong>Customer support with automated routing</strong>
                 <small id="agentCanvasMetric">0 resolved</small>
               </div>
               <div class="canvas-frame">
@@ -117,8 +117,8 @@
 
             <article class="process-card process-card--people">
               <div class="process-card__head">
-                <span>Manual support operation</span>
-                <strong>People-only customer support workflow</strong>
+                <span>Manual process</span>
+                <strong>Customer support without automated routing</strong>
                 <small id="peopleCanvasMetric">0 resolved</small>
               </div>
               <div class="canvas-frame canvas-frame--people">
@@ -191,8 +191,8 @@
 
           <article class="process-card process-card--impact">
             <div class="process-card__head">
-              <span>Workforce redeployment</span>
-              <strong>Freed support capacity moves into growth roles</strong>
+              <span>Staff-time scenario</span>
+              <strong>One possible reallocation of released support time</strong>
               <small id="growthCanvasMetric">0 role-days freed</small>
             </div>
             <div class="canvas-frame canvas-frame--impact">
@@ -212,8 +212,8 @@
         <section class="summary-dialog" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
           <button class="summary-close" id="summaryClose" type="button" aria-label="Close summary">Close</button>
           <p class="section-kicker">Run complete</p>
-          <h2 id="summaryTitle">Customer support transformation summary</h2>
-          <p id="summaryLead">Automation reduced service effort and created capacity for higher-value customer growth work.</p>
+          <h2 id="summaryTitle">Scenario results</h2>
+          <p id="summaryLead">The summary compares cases resolved, cycle time, effort, and the modeled reallocation of released staff time.</p>
           <div class="summary-grid">
             <article>
               <span>Cases resolved</span>

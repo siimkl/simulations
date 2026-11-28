@@ -2,6 +2,13 @@
   "api-1": {
     "url": "https://siimkl.github.io/andmep/api1/"
   },
+  "ai-toimepidevus": {
+    "url": "https://siimkl.github.io/sim32/"
+  },
+  "avalik-raha": {
+    "source": "Sim30_Gov_Budget",
+    "revision": "c1fd3c703cb8afda70f6839ab92908acfd604547aad4692b289bbb9ebddf485e"
+  },
   "api-2": {
     "url": "https://siimkl.github.io/andmep/api2/"
   },
@@ -14,118 +21,111 @@
   "ai-andmetoo": {
     "url": "https://siimkl.github.io/andmep/ai-andmetoo/"
   },
-  "ai-toimepidevus": {
-    "url": "https://siimkl.github.io/sim32/"
-  },
   "ai-assistendid": {
     "source": "Sim31_AI_Transformer",
-    "revision": "04bed99fb8f9959e374b709e05d10b3d6c579a7d9767c69b6a595279584774e3"
+    "revision": "c96ff9606b47cc010ffc1e48589a7479a55ffc4b0ebb00ffb4b660aefa448b74"
   },
   "keelemudeli-treenimine": {
     "source": "Sim32_AI_Neural_Network",
-    "revision": "71c684698fcce8f1c0daf145b0ec8b4ae1988161ca308012d55a814820f2d5ff"
+    "revision": "7c28f765941cc62d429250df1be853a56d1e2b113a97681769cc2e2419ec2ca3"
   },
   "ai-tooturg": {
     "source": "Sim13_Labor_Market_Prediction",
-    "revision": "fa6b9bf62c9ade51864601b2a829af8f3d86754c65c0b82550dc1e9d2980a19c"
+    "revision": "6e61725d410c5d3e530b1c59dd15113595362d3ecf69ac6a6bb42bc234b89578"
   },
   "generatiivne-ai": {
     "source": "Sim25_GenAi",
-    "revision": "aee3ebdb5943afb4c5b9893da1bb6adbdbfde889c2c7d69e8b36eef1252a9659"
+    "revision": "9dac8a6c5c4155c73173681564e5b3d8fce349505d24069fa307f2e592a520bb"
   },
   "ai-toovoog": {
     "source": "Sim26_AI_Transformation",
-    "revision": "d1e2f13d8e8bbfff87aed3b6045ea85524181c61fe18427063fc4b4eda52d1f2"
+    "revision": "9ba86193016fb265c8213ccc376a2fd8d737f8562f098c840ae7989b40745d6c"
   },
   "ai-klienditugi": {
     "source": "Sim27_AI_Automation",
-    "revision": "a242517ef43e9c526e93c6596e46bdb24e1d597c8695402324c145b37984af34"
-  },
-  "avalik-raha": {
-    "source": "Sim30_Gov_Budget",
-    "revision": "082a2bf9fd3161e7a8d5848c53986020e0f1e5d00f6c479e3388ecc24bb087ac"
+    "revision": "09f3a75bbc6447a5b9b36f5124ff8417136e575bf5e86f52f42233a6e1fe4ce8"
   },
   "ennustav-politseitoo": {
     "source": "Sim24_Crime_Prediction",
-    "revision": "d802ceb2927aa97fbbfcefa1542a9fac67c7180bf4fc077d9ffec87170fcf6af"
+    "revision": "735d44df681ffa0d306258fb4ac3082706fe18a7b7d31642dcd6664b541e646d"
   },
   "turvalisuse-prognoos": {
     "url": "https://siimkl.github.io/CDS_Crime_Prediction/"
   },
   "tookulu": {
     "source": "Sim10_Time_Cost",
-    "revision": "fbd1d35a44da148e05d0eb9289c0c76501ee36a2fd9ee08eb5d8c5d8c4506c98"
+    "revision": "acc2eeb8049e701d1c7040f414eccd811b31ce4993fc9d1b17b788ce5caa461e"
   },
   "vastavusrisk": {
     "source": "Sim11_Compliance_Drift",
-    "revision": "c551a9c1fa2119897b25b8e23b1593f905242382b4cded23bfa08dd5f7e2289e"
+    "revision": "68387930d8b7fcd6f7a6f5bf1929a2bb6e94a20e81cb2a51290941587a1c61f3"
   },
   "platvormide-tookorraldus": {
     "source": "Sim14_Ride_Platform",
-    "revision": "6611e078ceb26366239575fd0fa2d2c186ba59c96406e6c6a3f8f65ddf221807"
+    "revision": "61801abc4f0c06b61682b2675a6983ed1cae14a32d91a4d51ef1b86ce5d80020"
   },
   "kliendivoog": {
     "source": "Sim15_Customer_Flow",
-    "revision": "531b9b2bb5a1a377eaea95b2004ab39c9b9bbd6e1ac4642fe6afb40d32d45496"
+    "revision": "d2d95fbd582a38ca66d0d15170dee317283fe2eba1f6146f29886f74a81d938f"
   },
   "muugilehter": {
     "source": "Sim16_Sales_Funnel",
-    "revision": "fa50b8c5510f35da72e36dd3821dcc1dfb068783ea7b4adbfdf415be849b44eb"
+    "revision": "e406ba53f0dc4210aed0872c06a04267c047b1fa5abab0b90d013a76f632ed03"
   },
   "tulude-stabiilsus": {
     "source": "Sim1_FlowGuard",
-    "revision": "72bf5dd9b22a332b06c644be5c7633f29c3c594a47195c699538fa63c62aee9b"
+    "revision": "4d8535000e29b794c0c65d057a50d391643dba06dfa3820f74411641f7fa8122"
   },
   "dockflow": {
     "source": "Sim2_Dockflow",
-    "revision": "3b6e85e4c5e9b6c5ad0e5bdf608ae0eb71d6d6d99cdb585cfa31d20e18c48c93"
+    "revision": "c418957aabc7a8917e9c0de651478c1688d34ff09395a12e5fd829d360754f1d"
   },
   "strateegiline-joondumine": {
     "source": "Sim5_Alignement_Gap_2D",
-    "revision": "d60559af5ad5f207c7f1ed9fb88bef7dedcefdc15330dafbfd36de30de737cf6"
+    "revision": "2aa7842abd49bef116b5d8f873899126f8fdc2f322afc0c847eb329b61d14fc9"
   },
   "tehase-koordineerimine": {
     "source": "Sim6_Factory_Coordination_Blue",
-    "revision": "320f33782a4e8c121892123919dce63cdb51d5bf337def5b70570bf79327996d"
+    "revision": "b0cf2f4458604f1b1ed402f18bd45ce5997c6ac73991fbf8687030c5293ab8c7"
   },
   "iseteenindus": {
     "source": "Sim8_Retail_Self_Service",
-    "revision": "3aa6f1c6b788b7d7b85d1ef5cc6a0bcb0e705f92a5b024188f1298ca9beef573"
+    "revision": "ffc9eddb04c71981b45bb3cbab6c71ee3face9ee3c85a3f59f80a9389f6cdccc"
   },
   "toote-tagastuskutse": {
     "source": "Sim9_Product_Recall",
-    "revision": "42ed4d6882786b502f7b02893c46064de8fb44c38f6ed764b1dd6c78b69f6a16"
+    "revision": "79aa02fcd7cb910bc3f6232e3079c3934e56c6aea3f5027774307bf97c469be8"
   },
   "turu-omaksvott": {
     "source": "Sim20_Adoption_Curve",
-    "revision": "358e8fd363dd19eea193d3b9304beeebd8e3027c04a5a51a73a40ddede2cc56f"
+    "revision": "25bf5f152083be789058663d81d455f91f56fa84918d41ebba2dcdc4d9e68a51"
   },
   "investeeringu-tasuvus": {
     "source": "Sim21_ROI_Graphic",
-    "revision": "413a9cefc851e824c3fa6d64e9e28e3a1075c6cf35183a177d27dfdde7b329d1"
+    "revision": "12e5d7982fe68af89a68283afe2cf426662b4796491edd6aae279469433f51a7"
   },
   "aktsiainvesteering": {
     "source": "Sim22_Stock_Profit",
-    "revision": "145c3e96ed5f25afb5bd74220abec9325af29e1f0883837b96f7af6865250689"
+    "revision": "80ab5fbfec1a07dbae8187305185781db68b51172abcb8e254ad1e63ac030321"
   },
   "saagikus": {
     "source": "Sim23_Crop_Yield",
-    "revision": "dc700d3b2c3222d2020c8db0324b14944e4d3650a8b21cc678fb378fec987a88"
+    "revision": "6cc27c96fb55fd4ae01b11964a4256497013795e15d34e2bf3314e5ce6b52832"
   },
   "auto-kogukulu": {
     "source": "Sim29_Car_Comparison",
-    "revision": "09404115fe3f9067164691587e4e0bda346b452e19c5a4c2c173e3b348e93955"
+    "revision": "632b73b5cfa5fa0f1cfb1f8a51b70e7810ee56a24d6e7a1443b206048a60064a"
   },
   "ekraaniharjumused": {
     "source": "Sim4_Screentime",
-    "revision": "da863937c9365991003c23c9e5492e0210adbd93a78e5621704fe9ac2ba5f6a4"
+    "revision": "ea891de9bb538a3f7ba078c1d10304ccacb9d4cdb395e8e1e4c6708350cbde9d"
   },
   "scrollimise-harjumus": {
     "source": "Sim12_Infinite_Scroll",
-    "revision": "33956dc94ddab2967d733122d9dfcab07004cd1da2f04b52fbd7cc76007227b0"
+    "revision": "e4e920e0a5a1953bf835a2b6bfca13e712a1371e0cf7b7792df34f13c523baf9"
   },
   "simfluence-adoption": {
     "source": "Sim7_Simfluence",
-    "revision": "4e2619fd9ad1e49c2a8a4eeb4bddf2256adc4c52440e51036d242d2ced2006b2"
+    "revision": "9995ee4cece8e72ff2006a6b3729ca13e12b8bcb43321a6c4989a3d89bf5eca1"
   }
 }

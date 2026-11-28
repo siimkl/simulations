@@ -8,8 +8,8 @@
   }
 
   const SIM_CONFIG = {
-    brandName: "Automated Workflow Suite",
-    title: "Automated Workflow Time Cost Simulator",
+    brandName: "Illustrative workflow model",
+    title: "Manual and automated workflow costs",
     accent: "#1E96EC",
     warning: "#FF7F22",
     success: "#18A957",
@@ -17,9 +17,9 @@
     automationFollowUpMultiplier: 0.45,
     automationHandoffMultiplier: 0.5,
     labels: {
-      compareTitle: "Compare Manual Workflow vs Automated Workflow",
+      compareTitle: "Two processes under the same workload",
       compareText:
-        "Run the same team workload side by side to measure automated workflow time savings, follow-up work reduction, labor cost savings, and queue backlog reduction."
+        "Both processes use the same team size, task volume, handling time, follow-up rate, and hourly cost. The differences are model estimates."
     }
   };
 
@@ -634,9 +634,9 @@
     el.deltaFteSaved.textContent = number2.format(fteRecovered);
 
     const queueSaved = Math.max(0, manualScenario.backlogMinutes - autoScenario.backlogMinutes);
-    el.outcomeText.textContent = `Automated Workflow currently saves ${number0.format(
+    el.outcomeText.textContent = `Under the current assumptions, the automated workflow uses ${number0.format(
       hoursSaved
-    )} hours and ${currency0.format(costSaved)} in labor cost across 500 days, while reducing queue backlog by ${number0.format(
+    )} fewer hours and ${currency0.format(costSaved)} less labor cost across 500 days. The backlog difference is ${number0.format(
       queueSaved
     )} minutes.`;
     return summary;

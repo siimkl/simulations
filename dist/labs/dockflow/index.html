@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>DockFlow Systems Ltd - Yard & Dock Stability Simulation</title>
+<title>Yard and Dock Queue Stability</title>
 <style>
   :root{
     color-scheme:light;
@@ -456,9 +456,9 @@
           <rect x="6.8" y="9.2" width="10.4" height="7.6" rx="1.2" fill="#35566F"/>
           <path d="M12 10v6M9.5 13h5" stroke="#FFF8EE" stroke-width="1.4" stroke-linecap="round"/>
         </svg>
-        <span>DockFlow Systems Ltd</span>
+        <span>Yard and Dock Queue Stability</span>
       </div>
-      <div class="sub">How distribution yards collapse under peak truck arrivals, and how DockFlow stabilizes throughput to protect performance.</div>
+      <div class="sub">The model connects truck arrivals, process friction, and dock capacity with queues, throughput, and delay cost.</div>
     </div>
     <div class="topRight">
       <div class="pill" id="stepBadge">Step 0 / 300</div>
@@ -470,7 +470,7 @@
       <div class="card">
         <div class="panel">
           <div class="panelHead">
-            <div class="panelTitle">Controls</div>
+            <div class="panelTitle">Scenario controls</div>
             <div class="pill" style="padding:6px 10px;">
               <span style="opacity:.9;">Mode:</span>
               <strong id="modeReadout">Manual Dispatch</strong>
@@ -480,8 +480,8 @@
           <div class="group">
             <div class="groupHead">
               <div>
-                <div class="groupTitle">Dynamics</div>
-                <div class="groupSub">Tune load, delay and capacity.</div>
+                <div class="groupTitle">Model assumptions</div>
+                <div class="groupSub">The controls set arrivals, process friction, available capacity, and delay cost.</div>
               </div>
             </div>
 
@@ -530,7 +530,7 @@
 
             <div class="rowCtrl hasTip" id="rowSolution">
               <div class="labelWrap">
-                <div class="lbl">Activate</div>
+                <div class="lbl">Coordinated scheduling</div>
                 <button class="infoBtn" data-tip="tipSolution" aria-label="DockFlow orchestration info">i</button>
               </div>
               <button class="btn btnFlow" id="solutionBtn">
@@ -567,12 +567,12 @@
       <div class="simInner">
         <div class="simHead">
           <div>
-            <div class="h" id="simTitle">Yard under stress</div>
-            <div class="muted" id="simSub">Increase arrivals. Activate orchestration to stabilize dock throughput.</div>
+            <div class="h" id="simTitle">Yard flow under variable demand</div>
+            <div class="muted" id="simSub">The chart shows how the current assumptions affect queues, overdue trucks, and throughput.</div>
           </div>
           <div class="pill" style="padding:6px 10px;">
             <span style="opacity:.9;">Story:</span>
-            <strong id="storyReadout">Queue -> Breach -> Stabilize</strong>
+            <strong id="storyReadout">Arrivals -> Queue -> Capacity response</strong>
           </div>
         </div>
         <div class="canvasHost" id="canvasHost">

@@ -817,7 +817,7 @@
     dom.deliveredMetric.textContent = String(metrics.completedCount);
     dom.throughputMetric.textContent = `Manual workflow: ${metrics.peopleCompletedCount} delivered`;
     dom.costMetric.textContent = formatMoney(metrics.costAvoided);
-    dom.focusMetric.textContent = `Cycle time advantage: ${formatPercent(metrics.cycleReduction)}`;
+    dom.focusMetric.textContent = `Cycle time difference: ${formatPercent(metrics.cycleReduction)}`;
     dom.exceptionMetric.textContent = formatPercent(metrics.exceptionRate);
     dom.qualityMetric.textContent = `Manual workflow exceptions: ${formatPercent(metrics.peopleExceptionRate)}`;
 
@@ -870,7 +870,7 @@
   }
 
   function updatePlaybackButton() {
-    dom.toggleRun.textContent = state.running ? "Pause" : "Resume";
+    dom.toggleRun.textContent = state.running ? "Pause simulation" : "Resume simulation";
     dom.toggleRun.setAttribute("aria-pressed", String(state.running));
   }
 
@@ -909,8 +909,8 @@
   function openSummary() {
     const metrics = calculateMetrics();
     dom.summaryLead.textContent = metrics.cycleReduction > 45
-      ? `AI workflow automation delivered ${metrics.completedCount} cases while the manual workflow delivered ${metrics.peopleCompletedCount}.`
-      : `The automation ROI comparison shows ${metrics.completedCount} AI-supported cases and ${metrics.peopleCompletedCount} manual workflow deliveries.`;
+      ? `Under the model assumptions, the AI-assisted process completed ${metrics.completedCount} cases and the manual process completed ${metrics.peopleCompletedCount}.`
+      : `The scenario records ${metrics.completedCount} completed cases in the AI-assisted process and ${metrics.peopleCompletedCount} in the manual process.`;
     dom.summaryDelivered.textContent = String(metrics.completedCount);
     dom.summaryTimeSaved.textContent = `${Math.round(metrics.timeSaved)} days`;
     dom.summaryCostSaved.textContent = formatMoney(metrics.costAvoided);

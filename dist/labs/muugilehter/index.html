@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Funnel Demo | Auto Run</title>
+  <title>Lead Movement Through a Sales Funnel</title>
   <meta
     name="description"
     content="A simple six-step sales funnel demo that shows leads moving toward wins or losses, while referrals bring in new leads."
@@ -15,12 +15,11 @@
     <main class="widget" id="widgetRoot" data-widget="sim16-sales-funnel">
       <header class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Sales Funnel Demo | Auto Run</p>
+          <p class="eyebrow">10-day sales-funnel model</p>
           <h1>How leads move through the funnel</h1>
           <p class="hero-text">
-            This demo shows six steps: Awareness, Interest, Evaluation, Engagement, Action, and
-            Retention. You can watch leads move forward, see where they drop out, and see how
-            customers bring in new leads through referrals.
+            The model follows leads through Awareness, Interest, Evaluation, Engagement, Action, and
+            Retention. It records movement between stages, drop-off, completed deals, and referral leads.
           </p>
         </div>
 
@@ -62,12 +61,12 @@
         <section class="panel stage-panel" aria-labelledby="stageTitle">
           <div class="panel-head">
             <div>
-              <p class="section-kicker">Main View</p>
+              <p class="section-kicker">Simulation view</p>
               <h2 id="stageTitle">Six steps from first touch to result</h2>
             </div>
             <p class="panel-copy">
-              Dots show how many leads are in each step. Watch leads moving, dropping out,
-              winning, or sending referrals.
+              Dots represent leads in each stage and show movement, drop-off, completed deals,
+              and referrals during the run.
             </p>
           </div>
 
@@ -84,8 +83,8 @@
           <section class="panel metrics-panel" aria-labelledby="metricsTitle">
             <div class="panel-head compact">
               <div>
-                <p class="section-kicker">Live Numbers</p>
-                <h2 id="metricsTitle">Where leads are now</h2>
+                <p class="section-kicker">Current counts</p>
+                <h2 id="metricsTitle">Lead states during the run</h2>
               </div>
               <p class="panel-copy">
                 These numbers update live while the run plays.
@@ -137,8 +136,8 @@
       <div class="summary-backdrop" id="summaryBackdrop" hidden>
         <section class="summary-card" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
           <button class="summary-close" id="summaryCloseButton" type="button" aria-label="Close summary">x</button>
-          <p class="section-kicker">End of Run</p>
-          <h2 id="summaryTitle">This run is complete.</h2>
+          <p class="section-kicker">Run complete</p>
+          <h2 id="summaryTitle">Sales-funnel results</h2>
           <p class="summary-text" id="summaryText">
             This run ended with 0 won deals, 0 lost leads, and 0 new leads from referrals.
           </p>
@@ -163,7 +162,7 @@
           </div>
 
           <p class="summary-foot" id="summaryFoot">
-            Close this and press Run to play the same run again.
+            Closing this card returns to the completed run. The Run button repeats the same scenario.
           </p>
         </section>
       </div>

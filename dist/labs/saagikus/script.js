@@ -730,7 +730,7 @@
       this.root.classList.toggle("is-running", this.state.isRunning);
       this.refs.runButton.textContent = this.state.isRunning ? "Simulation running" : "Run simulation";
       if (this.state.isRunning) {
-        this.refs.simulationNote.textContent = "Simulation is running. Watch the canvas carry the scenario from inputs to outcome.";
+        this.refs.simulationNote.textContent = "The simulation is applying the current inputs to plant condition and the estimated output profile.";
         return;
       }
 
@@ -740,7 +740,7 @@
       }
 
       if (this.state.simulationProgress >= 1) {
-        this.refs.simulationNote.textContent = "Simulation complete. Adjust inputs and press Run to simulate a new scenario.";
+        this.refs.simulationNote.textContent = "The simulation is complete. Changed inputs are applied when the Run button is pressed again.";
         return;
       }
 
@@ -749,7 +749,7 @@
         return;
       }
 
-      this.refs.simulationNote.textContent = "Current scenario loaded. Adjust inputs and press Run when you want to simulate changes.";
+      this.refs.simulationNote.textContent = "The current assumptions are loaded. A changed setup is applied when the Run button is pressed.";
     }
 
     resizeCanvas() {

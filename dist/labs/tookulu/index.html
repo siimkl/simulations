@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Automated Workflow Time Cost Simulator</title>
+  <title>Manual and Automated Workflow Costs</title>
   <meta
     name="description"
-    content="Automated workflow time cost simulator comparing manual workflow vs automated workflow for 500-day hours saved, follow-up work reduction, labor cost savings, queue backlog reduction, and FTE capacity recovered."
+    content="A 500-day educational model comparing handling time, follow-up work, labor cost, backlog, and staff capacity in manual and automated workflows."
   />
   <meta
     name="keywords"
@@ -17,13 +17,13 @@
 <body>
   <main class="widget-shell">
     <section class="panel controls-panel" aria-labelledby="simTitle">
-      <p class="badge">Interactive Simulation</p>
-      <h1 id="simTitle">Automated Workflow Time Cost Simulator</h1>
-      <p id="simSubtitle" class="subtitle">Compare manual workflow vs automated workflow for 500-day hours saved, follow-up work, labor cost impact, and queue backlog.</p>
+      <p class="badge">500-day workflow model</p>
+      <h1 id="simTitle">Manual and automated workflow costs</h1>
+      <p id="simSubtitle" class="subtitle">The model applies the same workload to manual and automated processes, then compares handling time, follow-up work, labor cost, and backlog.</p>
 
       <div class="mode-banner compare" id="modeBanner" aria-live="polite">
-        <h2 id="modeTitle">Compare Manual Workflow vs Automated Workflow</h2>
-        <p id="modeText">Run the same team workload side by side to measure automated workflow time savings, follow-up work reduction, labor cost savings, and queue backlog reduction.</p>
+        <h2 id="modeTitle">Two processes under the same workload</h2>
+        <p id="modeText">Both processes use the team size, task volume, handling time, follow-up rate, and hourly cost entered below. The differences are model estimates, not observed operational results.</p>
       </div>
 
       <p class="outcome" id="outcomeText" aria-live="polite">Automated Workflow currently saves 0 hours and $0 in labor cost across this 500-day scenario.</p>
@@ -81,8 +81,8 @@
       <section class="brand-strip" aria-label="Simfluence">
         <img class="brand-strip-logo" src="../../media/simfluence.webp" alt="Simfluence logo" />
         <div class="brand-strip-copy">
-          <p>Make goals and behaviour patterns seen in 20 seconds with interactive simulations. Get your ideas powered visually and answers seen clearly.</p>
-          <a class="brand-strip-link" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">Visit simfluence.io</a>
+          <p>This educational model illustrates how assumptions about workload and automation affect estimated time and cost.</p>
+          <a class="brand-strip-link" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">About Simfluence</a>
         </div>
       </section>
     </section>
@@ -109,7 +109,7 @@
           <article class="metric-card metric-fte hasTip">
             <h3><span class="labelWithInfo">FTE capacity recovered<button class="infoBtn" data-tip="tipFteRecovered" aria-controls="tipFteRecovered" aria-expanded="false" aria-label="FTE capacity recovered info" type="button">i</button></span></h3>
             <p id="deltaFteSaved">0.00</p>
-            <div class="tip" id="tipFteRecovered">FTE capacity recovered converts Automated Workflow time savings into full-time capacity your team can redirect to higher-value work across the 500-day window.</div>
+            <div class="tip" id="tipFteRecovered">FTE capacity recovered converts the modeled time difference into full-time-equivalent capacity across the 500-day window.</div>
           </article>
         </div>
       </section>
@@ -117,7 +117,7 @@
       <div class="sim-top">
         <div>
           <p class="product-line">System: <strong id="brandName">Automated Workflow Suite</strong></p>
-          <p class="view-mode">Compare view</p>
+          <p class="view-mode">Comparison view</p>
           <p class="day-counter" id="dayCounter">Day 0 / 500</p>
         </div>
         <div class="sim-actions">

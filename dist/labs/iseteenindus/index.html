@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Retail Self-Service Simulation</title>
+<title>Checkout Capacity and Queue Formation</title>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Space+Grotesk:wght@400;500;700&display=swap");
 
@@ -589,9 +589,9 @@ button.primary{background:linear-gradient(135deg, var(--ink), #29496e);color:#ff
 <div id="app">
   <section class="hero card">
     <div>
-      <div class="eyebrow">Throughput &amp; Capacity Simulation: Queues, Bottlenecks</div>
-      <h1>Retail Self-Service</h1>
-      <p>One full hour of retail checkout activity, played back at 10x, 25x, 100x, 200x, or 400x speed. Sliders define the scenario before the run; changing any of them restarts the hour from the beginning.</p>
+      <div class="eyebrow">One-hour checkout model</div>
+      <h1>Checkout capacity and queue formation</h1>
+      <p>The model links customer arrivals, checkout preferences, staffed lanes, self-service kiosks, and assistant coverage with waiting time and completed checkouts. Changing an assumption restarts the modeled hour.</p>
     </div>
     <div class="statusRail">
       <div class="chipRow">
@@ -676,7 +676,7 @@ button.primary{background:linear-gradient(135deg, var(--ink), #29496e);color:#ff
           <span class="legendItem"><i class="legendSwatch" style="background:var(--danger)"></i>Kiosk error</span>
           <span class="legendItem"><i class="legendSwatch" style="background:var(--staff)"></i>Checkout staff</span>
         </div>
-        <div id="narrative" class="narrative">Customers are still entering. Watch which lane looks faster once real waits start to diverge.</div>
+        <div id="narrative" class="narrative">Customer arrivals have begun; waiting-time differences will appear as the queues develop.</div>
         <div id="summary" class="summary">
           <div class="summaryCard">
             <button id="summaryClose" class="summaryClose" type="button" aria-label="Close summary">X</button>
@@ -727,8 +727,8 @@ button.primary{background:linear-gradient(135deg, var(--ink), #29496e);color:#ff
             </div>
             <div class="summaryImpact">
               <div class="summaryImpactHead">
-                <strong>Why Both Options Matter</strong>
-                <span>Better for shoppers and society</span>
+                <strong>How the two checkout options are used</strong>
+                <span>Modeled customer and staffing outcomes</span>
               </div>
               <div class="summaryGrid">
                 <div class="summaryTile hasTip">
@@ -821,7 +821,7 @@ button.primary{background:linear-gradient(135deg, var(--ink), #29496e);color:#ff
       <section class="card brandPanel">
         <div class="brandInner">
           <img class="brandLogo" src="../../media/simfluence.webp" alt="Simfluence logo" />
-          <p class="brandCopy">Make goals and behaviour patterns seen in 20 seconds with interactive simulations. Get your ideas powered visually and answers seen clearly.<a class="brandLink" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">Visit website</a></p>
+          <p class="brandCopy">This educational model illustrates how demand and staffing assumptions affect two checkout queues.<a class="brandLink" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">About Simfluence</a></p>
         </div>
       </section>
 
@@ -1716,11 +1716,11 @@ button.primary{background:linear-gradient(135deg, var(--ink), #29496e);color:#ff
   }
 
   function narrativeFromBottleneck(label) {
-    if (label === "Staff overload") return "Assist is setting the pace.";
-    if (label === "Traditional queue drag") return "Traditional lanes are dragging.";
-    if (label === "Unattended kiosk errors") return "Kiosk issues are going untouched.";
-    if (label === "Self-Service congestion") return "Self-Service is over-attracting demand.";
-    if (label === "Demand spike") return "Demand is outrunning clean flow.";
+    if (label === "Staff overload") return "Assistant capacity is the current constraint.";
+    if (label === "Traditional queue drag") return "The traditional queue is the current constraint.";
+    if (label === "Unattended kiosk errors") return "Unresolved kiosk issues are the current constraint.";
+    if (label === "Self-Service congestion") return "The self-service queue is the current constraint.";
+    if (label === "Demand spike") return "Arrivals currently exceed checkout capacity.";
     return "Flow is balanced.";
   }
 
@@ -1734,7 +1734,7 @@ button.primary{background:linear-gradient(135deg, var(--ink), #29496e);color:#ff
     if (current.simTime < 4 * 60) {
       if (live.tradQueue === 0 && live.selfQueue === 0) return "Opening minutes. Both checkout paths are still clear.";
       if (queueGap >= 2) return "Early drift toward traditional. Self-Service still has room.";
-      if (queueGap <= -2) return "Early drift toward Self-Service. Watch for kiosk friction.";
+      if (queueGap <= -2) return "More customers are currently choosing self-service; kiosk issues may affect its queue.";
       return "Opening flow. Shoppers are still testing both paths.";
     }
     if (current.params.selfServeAssistants === 0 && live.errorCount > 0) return "No assistant is available. Self-Service calls will stay blocked.";
@@ -1748,7 +1748,7 @@ button.primary{background:linear-gradient(135deg, var(--ink), #29496e);color:#ff
     if (live.congestion > 58 && backlog > 10) return "Pressure is building on both sides. Backlog is still growing.";
     if (progress > 0.8) return `Late-hour view. ${narrativeFromBottleneck(live.bottleneck)}`;
     if (backlog <= 4 && current.metrics.served > Math.max(8, current.metrics.arrivals * 0.85)) return "Checkout is keeping up. Most shoppers are flowing straight through.";
-    return "Balanced phase. Small staffing changes would move this quickly.";
+    return "The two queues are currently close under the selected staffing assumptions.";
   }
 
   function computeMetrics(current, recordTrend = false) {
@@ -1887,7 +1887,7 @@ button.primary{background:linear-gradient(135deg, var(--ink), #29496e);color:#ff
     UI.windowProgressFill.style.width = `${progress}%`;
     UI.narrative.textContent = current.paused
       ? (current.simTime === 0
-        ? "Ready at 00:00. Press Run to watch the hour unfold."
+        ? "Ready at 00:00. The Run button starts the modeled hour."
         : `Paused at ${simulatedClock}. ${current.narrative}`)
       : current.narrative;
     UI.runAgain.textContent = current.running && !current.paused ? "Pause" : "Run";

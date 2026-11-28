@@ -893,7 +893,7 @@
     dom.runProgress.setAttribute("aria-valuenow", String(Math.floor(state.day)));
     dom.agentCanvasMetric.textContent = `${metrics.completedCount} resolved`;
     dom.peopleCanvasMetric.textContent = `${metrics.peopleCompletedCount} resolved`;
-    dom.growthCanvasMetric.textContent = `${Math.round(metrics.roleDaysFreed)} role-days freed`;
+    dom.growthCanvasMetric.textContent = `${Math.round(metrics.roleDaysFreed)} role-days released`;
 
     const hasFreedCapacity = metrics.roleDaysFreed > 0;
     const hasShiftedPeople = metrics.reassignedPeople > 0;
@@ -902,14 +902,14 @@
     dom.cycleDeltaMetric.textContent = `Manual support: ${formatDays(metrics.avgManual)}`;
     dom.deliveredMetric.textContent = `${Math.round(metrics.roleDaysFreed)} role-days`;
     dom.throughputMetric.textContent = hasFreedCapacity
-      ? `Moved into retention, onboarding, and knowledge work`
+      ? `Allocated to retention, onboarding, and knowledge work in the scenario`
       : `Capacity appears as automated cases resolve`;
     dom.costMetric.textContent = `${formatPercent(metrics.costEfficiency)} less effort`;
     dom.focusMetric.textContent = `Fewer handoffs, reviews, and repeat updates`;
     dom.exceptionMetric.textContent = formatPeopleCount(metrics.reassignedPeople);
     dom.qualityMetric.textContent = hasShiftedPeople
-      ? `Retention, onboarding, and knowledge work`
-      : `Growth roles open as capacity accumulates`;
+      ? `Retention, onboarding, and knowledge work in the scenario`
+      : `Capacity is reallocated as automated cases are resolved`;
 
     renderAgentRoster();
     syncEmbedHeight();
@@ -966,7 +966,7 @@
   }
 
   function updatePlaybackButton() {
-    dom.toggleRun.textContent = state.running ? "Pause" : "Resume";
+    dom.toggleRun.textContent = state.running ? "Pause simulation" : "Resume simulation";
     dom.toggleRun.setAttribute("aria-pressed", String(state.running));
   }
 
@@ -1015,8 +1015,8 @@
   function openSummary() {
     const metrics = calculateMetrics();
     dom.summaryLead.textContent = metrics.cycleReduction > 45
-      ? `Automation resolved ${metrics.completedCount} support cases and freed ${Math.round(metrics.roleDaysFreed)} role-days for growth work.`
-      : `The support transformation shows ${metrics.completedCount} automated resolutions, less repetitive work, and capacity shifted into higher-value roles.`;
+      ? `Under the model assumptions, automation resolved ${metrics.completedCount} cases and released ${Math.round(metrics.roleDaysFreed)} role-days for other assigned work.`
+      : `The model records ${metrics.completedCount} automated resolutions and reallocates the estimated released capacity across the selected roles.`;
     dom.summaryDelivered.textContent = String(metrics.completedCount);
     dom.summaryTimeSaved.textContent = `${Math.round(metrics.timeSaved)} days`;
     dom.summaryCostSaved.textContent = `${formatPercent(metrics.costEfficiency)} less effort`;

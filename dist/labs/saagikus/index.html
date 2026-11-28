@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Plant Yield &amp; Quality Simulator</title>
+  <title>Growing Conditions, Yield, and Quality</title>
   <meta
     name="description"
     content="Interactive plant yield and quality simulator for exploring how water, nutrients, weather, and timing influence plant condition and final output."
@@ -13,13 +13,13 @@
     content="plant yield simulator, agritech widget, plant quality simulator, crop scenario tool, production class calculator"
   >
   <meta name="theme-color" content="#102131">
-  <meta property="og:title" content="Plant Yield &amp; Quality Simulator">
+  <meta property="og:title" content="Growing Conditions, Yield, and Quality">
   <meta
     property="og:description"
-    content="Adjust irrigation, nutrients, and weather to watch plant condition translate into quality and production outcome."
+    content="An educational model linking irrigation, nutrients, and weather assumptions with plant condition, quality, and estimated output."
   >
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Plant Yield &amp; Quality Simulator">
+  <meta name="twitter:title" content="Growing Conditions, Yield, and Quality">
   <meta
     name="twitter:description"
     content="A flow-based plant simulation showing how resource conditions shape vigor, maturity, quality, and final class."
@@ -31,10 +31,10 @@
     <section class="crop-widget" id="cropWidget">
       <header class="crop-header">
         <div class="crop-copy">
-          <p class="crop-badge">Agri-tech Simulation Template</p>
-          <h1>Plant Yield &amp; Quality Simulator</h1>
+          <p class="crop-badge">Educational crop model</p>
+          <h1>Growing conditions, yield, and quality</h1>
           <p class="crop-subtitle">
-            Adjust water, nutrients, and growing conditions to see how plant condition and final output change across the season.
+            The model links water, nutrients, and weather assumptions with plant condition and an estimated output profile. It is not an agronomic forecast.
           </p>
         </div>
 
@@ -73,7 +73,7 @@
           </div>
 
           <p class="header-note">
-            Edit inputs, then press Run.
+            Inputs can be changed before each run.
           </p>
         </aside>
       </header>
@@ -86,41 +86,41 @@
         <aside class="panel panel--controls" aria-labelledby="controlsTitle">
           <div class="panel-head panel-head--step panel-head--step-1">
             <p class="panel-kicker">Step 1</p>
-            <h2 id="controlsTitle">Build the scenario</h2>
+            <h2 id="controlsTitle">Scenario assumptions</h2>
             <p class="panel-copy">
-              Adjust plant inputs, review climate stress, and run the simulation when the scenario is ready.
+              Water, nutrient, and weather values define the conditions used in the model.
             </p>
           </div>
 
           <section class="control-block control-block--priority" aria-labelledby="seasonTitle">
             <div class="block-head">
               <div>
-                <p class="block-kicker">Start the simulation</p>
-                <h3 id="seasonTitle">Simulation controls</h3>
+                <p class="block-kicker">Playback</p>
+                <h3 id="seasonTitle">Run controls</h3>
               </div>
             </div>
 
             <p class="helper-copy">
-              Changing any input below resets the scenario. Press Run whenever you want to simulate the updated setup.
+              Changing an input resets the scenario. The Run button calculates and animates the updated setup.
             </p>
 
             <div class="simulation-actions">
               <button class="button button--primary" type="button" id="runButton">Run simulation</button>
             </div>
 
-            <p class="simulation-note" id="simulationNote">Current scenario loaded. Adjust inputs and press Run when you want to simulate changes.</p>
+            <p class="simulation-note" id="simulationNote">The current assumptions are loaded. A changed setup is applied when the Run button is pressed.</p>
           </section>
 
           <section class="control-block" aria-labelledby="productionTitle">
             <div class="block-head">
               <div>
-                <p class="block-kicker">Tune the plant</p>
+                <p class="block-kicker">Primary inputs</p>
                 <h3 id="productionTitle">Water and nutrients</h3>
               </div>
             </div>
 
             <p class="helper-copy">
-              Adjust the main agronomic levers first. These shape plant growth, site retention, output quality, and final yield.
+              Water and nutrient values affect plant growth, site retention, output quality, and estimated yield in the model.
             </p>
 
             <div class="slider-stack">
@@ -177,13 +177,13 @@
           <section class="control-block" aria-labelledby="environmentTitle">
             <div class="block-head">
               <div>
-                <p class="block-kicker">Fine-tune the season</p>
+                <p class="block-kicker">Weather assumptions</p>
                 <h3 id="environmentTitle">Climate and stress</h3>
               </div>
             </div>
 
             <p class="helper-copy">
-              Use weather conditions to stress-test plant response after the main agronomy is set.
+              Temperature, humidity, wind, rain, and solar radiation contribute to the modeled environmental stress.
             </p>
 
             <div class="slider-stack">
@@ -254,8 +254,8 @@
         <section class="panel panel--canvas" aria-labelledby="canvasTitle">
           <div class="panel-head panel-head--canvas panel-head--step panel-head--step-2">
             <div>
-              <p class="panel-kicker">Step 2</p>
-              <h2 id="canvasTitle">Watch cause become outcome</h2>
+              <p class="panel-kicker">Modeled relationships</p>
+              <h2 id="canvasTitle">From inputs to estimated output</h2>
               <p class="panel-copy">
                 The canvas shows the logic from left to right: inputs shift first, the plant responds next, and final output settles last.
               </p>
@@ -356,10 +356,10 @@
 
         <aside class="panel panel--outputs" aria-labelledby="outputsTitle">
           <div class="panel-head panel-head--step panel-head--step-3">
-            <p class="panel-kicker">Step 3</p>
-            <h2 id="outputsTitle">Read the result in order</h2>
+            <p class="panel-kicker">Results</p>
+            <h2 id="outputsTitle">Estimated output profile</h2>
             <p class="panel-copy">
-              Start with the overall result, then read quality and size mix to understand the output profile.
+              The result combines the composite score, quality, estimated loss, and output size distribution.
             </p>
           </div>
 

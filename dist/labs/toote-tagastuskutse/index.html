@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Product Traceability Impact Simulator</title>
+<title>Traceability and Product Recall Scope</title>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
 
@@ -287,20 +287,20 @@ button:active{transform:translateY(0)} button.primary{background:linear-gradient
 <div id="app" class="widgetCard">
   <section class="hero card">
     <div>
-      <div class="eyebrow">Product Recall: No Traceability vs Traceability</div>
-      <h1>Product Traceability Impact Simulator</h1>
-      <p>A single defect enters a production network in both panels. The left side has no lot traceability, so recall scope explodes. The right side isolates only traced batches and contains the blast radius.</p>
+      <div class="eyebrow">Full recall and lot-specific recall</div>
+      <h1>Traceability and product recall scope</h1>
+      <p>The same defect follows the same production path in both panels. Without lot traceability, the model recalls every related batch layer; with traceability, it recalls only the linked batches.</p>
     </div>
     <div class="statusRail">
       <div class="chipRow">
-        <div class="chip live"><span class="dot"></span><span>Defect demo</span></div>
+        <div class="chip live"><span class="dot"></span><span>Illustrative defect scenario</span></div>
       </div>
       <div class="narrative">
-        <strong id="badgeHeadline">Traceability contains the defect recall.</strong>
-        <p id="badgeText">Both panels are aligned to the same defect path. Watch the demo unfold until callback scope and cost split the outcome.</p>
+        <strong id="badgeHeadline">Lot traceability narrows the modeled recall scope.</strong>
+        <p id="badgeText">Both panels use the same network and defect path. Their recall rules differ after the defect is detected.</p>
         <div class="demoProgress">
           <div class="demoProgressHead">
-            <span>Demo progress</span>
+            <span>Scenario progress</span>
             <strong id="demoProgressLabel">Standby</strong>
           </div>
           <div class="demoProgressTrack">
@@ -324,11 +324,11 @@ button:active{transform:translateY(0)} button.primary{background:linear-gradient
         <div id="summary" class="summary">
           <div class="summaryCard">
             <button id="summaryClose" class="summaryClose" type="button" aria-label="Close final snapshot">X</button>
-            <h2>Full recall vs Targeted recall</h2>
-            <p id="summaryText">Traceability cuts the blast radius by isolating only the affected batches instead of sweeping the entire network.</p>
+            <h2>Full and lot-specific recall</h2>
+            <p id="summaryText">Lot traceability limits the modeled recall to linked batches while the full-recall rule includes every batch layer.</p>
             <div class="summaryHero hasTip">
               <div class="summaryHeroHead">
-                <span class="labelWithInfo">Saved with traceability<button class="infoBtn" type="button" data-tip="tipSummarySaved" aria-label="Saved with traceability info">i</button></span>
+                <span class="labelWithInfo">Estimated cost difference<button class="infoBtn" type="button" data-tip="tipSummarySaved" aria-label="Estimated cost difference info">i</button></span>
               </div>
               <strong id="summarySaved">USD 0</strong>
               <p id="deltaText">Awaiting detection. Both panels are still sharing the same defect build-up.</p>
@@ -358,7 +358,7 @@ button:active{transform:translateY(0)} button.primary{background:linear-gradient
                 <button class="sizeButton active" type="button" data-size="medium">Medium</button>
                 <button class="sizeButton" type="button" data-size="large">Large</button>
               </div>
-              <div class="tip" id="tipNetworkSize">Changes how many process and batch nodes exist in the network, which changes how wide the callback can spread.</div>
+              <div class="tip" id="tipNetworkSize">Changes the number of process and batch nodes, which changes the possible recall scope.</div>
             </div>
           </div>
           <div class="controlActions">
@@ -375,7 +375,7 @@ button:active{transform:translateY(0)} button.primary{background:linear-gradient
           <div class="scenarioIntro">
             <div class="scenarioHint hasTip">
               <h3><span class="labelWithInfo">No Traceability<button class="infoBtn" type="button" data-tip="tipLeftPanel" aria-label="Left panel logic info">i</button></span></h3>
-              <div class="tip" id="tipLeftPanel">No lot traceability means the callback spreads across every batch layer once a defect is confirmed.</div>
+              <div class="tip" id="tipLeftPanel">Without lot traceability, the model recalls every batch layer once a defect is confirmed.</div>
             </div>
           </div>
           <strong id="leftStatus" class="scenarioStatus">Monitoring</strong>
@@ -391,7 +391,7 @@ button:active{transform:translateY(0)} button.primary{background:linear-gradient
           <div class="scenarioIntro">
             <div class="scenarioHint hasTip">
               <h3><span class="labelWithInfo">With Traceability<button class="infoBtn" type="button" data-tip="tipRightPanel" aria-label="Right panel logic info">i</button></span></h3>
-              <div class="tip" id="tipRightPanel">Lot lineage isolates the affected path and keeps clean batches out of the callback.</div>
+              <div class="tip" id="tipRightPanel">Lot lineage identifies the affected path and keeps unlinked batches out of the recall.</div>
             </div>
           </div>
           <strong id="rightStatus" class="scenarioStatus">Monitoring</strong>
@@ -964,7 +964,7 @@ button:active{transform:translateY(0)} button.primary{background:linear-gradient
     const sourceNode = run.graph.nodeById.get(run.base.sourceId);
     if (now < run.timing.inject) {
       return {
-        headline: "Traceability contains the defect recall.",
+        headline: "Lot traceability narrows the modeled recall scope.",
         detail: "Both panels share the same network and defect path. All nodes stay clean until the defect is introduced."
       };
     }
@@ -992,7 +992,7 @@ button:active{transform:translateY(0)} button.primary{background:linear-gradient
     let label = "Standby";
     if (now >= run.timing.inject && now < run.timing.detect) label = "Incident spreading";
     if (now >= run.timing.detect && now < run.timing.end) label = "Callback active";
-    if (now >= run.timing.end) label = "Demo complete";
+    if (now >= run.timing.end) label = "Scenario complete";
     return { progress, label };
   }
 
@@ -1509,7 +1509,7 @@ button:active{transform:translateY(0)} button.primary{background:linear-gradient
     const saved = run.panels.left.metrics.loss - run.panels.right.metrics.loss;
     const lotsSaved = run.panels.left.metrics.recalledLots - run.panels.right.metrics.recalledLots;
     UI.summarySaved.textContent = formatMoney(saved);
-    UI.summaryText.textContent = `Traceability held ${lotsSaved} clean batch lots out of the callback while isolating the same defect source.`;
+    UI.summaryText.textContent = `Lot traceability kept ${lotsSaved} unlinked batch lots outside the recall while using the same defect source.`;
   }
 
   function updateUi(now) {
@@ -1528,9 +1528,9 @@ button:active{transform:translateY(0)} button.primary{background:linear-gradient
       UI.compareNote.textContent = "Once detection hits, the left panel recalls every batch layer while the right panel isolates only traced affected lots.";
     } else if (now < run.timing.end) {
       UI.deltaText.textContent = `Traceability is already preserving ${run.panels.left.metrics.recalledBatches - rightStats.recalledBatches} batches from recall compared with the full-sweep panel.`;
-      UI.compareNote.textContent = "Grey recall nodes are now diverging across batch layers. Clean blue and teal lots on the right show the value of targeted callback control.";
+      UI.compareNote.textContent = "Grey recall nodes now differ across batch layers. Blue and teal lots on the right are not linked to the affected path.";
     } else {
-      UI.deltaText.textContent = `Final outcome: traceability saves ${formatMoney(run.panels.left.metrics.loss - run.panels.right.metrics.loss)} while keeping callback scope far tighter.`;
+      UI.deltaText.textContent = `Final estimated cost difference: ${formatMoney(run.panels.left.metrics.loss - run.panels.right.metrics.loss)}. The lot-specific rule recalls fewer batches.`;
       UI.compareNote.textContent = "The defect path was identical. Only recall logic changed how many batch-layer lots were shut down.";
     }
 

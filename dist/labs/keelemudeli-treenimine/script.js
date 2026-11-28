@@ -1479,7 +1479,7 @@
     running = nextRunning;
     pauseButton.classList.toggle("is-paused", !running);
     pauseButton.setAttribute("aria-pressed", String(!running));
-    pauseButton.lastChild.textContent = running ? "Pause" : "Resume";
+    pauseButton.lastChild.textContent = running ? "Pause animation" : "Resume animation";
   }
 
   function tick(time) {

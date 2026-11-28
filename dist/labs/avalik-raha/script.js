@@ -225,19 +225,19 @@
     els.playToggle.setAttribute("aria-pressed", state.running ? "true" : "false");
 
     if(state.completed){
-      els.playLabel.textContent = "Replay";
+      els.playLabel.textContent = "Replay animation";
       els.playToggle.setAttribute("aria-label", "Replay budget compromise animation");
       els.statusLabel.textContent = "Complete";
     } else if(state.running){
-      els.playLabel.textContent = "Pause";
+      els.playLabel.textContent = "Pause animation";
       els.playToggle.setAttribute("aria-label", "Pause budget compromise animation");
       els.statusLabel.textContent = "Running";
     } else if(state.time > 0){
-      els.playLabel.textContent = "Start";
+      els.playLabel.textContent = "Resume animation";
       els.playToggle.setAttribute("aria-label", "Resume budget compromise animation");
       els.statusLabel.textContent = "Paused";
     } else {
-      els.playLabel.textContent = "Start";
+      els.playLabel.textContent = "Run animation";
       els.playToggle.setAttribute("aria-label", "Start budget compromise animation");
       els.statusLabel.textContent = state.reducedMotion ? "Ready" : "Ready";
     }

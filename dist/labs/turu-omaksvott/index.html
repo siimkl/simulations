@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Simfluence market adoption simulation widget showing how understanding, proof, and bridge reach accelerate awareness and adoption across market segments." />
+<meta name="description" content="An educational network model linking understanding, social proof, and connections between market segments with awareness and adoption." />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#0A2540" />
-<title>Simfluence Market Adoption Curve Simulator</title>
+<title>Drivers of Market Adoption | Network Model</title>
 <style>
 :root{
       --sf-bg:#f5f9ff;
@@ -2899,12 +2899,12 @@ body.embed-mode.embed-optimized .sf-main{
       <div class="sf-topbar-left">
         <div class="sf-badge">
           <span class="sf-badge-dot"></span>
-          <span>Market Adoption Simulation</span>
+          <span>Educational network model</span>
         </div>
-        <h1 class="sf-title">Market Adoption Curve Simulator</h1>
+        <h1 class="sf-title">Drivers of market adoption</h1>
         <p class="sf-sub">
-          Explore how <b>understanding</b>, proof, and bridge strength change diffusion across innovators, early adopters,
-          mainstream buyers, and risk-averse segments.
+          The model links <b>understanding</b>, social proof, and connections between market segments with diffusion across
+          innovators, early adopters, mainstream buyers, and risk-averse groups.
         </p>
       </div>
 
@@ -2954,7 +2954,7 @@ body.embed-mode.embed-optimized .sf-main{
             <div class="sf-stage-overlay">
               <div class="sf-insight">
                 <div class="sf-insight-label" id="phaseLabel">Baseline Market</div>
-                <p class="sf-insight-text" id="phaseText">Every product enters a market.</p>
+                <p class="sf-insight-text" id="phaseText">The model begins with a largely unaware market.</p>
               </div>
 
               <div class="sf-mini-metrics">
@@ -2977,23 +2977,23 @@ body.embed-mode.embed-optimized .sf-main{
 
         <section class="sf-panel sf-panel--howto" id="howtoPanel">
           <div class="sf-panel-head">
-            <div class="sf-panel-kicker"><span></span><span>How to use</span></div>
-            <h2 class="sf-panel-title">Read the system, not just the curve</h2>
+            <div class="sf-panel-kicker"><span></span><span>Model interpretation</span></div>
+            <h2 class="sf-panel-title">How the network and curve relate</h2>
             <p class="sf-panel-sub">The network shows where momentum starts, how it crosses clusters, and when adoption becomes self-reinforcing.</p>
           </div>
 
           <div class="sf-panel-body">
             <div class="sf-story">
               <div class="sf-story-item">
-                <p class="sf-story-item-title">1. Tune understanding lift</p>
+                <p class="sf-story-item-title">Understanding lift</p>
                 <p class="sf-story-item-desc">Higher understanding speeds early awareness and improves the odds that confident buyers emerge fast enough to seed the market.</p>
               </div>
               <div class="sf-story-item">
-                <p class="sf-story-item-title">2. Strengthen social proof</p>
+                <p class="sf-story-item-title">Social proof</p>
                 <p class="sf-story-item-desc">Proof amplifies neighbor effects, turning isolated wins into visible signals that push adoption forward.</p>
               </div>
               <div class="sf-story-item">
-                <p class="sf-story-item-title">3. Watch the bridges</p>
+                <p class="sf-story-item-title">Connections between segments</p>
                 <p class="sf-story-item-desc">Bridge nodes carry momentum between segments. If they convert, diffusion reaches the mainstream much earlier.</p>
               </div>
             </div>
@@ -3004,9 +3004,9 @@ body.embed-mode.embed-optimized .sf-main{
       <aside class="sf-side sf-side--top">
         <section class="sf-panel sf-panel--controls" id="controlsPanel">
           <div class="sf-panel-head">
-            <div class="sf-panel-kicker"><span></span><span>Controls</span></div>
-            <h2 class="sf-panel-title">Adjust the adoption drivers</h2>
-            <p class="sf-panel-sub">Keep the network fixed, then adjust understanding, proof, or bridge strength to compare diffusion behavior.</p>
+            <div class="sf-panel-kicker"><span></span><span>Scenario controls</span></div>
+            <h2 class="sf-panel-title">Adoption assumptions</h2>
+            <p class="sf-panel-sub">The network remains fixed while the three assumptions change, which makes scenarios comparable.</p>
           </div>
 
           <div class="sf-panel-body">
@@ -3044,8 +3044,8 @@ body.embed-mode.embed-optimized .sf-main{
 
         <section class="sf-panel sf-panel--outputs" id="outputsPanel">
           <div class="sf-panel-head">
-            <div class="sf-panel-kicker"><span></span><span>Key outputs</span></div>
-            <h2 class="sf-panel-title">Signals worth watching</h2>
+            <div class="sf-panel-kicker"><span></span><span>Model outputs</span></div>
+            <h2 class="sf-panel-title">Comparable adoption measures</h2>
             <p class="sf-panel-sub">These metrics translate the network state into adoption signals you can compare across scenarios.</p>
           </div>
 
@@ -3099,7 +3099,7 @@ body.embed-mode.embed-optimized .sf-main{
               <div class="sf-chart-head">
                 <div>
                   <p class="sf-chart-title">Adoption Curve</p>
-                  <p class="sf-chart-sub">Compare dynamic simulation performance against a slow static baseline.</p>
+                  <p class="sf-chart-sub">The dynamic scenario is shown alongside a slower static baseline.</p>
                 </div>
 
                 <div class="legend">
@@ -3217,11 +3217,11 @@ body.embed-mode.embed-optimized .sf-main{
   const SEGMENT_LABELS = ["Innovators", "Early", "Mainstream", "Risk-averse"];
 
   const COPY_TIMELINE = [
-    { t: 0.0, text: "Every product enters a market." },
-    { t: 0.8, text: "Dynamic content activates market understanding." },
+    { t: 0.0, text: "The model begins with a largely unaware market." },
+    { t: 0.8, text: "The interactive scenario increases modeled understanding." },
     { t: 1.5, text: "Innovators respond first. Awareness starts spreading." },
     { t: 4.0, text: "Confidence moves across clusters." },
-    { t: 6.8, text: "Understanding drives adoption." }
+    { t: 6.8, text: "Higher modeled understanding increases adoption probability." }
   ];
 
   const SEGMENT_STAGE_STARTS = {
@@ -4137,7 +4137,7 @@ body.embed-mode.embed-optimized .sf-main{
       : controlState.bridges <= 35
         ? "narrow bridge reach"
         : "medium bridge reach";
-    return understanding + ", " + proof + ", and " + bridges + ". Adjusting a slider restarts the run.";
+    return understanding + ", " + proof + ", and " + bridges + ". A changed slider restarts the run.";
   }
 
   function buildSummaryText(metrics, run, scenario) {
@@ -4150,7 +4150,7 @@ body.embed-mode.embed-optimized .sf-main{
       return "Awareness is building slowly at " + awareness + "% while diffusion stays concentrated in the earliest segment.";
     }
     if (run.t < LOCK_SECONDS) {
-      return "Understanding has pushed adoption to " + adoption + "%, with " + bridge + "% of bridge nodes already carrying momentum across segments.";
+      return "Modeled adoption is " + adoption + "%, and " + bridge + "% of bridge nodes have adopted across segments.";
     }
     return "Momentum is stabilizing at " + adoption + "% adoption, currently " + lift + " above the static baseline under this scenario.";
   }

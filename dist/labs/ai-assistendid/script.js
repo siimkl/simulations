@@ -515,10 +515,10 @@
       <div class="scene decision-scene" data-scene-key="${state.sceneKey}">
         <section class="decision-core"><span class="scene-label">Task snapshot</span><div class="model-orb"></div><strong>${models[state.model].name} model</strong><span>Uses the prepared context to propose a useful next move</span><div class="decision-task"><b>${scenario.complexity === "complex" ? "Complex" : "Simple"}</b><small>${escapeHtml(scenario.name)}</small></div></section>
         <section class="decision-gates"><div class="scene-panel-head"><span class="scene-label">1. Check what the task needs</span><strong>Routing signals</strong></div>${checks.map((check, index) => `<article style="--delay:${index * .1}s"><i>${index + 1}</i><span><strong>${check.label}</strong><small>${check.value}</small></span><b class="${check.pass ? "is-pass" : "is-flag"}">${check.pass ? "clear" : "route signal"}</b></article>`).join("")}</section>
-        <section class="route-options"><div class="scene-panel-head"><span class="scene-label">2. Choose the next move</span><strong>One route wins</strong></div>
+        <section class="route-options"><div class="scene-panel-head"><span class="scene-label">2. Next processing route</span><strong>One route is selected</strong></div>
           <article class="route-option ${chosen === "answer" ? "is-chosen" : ""}" style="--route-color:#2fb77f"><i>A</i><div><strong>Answer directly</strong><small>Use the context already available</small></div><b>${chosen === "answer" ? "selected" : "available"}</b></article>
           <article class="route-option ${chosen === "tool" ? "is-chosen" : ""}" style="--route-color:#ff9a52"><i>T</i><div><strong>Request ${escapeHtml(scenario.tool || "an outside tool")}</strong><small>${scenario.tool ? "Bring fresh, exact, or file-based data into context" : "No outside capability is needed here"}</small></div><b>${chosen === "tool" ? "selected" : "not needed"}</b></article>
-          <article class="route-option" style="--route-color:#a36cf5"><i>?</i><div><strong>Ask a question</strong><small>Pause when missing information could change the result</small></div><b>available</b></article>
+          <article class="route-option" style="--route-color:#a36cf5"><i>?</i><div><strong>Question to the user</strong><small>This route is available when missing information could change the result</small></div><b>available</b></article>
         </section>
         <p class="decision-caption"><strong>Important:</strong> the product can limit routes for safety, permissions, cost, or workflow rules.</p>
       </div>`;
@@ -547,7 +547,7 @@
               <i aria-hidden="true"></i>
               <article class="is-skip"><b>2</b><span><strong>Skip the work loop</strong><small>No search, file reading, or calculator call</small></span></article>
               <i aria-hidden="true"></i>
-              <article class="is-finish"><b>3</b><span><strong>Start writing the answer</strong><small>The model predicts the response token by token</small></span></article>
+              <article class="is-finish"><b>3</b><span><strong>Response generation begins</strong><small>The model predicts the response token by token</small></span></article>
             </div>
             <div class="unused-tools"><span>Not needed for this task</span><i>Web search</i><i>Files</i><i>Calculator</i><i>Apps</i></div>
           </section>
@@ -579,16 +579,16 @@
           <span class="scene-label">What one work cycle means</span>
           <h4>Each result changes the next decision</h4>
           <div class="work-loop-steps">
-            <article><b>1</b><span><strong>Choose</strong><small>Pick the next useful step</small></span></article>
+            <article><b>1</b><span><strong>Route selection</strong><small>The next useful step is selected</small></span></article>
             <article><b>2</b><span><strong>Act</strong><small>Use ${escapeHtml(scenario.tool || "the available context")}</small></span></article>
-            <article><b>3</b><span><strong>Read</strong><small>Inspect what came back</small></span></article>
+            <article><b>3</b><span><strong>Result inspection</strong><small>The returned information is added to the working context</small></span></article>
             <article><b>4</b><span><strong>Update</strong><small>Add the result to context</small></span></article>
           </div>
           <div class="work-loop-return"><i aria-hidden="true"></i><span><strong>New evidence returns to the model</strong><small>The next cycle starts with more information than the last one.</small></span></div>
           <p>This is why a complex task is not one giant answer step. It is a sequence of smaller, connected decisions.</p>
         </section>
         <section class="work-cycle-story">
-          <div class="work-cycle-story__head"><span>${scenario.cycles} work cycles in this example</span><strong>Watch the task become more complete</strong></div>
+          <div class="work-cycle-story__head"><span>${scenario.cycles} work cycles in this example</span><strong>How the task develops across cycles</strong></div>
           <div class="work-cycle-list">
             ${cycles.map((item, index) => `
               <article class="work-cycle-card" style="--delay:${index * .11}s">
@@ -610,7 +610,7 @@
     if (scenario.complexity === "complex") {
       return {
         ...scene,
-        title: `Watch the task improve across ${scenario.cycles} connected work cycles`,
+        title: `How the task develops across ${scenario.cycles} connected work cycles`,
         question: "How does each new result become context for the next decision?",
         watch: "Complexity comes from connected model-and-tool turns: choose, act, inspect the result, update context, and repeat.",
         plainTitle: "Each cycle leaves the assistant better informed",
@@ -658,7 +658,7 @@
       <div class="scene output-scene" data-scene-key="${state.sceneKey}">
         <section class="generation-engine">
           <div class="scene-panel-head"><span class="scene-label">The repeating generation loop</span><strong>Runs once per new token</strong></div>
-          <div class="generation-loop"><div class="output-model"><div class="model-orb"></div><strong>Read the full context again</strong></div><i></i><div><b>1</b><span>Score possible next tokens</span></div><i></i><div><b>2</b><span>Select one likely token</span></div><i></i><div><b>3</b><span>Add it to the response</span></div></div>
+          <div class="generation-loop"><div class="output-model"><div class="model-orb"></div><strong>The model processes the updated context</strong></div><i></i><div><b>1</b><span>Possible next tokens are scored</span></div><i></i><div><b>2</b><span>One likely token is selected</span></div><i></i><div><b>3</b><span>The token is added to the response</span></div></div>
           <div class="candidate-board"><div class="candidate-board__head"><span>Illustrative next-token scores</span><strong>Highest score is selected</strong></div><div class="candidate-list">${candidateData.map((candidate, index) => `<div class="candidate-row"><span class="${index === 0 ? "is-top" : ""}">${escapeHtml(candidate.text)}</span><span class="candidate-track"><i style="--probability:${candidate.value}%"></i></span><span>${candidate.value}%</span></div>`).join("")}</div></div>
         </section>
         <section class="answer-board"><div class="answer-board__top"><span>Example answer being assembled</span><span class="output-token-count">${state.generatedCount} / ${state.outputMatches.length} pieces</span></div><div class="generation-progress"><i style="--progress:${progress}%"></i></div><p class="stream-text"><span class="stream-text-content">${escapeHtml(text)}</span><span class="stream-cursor"></span></p><div class="answer-status"><i></i><span><strong class="generation-status">Generating response</strong><small>The same loop repeats after every new piece.</small></span></div></section>

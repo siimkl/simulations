@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Doomscrolling Effect: Brainrot Habit Simulation</title>
+<title>Repeated Scrolling and Attention | Six-Month Habit Model</title>
 <style>
 		:root{
 	  color-scheme:light;
@@ -705,11 +705,11 @@ h1{
 	  <section class="app" id="app">
 	    <header class="hero">
 	      <div class="hero-top">
-	        <div class="eyebrow">Long-term habit simulation</div>
+        <div class="eyebrow">Illustrative six-month habit model</div>
 	        <button id="runToggleBtn" class="run-btn" type="button">Pause Simulation</button>
 	      </div>
-	      <h1>The Doomscrolling Effect: Brainrot Habit Simulation</h1>
-	      <p>This is not about one bad evening. It shows what repeated short-form doomscrolling can train over months: more daily scrolling, more brainrot habit, and less room left for deep focus.</p>
+      <h1>Repeated scrolling and sustained attention</h1>
+      <p>This scenario assumes that repeated short-form scrolling can increase session length and habit strength while reducing modeled capacity for sustained attention. It is an illustrative behavioral model, not a clinical or neurological assessment.</p>
 	      <div class="hero-progress">
 	        <div class="progress-row">
 	          <span>Time progress</span>
@@ -724,11 +724,11 @@ h1{
 			        <div id="phaseStrip" class="phase-strip"></div>
 			        <div class="brain-view">
 			            <div class="brain-notes">
-			              <div id="habitNote" class="habit-note">It starts as a harmless daily check-in.</div>
+              <div id="habitNote" class="habit-note">The initial scenario has short daily sessions and low habit strength.</div>
 			            </div>
 			            <div id="brainScene" class="brain-scene" aria-live="polite"></div>
 				            <div class="brain-corner">
-				              <span>Scroll habits</span>
+                  <span>Scrolling pattern</span>
 				              <strong id="dailyMetric">Day 1 - 12 minutes / per day</strong>
 				            </div>
 			          </div>
@@ -736,15 +736,15 @@ h1{
 		
 		      <aside class="side">
 	          <div class="chart-wrap">
-	            <svg id="chart" viewBox="0 0 640 300" role="img" aria-label="Long-term doomscroll trajectory chart"></svg>
+            <svg id="chart" viewBox="0 0 640 300" role="img" aria-label="Six-month scrolling and sustained-attention chart"></svg>
 	            <div class="legend">
-	              <div class="legend-item"><span class="legend-line" style="background:var(--short)"></span>Daily doomscroll time</div>
-	              <div class="legend-item"><span class="legend-line" style="background:var(--brain)"></span>Brainrot habit</div>
-		            <div class="legend-item"><span class="legend-line" style="background:var(--focus)"></span>Deep focus capacity</div>
+              <div class="legend-item"><span class="legend-line" style="background:var(--short)"></span>Daily short-form scrolling</div>
+              <div class="legend-item"><span class="legend-line" style="background:var(--brain)"></span>Modeled habit strength</div>
+              <div class="legend-item"><span class="legend-line" style="background:var(--focus)"></span>Sustained-attention capacity</div>
 		            </div>
 		          </div>
 		          <div class="takeaway">
-		            <svg id="doomCanvas" viewBox="0 0 360 270" role="img" aria-label="Short video doomscroll loop visualization"></svg>
+            <svg id="doomCanvas" viewBox="0 0 360 270" role="img" aria-label="Illustrative short-video scrolling loop"></svg>
 		          </div>
 		      </aside>
 		    </main>
@@ -791,10 +791,10 @@ h1{
 	  const TOTAL_DAYS = 180;
 	  const SIM_DURATION_MS = 15000;
   const PHASES = [
-    { label: "Week 1", title: "Harmless habit", note: "The deep-focus network is still stronger than the short-loop urge." },
-    { label: "Month 2", title: "Session creep", note: "Short-loop reward pathways begin heating up." },
-    { label: "Month 4", title: "Fragmented attention", note: "Attention starts breaking into faster, smaller loops." },
-    { label: "Month 6", title: "Low-depth default", note: "The brain now expects stimulation faster than depth can arrive." }
+    { label: "Week 1", title: "Initial pattern", note: "Daily sessions are short and modeled habit strength is low." },
+    { label: "Month 2", title: "Longer sessions", note: "Daily scrolling time increases under the scenario assumptions." },
+    { label: "Month 4", title: "Reduced sustained attention", note: "The model now assigns less capacity to uninterrupted focus." },
+    { label: "Month 6", title: "Established pattern", note: "Habit strength is high and sustained-attention capacity is lower in the model." }
   ];
 			  const NEURON_ROWS = [
 			    [60, [244, 282, 320, 358, 396, 434]],

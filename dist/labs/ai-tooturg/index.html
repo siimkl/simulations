@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>How AI May Change Work</title>
+<title>AI Adoption and Changes in Work | Scenario Model</title>
 <style>
 :root{--bg:#f4fbfd;--bg2:#e5f1f4;--panel:rgba(255,255,255,.84);--stroke:rgba(109,147,154,.18);--text:#18373e;--muted:#617c82;--blue:#4da6ff;--red:#ff856d;--teal:#22c4af;--amber:#ffb34d;--shadow:0 26px 52px rgba(86,117,128,.16);--font:"Bahnschrift","Trebuchet MS","Segoe UI",sans-serif;--display:"Aptos Display","Bahnschrift","Trebuchet MS",sans-serif}
 *{box-sizing:border-box} html,body{min-height:100%;width:100%}
@@ -95,8 +95,8 @@ svg{width:100%;height:auto;display:block} svg text{font-family:var(--font)}
         <div class="eyebrow">Auto Run | 20 Seconds | 5 Years</div>
         <button id="simToggle" class="sim-toggle" type="button" aria-pressed="false">Pause Simulation</button>
       </div>
-      <h1>How AI may change work</h1>
-      <p>This widget shows one simple idea: AI may be able to do many tasks, but companies adopt it slowly. As the sim runs, you can see how that delay may affect some jobs, new hiring, and other work signals. It is a simple demo, not a prediction.</p>
+      <h1>AI adoption and possible changes in work</h1>
+      <p>This scenario separates technical task exposure from the slower adoption of AI by organizations. It represents one possible relationship between adoption, hiring, and selected labor-market signals; it is not a forecast.</p>
       <div class="hero-progress">
         <div class="progress-meta"><span>5-Year Progress</span><strong id="heroClock">Year 1 of 5</strong></div>
         <div class="progress"><div id="progFill" class="progress-fill"></div><div id="progMark" class="progress-mark"></div></div>
@@ -108,24 +108,24 @@ svg{width:100%;height:auto;display:block} svg text{font-family:var(--font)}
         <section class="panel">
           <div class="head">
             <div>
-              <div class="kicker">Panel 1 | AI Use Gap</div>
-              <h2 class="title">What AI can do is ahead of what companies use</h2>
-              <p class="copy">The blue level starts high at about 94%. The red level starts much lower at about 33% and rises slowly over the 60-month sim.</p>
+              <div class="kicker">Panel 1 | Task exposure and adoption</div>
+              <h2 class="title">Technical task exposure and organizational adoption can differ</h2>
+              <p class="copy">The blue level is a high-exposure benchmark derived from source [1]. The red level is a modeled adoption rate that rises over 60 months.</p>
             </div>
             <div class="badge"><span>Simulated Year</span><strong id="year">Year 1</strong><em id="month">Month 0 of 60</em></div>
           </div>
           <div class="metrics">
-            <article class="metric"><span>What AI Could Do</span><strong id="capVal">94%</strong><small>Top level from report [1] for work that AI can affect the most.</small></article>
-            <article class="metric"><span>What Companies Use</span><strong id="adoptVal">33%</strong><small>Real use starts lower and grows slowly over time.</small></article>
-            <article class="metric"><span>Gap Left</span><strong id="gapVal">61 points</strong><small>This is the space between AI ability and real company use.</small></article>
-            <article class="metric"><span>AI Task Mix</span><strong id="autoVal">82.5</strong><small>This mixes tasks AI can fully do, partly help with, or not do.</small></article>
+            <article class="metric"><span>High-exposure benchmark</span><strong id="capVal">94%</strong><small>Illustrative upper benchmark based on source [1], not the share of whole jobs that AI can perform.</small></article>
+            <article class="metric"><span>Modeled organizational adoption</span><strong id="adoptVal">33%</strong><small>A scenario assumption that rises gradually over time.</small></article>
+            <article class="metric"><span>Modeled adoption gap</span><strong id="gapVal">61 points</strong><small>The difference between the benchmark and the scenario's adoption rate.</small></article>
+            <article class="metric"><span>Task-exposure index</span><strong id="autoVal">82.5</strong><small>A simplified combination of tasks modeled as automatable, assistable, or unaffected.</small></article>
           </div>
           <div class="chart">
             <div class="chart-head">
               <div class="legend-row">
-                <div class="legend"><i class="b"></i><span>AI could do</span></div>
-                <div class="legend"><i class="r"></i><span>companies use</span></div>
-                <div class="legend"><i class="g"></i><span>gap</span></div>
+                <div class="legend"><i class="b"></i><span>exposure benchmark</span></div>
+                <div class="legend"><i class="r"></i><span>modeled adoption</span></div>
+                <div class="legend"><i class="g"></i><span>difference</span></div>
               </div>
               <div class="note" id="gapNote">Gap closed so far: 0%</div>
             </div>
@@ -143,7 +143,7 @@ svg{width:100%;height:auto;display:block} svg text{font-family:var(--font)}
 
         <section class="story" aria-live="polite">
           <div class="story-head">
-            <div id="storyLead" class="story-lead"><div class="kicker">What Is Happening</div><h2 class="story-title" id="storyTitle">At first, AI ability is ahead of real use</h2><p class="story-copy" id="storyCopy">This sim begins with a gap: AI may be able to do many tasks, but companies are not using it everywhere yet.</p></div>
+            <div id="storyLead" class="story-lead"><div class="kicker">Current model state</div><h2 class="story-title" id="storyTitle">The exposure benchmark is above modeled adoption</h2><p class="story-copy" id="storyCopy">The scenario begins with a difference between a high task-exposure benchmark and the assumed organizational adoption rate.</p></div>
             <div class="badge"><span>Time Span</span><strong>5 Years</strong><em id="motionNote">Years 1 to 5 | 60 months total</em></div>
           </div>
           <div class="timeline" id="timeline"></div>
@@ -154,20 +154,20 @@ svg{width:100%;height:auto;display:block} svg text{font-family:var(--font)}
         <section class="panel">
           <div class="head">
             <div>
-              <div class="kicker">Panel 2 | Jobs Most Affected</div>
-              <h2 class="title">Some jobs feel the change first</h2>
-              <p class="copy">Blue bars show the full possible impact from report [1]. Warm bars show how much of that impact is happening right now as AI use grows.</p>
+              <div class="kicker">Panel 2 | Occupation-level task exposure</div>
+              <h2 class="title">Task exposure differs across occupations</h2>
+              <p class="copy">Blue bars show task-exposure values based on source [1]. Warm bars apply the scenario's adoption rate to those values; they are not measured job losses.</p>
             </div>
-            <div class="badge"><span>Now</span><strong id="sceneBadge">Start</strong></div>
+            <div class="badge"><span>Now</span><strong id="sceneBadge">Initial state</strong></div>
           </div>
           <ul class="occ" id="occ"></ul>
-          <div class="occ-foot"><span id="occNote">Real AI use is still rising in these jobs.</span><span id="coverage">Used / possible: 35%</span></div>
+          <div class="occ-foot"><span id="occNote">The warm bars apply modeled adoption to each exposure value.</span><span id="coverage">Modeled adoption / exposure: 35%</span></div>
           <section class="cohort-box">
             <div class="cohort-head">
-              <div><div class="kicker">Scene 4 | Worker Groups</div><h3 class="title" style="font-size:20px">New workers get squeezed first</h3></div>
+              <div><div class="kicker">Panel 3 | Worker Groups</div><h3 class="title" style="font-size:20px">Illustrative differences between worker groups</h3></div>
               <div class="badge"><span>Simple View</span><strong>Estimate Only</strong></div>
             </div>
-            <p>Report [1] gives a clearer signal for hiring than for age groups, so these bars are a simple example. Entry-level jobs shrink first because many beginner tasks are easier to help with or automate.</p>
+            <p>Source [1] gives a clearer signal for hiring than for career stages. These bars therefore use an illustrative assumption that entry-level openings change earlier because more beginner tasks are treated as routine.</p>
             <div class="cohorts">
               <div class="cohort"><span>Entry-level openings</span><strong id="entryTxt">100%</strong><div class="cohort-track"><div id="entryFill" class="cohort-fill entry"></div></div></div>
               <div class="cohort"><span>Mid-career openings</span><strong id="midTxt">100%</strong><div class="cohort-track"><div id="midFill" class="cohort-fill"></div></div></div>
@@ -180,20 +180,20 @@ svg{width:100%;height:auto;display:block} svg text{font-family:var(--font)}
       <section class="panel panel-wide signals-panel">
         <div class="head">
           <div>
-            <div class="kicker">Panel 3 | Work Signals</div>
-            <h2 class="title">Hiring may slow before unemployment rises a lot</h2>
-            <p class="copy">The unemployment line stays small and bumpy. Entry-level hiring trends down as AI use rises. These are warning signs, not a full forecast.</p>
+            <div class="kicker">Panel 4 | Work Signals</div>
+            <h2 class="title">Hiring and unemployment can change at different rates</h2>
+            <p class="copy">The scenario keeps unemployment change small while reducing the entry-level hiring indicator as adoption rises. These paths are assumptions, not a forecast.</p>
           </div>
           <div class="badge"><span>Sim Year</span><strong id="clock">Year 1</strong><em>Current point in the 5-year sim</em></div>
         </div>
         <div class="mini-grid">
-          <article class="mini"><div class="mini-head"><div><span class="mini-kicker">Unemployment Change</span><strong id="uVal">+0.20 points</strong></div><div class="badge"><span>Start</span><strong>+0.20 points</strong></div></div><svg viewBox="0 0 320 140" role="img" aria-label="Small chart showing unemployment change over time"><defs><linearGradient id="warm" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="rgba(255,132,114,.42)"/><stop offset="100%" stop-color="rgba(255,132,114,.02)"/></linearGradient></defs><g id="uGrid"></g><path id="uArea" fill="url(#warm)"></path><path id="uLine" fill="none" stroke="rgba(255,132,114,.94)" stroke-width="3"></path></svg><p>This line stays in a small range. In this sim, that means unemployment changes only a little.</p></article>
-          <article class="mini"><div class="mini-head"><div><span class="mini-kicker">Entry-Level Hiring</span><strong id="hVal">2.00%</strong></div><div class="badge"><span>Start</span><strong>2.00%</strong></div></div><svg viewBox="0 0 320 140" role="img" aria-label="Small chart showing entry-level hiring over time"><defs><linearGradient id="cool" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="rgba(118,228,214,.42)"/><stop offset="100%" stop-color="rgba(118,228,214,.02)"/></linearGradient></defs><g id="hGrid"></g><path id="hArea" fill="url(#cool)"></path><path id="hLine" fill="none" stroke="rgba(118,228,214,.96)" stroke-width="3"></path></svg><p>Hiring starts at 2.0% a month and slowly falls as AI use rises. It does not drop all at once.</p></article>
+          <article class="mini"><div class="mini-head"><div><span class="mini-kicker">Unemployment Change</span><strong id="uVal">+0.20 points</strong></div><div class="badge"><span>Initial value</span><strong>+0.20 points</strong></div></div><svg viewBox="0 0 320 140" role="img" aria-label="Small chart showing unemployment change over time"><defs><linearGradient id="warm" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="rgba(255,132,114,.42)"/><stop offset="100%" stop-color="rgba(255,132,114,.02)"/></linearGradient></defs><g id="uGrid"></g><path id="uArea" fill="url(#warm)"></path><path id="uLine" fill="none" stroke="rgba(255,132,114,.94)" stroke-width="3"></path></svg><p>This line stays in a small range. In this sim, that means unemployment changes only a little.</p></article>
+          <article class="mini"><div class="mini-head"><div><span class="mini-kicker">Entry-Level Hiring</span><strong id="hVal">2.00%</strong></div><div class="badge"><span>Initial value</span><strong>2.00%</strong></div></div><svg viewBox="0 0 320 140" role="img" aria-label="Small chart showing entry-level hiring over time"><defs><linearGradient id="cool" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="rgba(118,228,214,.42)"/><stop offset="100%" stop-color="rgba(118,228,214,.02)"/></linearGradient></defs><g id="hGrid"></g><path id="hArea" fill="url(#cool)"></path><path id="hLine" fill="none" stroke="rgba(118,228,214,.96)" stroke-width="3"></path></svg><p>Hiring starts at 2.0% a month and slowly falls as AI use rises. It does not drop all at once.</p></article>
         </div>
         <div class="placeholders">
-          <article class="placeholder"><span>Job Loss Risk</span><strong id="dVal">0.0%</strong><div class="meter"><div id="dFill" class="meter-fill warm"></div></div></article>
-          <article class="placeholder"><span>Pay Pressure</span><strong id="wVal">0.0 / 20</strong><div class="meter"><div id="wFill" class="meter-fill"></div></div></article>
-          <article class="placeholder"><span>New Job Growth</span><strong id="jVal">0.0 / 20</strong><div class="meter"><div id="jFill" class="meter-fill"></div></div></article>
+          <article class="placeholder"><span>Modeled job-loss indicator</span><strong id="dVal">0.0%</strong><div class="meter"><div id="dFill" class="meter-fill warm"></div></div></article>
+          <article class="placeholder"><span>Modeled pay-pressure index</span><strong id="wVal">0.0 / 20</strong><div class="meter"><div id="wFill" class="meter-fill"></div></div></article>
+          <article class="placeholder"><span>Modeled new-job index</span><strong id="jVal">0.0 / 20</strong><div class="meter"><div id="jFill" class="meter-fill"></div></div></article>
         </div>
         <div class="hero-progress panel-progress">
           <div class="progress-meta"><span>5-Year Progress</span><strong id="bottomClock">Year 1 of 5</strong></div>
@@ -219,12 +219,12 @@ svg{width:100%;height:auto;display:block} svg text{font-family:var(--font)}
   const LOOP=20000, SECS=20, MONTHS=60, CAP=.94, A0=.33, RATE=.005, BASE=.02, AUTO=.68 + .29 * .5;
   const jobs=[["Programmers",.745],["Customer Service",.701],["Data Entry",.671],["Medical Records",.667],["Market Research",.648],["Sales Reps",.628],["Financial Analysts",.572],["QA Analysts",.519],["InfoSec Analysts",.486],["User Support",.468]];
   const scenes=[
-    {id:"intro",s:0,e:2,label:"Start",title:"At first, AI ability is ahead of real use",body:"This sim begins with a gap: AI may be able to do many tasks, but companies are not using it everywhere yet."},
-    {id:"gap",s:2,e:4,label:"Year 1",title:"AI can do a lot, but company use is still low",body:"The chart starts with AI ability near 94%, while real use starts near 33%. The gap stays wide because companies need time, money, trust, and rule changes."},
-    {id:"occupations",s:4,e:8,label:"Years 1-2",title:"A few job groups stand out first",body:"Programming, customer service, data entry, and research show the clearest early effect. The warm bars grow inside the bigger blue bars, showing that real use still trails what AI may do."},
-    {id:"cohorts",s:8,e:12,label:"Years 2-3",title:"New workers feel pressure first",body:"Entry-level roles feel the squeeze sooner because many beginner tasks are more routine. This worker-group view is a simple example, not measured data."},
-    {id:"unemployment",s:12,e:16,label:"Years 3-4",title:"Unemployment stays mostly flat",body:"The unemployment line moves a little, but not by much. In this sim, that means the signal is weak and uncertain."},
-    {id:"hiring",s:16,e:20,label:"Years 4-5",title:"Hiring slows before job losses become obvious",body:"By the end, hiring for new workers is clearly lower even though unemployment still has not jumped much. The clearest change is a smaller path into work."}
+    {id:"intro",s:0,e:2,label:"Initial state",title:"The exposure benchmark is above modeled adoption",body:"The scenario begins with a difference between a high task-exposure benchmark and the assumed organizational adoption rate."},
+    {id:"gap",s:2,e:4,label:"Year 1",title:"Modeled adoption rises gradually",body:"The benchmark remains fixed at 94%, while the scenario's organizational adoption rate starts at 33% and grows over time."},
+    {id:"occupations",s:4,e:8,label:"Years 1-2",title:"Task exposure differs across occupations",body:"Programming, customer service, data entry, and research have higher source-based exposure values. The warm bars apply the modeled adoption rate to those values."},
+    {id:"cohorts",s:8,e:12,label:"Years 2-3",title:"The worker-group example differs by career stage",body:"The scenario reduces the entry-level indicator earlier because it assumes that more beginner tasks are routine. This is an illustrative assumption, not measured data."},
+    {id:"unemployment",s:12,e:16,label:"Years 3-4",title:"The unemployment indicator changes little",body:"The unemployment path changes within a small range because the scenario assumes only a weak aggregate effect."},
+    {id:"hiring",s:16,e:20,label:"Years 4-5",title:"The entry-level hiring indicator declines",body:"By the end of the scenario, the entry-level hiring indicator is lower while the unemployment indicator still changes little."}
   ];
   const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
   const rootEl = $(".shell");
@@ -348,8 +348,8 @@ svg{width:100%;height:auto;display:block} svg text{font-family:var(--font)}
     ui.year.textContent=`Year ${y}`; ui.month.textContent=`Month ${m} of 60`; ui.capVal.textContent=pct(CAP,0); ui.adoptVal.textContent=pct(st.adoption,1); ui.gapVal.textContent=`${(st.gap*100).toFixed(1)} points`; ui.autoVal.textContent=(AUTO*100).toFixed(1); ui.gapNote.textContent=`Gap closed so far: ${pct(st.close,0)}`;
     drawMain(st);
     jobs.forEach((j,i)=>{const cap=j[1]*100, boost=i===0?.04:.012, shown=clamp(j[1]*(st.cover + (i===0?.2:.1)*Math.pow(st.occEase,.58)) + boost,0,j[1]), fill=clamp(shown*100*(i===0?1.34 + st.occEase*.34:1.05 + st.occEase*.2),0,cap), row=$(`[data-i="${i}"]`); row.classList.toggle("dim",!(st.secs>=4+i*.28)&&st.secs<8); row.style.opacity=st.secs>=4?1:.5+st.introEase*.2; row.style.transform=""; $(`#oc${i}`).style.width=`${cap.toFixed(1)}%`; $(`#of${i}`).style.width=`${fill.toFixed(1)}%`; $(`#om${i}`).style.left=`calc(${cap.toFixed(1)}% - 1px)`; $(`#ov${i}`).textContent=pct(shown,0);});
-    ui.coverage.textContent=`Used / possible: ${pct(st.cover,0)}`;
-    ui.occNote.textContent=st.scene.id==="occupations"?"Possible impact is high, but real use is still filling in slowly.":st.scene.id==="cohorts"?"These job bars show where pressure starts. Hiring and career paths show the next effect.":"Real AI use is still rising in these jobs.";
+    ui.coverage.textContent=`Modeled adoption / exposure: ${pct(st.cover,0)}`;
+    ui.occNote.textContent=st.scene.id==="occupations"?"The warm bars apply modeled adoption to each exposure value.":st.scene.id==="cohorts"?"The occupation bars and career-stage bars use different illustrative assumptions.":"The warm bars apply modeled adoption to each exposure value.";
     ui.entryTxt.textContent=pct(st.entry,0); ui.midTxt.textContent=pct(st.mid,0); ui.seniorTxt.textContent=pct(st.senior,0); ui.entryFill.style.width=pct(st.entry,1); ui.midFill.style.width=pct(st.mid,1); ui.seniorFill.style.width=pct(st.senior,1);
     const yearLabel=`Year ${y}`;
     ui.sceneBadge.textContent=st.scene.label; ui.clock.textContent=yearLabel; ui.heroClock.textContent=`${yearLabel} of 5`; if(ui.bottomClock) ui.bottomClock.textContent=`${yearLabel} of 5`; ui.uVal.textContent=`${st.unemployment>=0?"+":""}${(st.unemployment*100).toFixed(2)} points`; ui.hVal.textContent=pct(st.hiring,2); spark("u",st); spark("h",st);

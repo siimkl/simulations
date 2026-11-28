@@ -127,16 +127,16 @@
 
   const MODE_META = {
     score: {
-      headline: "Score-based policing pulls patrols toward districts that already look hot.",
-      controlNote: "Score-led deployment rewards whichever district already looks hottest, so patrol visibility begins to compound."
+      headline: "Score-based policing allocates more patrols to districts with higher recorded risk.",
+      controlNote: "Under the modeled rule, higher recorded risk leads to more patrol attention and therefore more opportunities to record incidents."
     },
     equal: {
       headline: "Equal patrols keep attention flatter, so detections stay closer to the underlying citywide pattern.",
       controlNote: "This baseline spreads attention evenly across districts, reducing self-reinforcing patrol concentration."
     },
     support: {
-      headline: "Support-led intervention trades part of the patrol response for stabilizing services in high-score districts.",
-      controlNote: "Support mode still watches risk, but it redirects some capacity into relief so the score can decay instead of only escalating."
+      headline: "The support-led scenario reallocates part of the response to services in high-score districts.",
+      controlNote: "In this scenario, support activity reduces part of the modeled risk score while patrol activity continues."
     }
   };
 
@@ -1288,8 +1288,8 @@
     if (config.mode === "score") {
       if (metrics.gap > 0.16) {
         return {
-          title: "Surveillance is manufacturing the hotspot",
-          copy: "Recorded incidents are now clustering faster than true incidents, which means patrol attention is helping create the proof it later cites."
+          title: "The recorded hotspot is becoming self-reinforcing",
+          copy: "Recorded incidents are concentrating faster than the model's underlying incidents because patrol attention also affects where incidents are detected."
         };
       }
       if (metrics.topDistrict && metrics.topDistrict.patrolShare > 0.26) {
@@ -1300,7 +1300,7 @@
       }
       return {
         title: "The score is beginning to compound",
-        copy: "Linked contacts and repeated checks are pulling more residents into the watchlist than the underlying citywide risk alone would explain."
+        copy: "Linked contacts and repeated checks add more residents to the watchlist than the model's underlying incidents alone would produce."
       };
     }
 
@@ -1319,14 +1319,14 @@
 
     if (metrics.propertyIndex >= 94) {
       return {
-        title: "Support is slowing the spiral",
-        copy: "Risk scores can still move, but support contacts let districts recover before surveillance alone hardens into neighborhood stigma."
+        title: "Support changes the score trajectory",
+        copy: "Risk scores still change, while the modeled support effect reduces part of the accumulated score and property-value impact."
       };
     }
 
     return {
-      title: "The city stabilizes instead of locking in a hotspot",
-      copy: "Compared with pure score-led patrols, support keeps more residents off the watchlist and preserves neighborhood value."
+      title: "Recorded risk becomes less concentrated",
+      copy: "Compared with score-led patrols alone, the support scenario produces fewer watchlisted residents and a smaller modeled property-value change."
     };
   }
 

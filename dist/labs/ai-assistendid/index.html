@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>How AI Assistants Work | ChatGPT, Claude & Gemini</title>
+  <title>How an AI Assistant Processes a Request | Educational Model</title>
   <meta
     name="description"
-    content="Explore how ChatGPT, Claude, and Gemini use language models, context, tokens, transformer layers, and AI tools to answer questions and complete complex tasks."
+    content="An educational model of how AI assistants combine a language model, supplied context, and optional tools to produce a response."
   >
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#eef3ff">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="How AI Assistants Work | ChatGPT, Claude & Gemini">
-  <meta property="og:description" content="A visual AI explainer showing how language models, context windows, tokens, transformer layers, and tools turn a request into a useful answer.">
+  <meta property="og:title" content="How an AI Assistant Processes a Request">
+  <meta property="og:description" content="An educational model of context, language-model processing, tool use, and multi-step tasks.">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="How AI Assistants Work | ChatGPT, Claude & Gemini">
-  <meta name="twitter:description" content="Explore the visual process behind simple AI answers, tool use, and complex multi-step tasks.">
+  <meta name="twitter:title" content="How an AI Assistant Processes a Request">
+  <meta name="twitter:description" content="An educational model of context, language-model processing, tool use, and multi-step tasks.">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -66,18 +66,18 @@
     <section class="ai-widget" id="aiWidget" data-model="chatgpt" data-complexity="simple" aria-labelledby="pageTitle">
       <header class="hero">
         <div class="hero-copy">
-          <p class="eyebrow"><span aria-hidden="true"></span> Interactive AI explainer</p>
-          <h1 id="pageTitle">See how AI assistants <em>actually work.</em></h1>
+          <p class="eyebrow"><span aria-hidden="true"></span> Educational process model</p>
+          <h1 id="pageTitle">How an AI assistant <em>processes a request</em></h1>
           <p class="hero-lede">
-            Explore how ChatGPT, Claude, and Gemini turn your request into an answer. Follow the context window,
-            tokens, transformer layers, optional AI tools, and work loops behind complex tasks.
+            This model separates the information supplied with a request, the language model that processes it,
+            optional tools, and the repeated work cycles that some complex tasks require.
           </p>
         </div>
 
         <div class="hero-control">
           <div class="assistant-picker" aria-labelledby="assistantPickerTitle">
             <div class="control-heading">
-              <span id="assistantPickerTitle">Choose assistant lens</span>
+              <span id="assistantPickerTitle">Product examples</span>
             </div>
             <div class="assistant-options" role="group" aria-label="Assistant family">
               <button class="model-button is-active" type="button" data-model="chatgpt" aria-label="Choose the ChatGPT lens" aria-pressed="true"><i>O</i> ChatGPT</button>
@@ -141,7 +141,7 @@
           </article>
           <article class="route-lane info-card" id="complexLane">
             <div class="route-lane__head"><span>Complex task</span><strong>May repeat several times</strong></div>
-            <div class="mini-route mini-route--loop" aria-hidden="true"><i>Plan</i><b></b><i>Use a tool</i><b></b><i>Check</i></div>
+            <div class="mini-route mini-route--loop" aria-hidden="true"><i>Planning</i><b></b><i>Tool use</i><b></b><i>Validation</i></div>
             <div class="route-repeat"><span aria-hidden="true"></span><strong>Repeat with the new result as context</strong></div>
             <p>Use AI tools to research, compare evidence, inspect files, calculate, and revise until the result is ready.</p>
           </article>
@@ -151,13 +151,13 @@
       <div class="workbench">
         <aside class="task-panel card" aria-labelledby="taskTitle">
           <div class="section-head">
-            <p class="section-kicker">Explore an AI workflow</p>
-            <h2 id="taskTitle">Choose a task to see how the AI assistant handles it</h2>
-            <p>Each example changes the context, AI tools, and number of work cycles.</p>
+            <p class="section-kicker">AI workflow examples</p>
+            <h2 id="taskTitle">How the workflow changes with the task</h2>
+            <p>Each example uses a different combination of context, tools, and work cycles.</p>
           </div>
 
           <div class="control-heading control-heading--section">
-            <span>1. Choose task type</span>
+            <span>1. Task type</span>
           </div>
           <div class="task-tabs" role="tablist" aria-label="Choose task complexity">
             <button class="task-tab is-active" id="simpleTab" type="button" role="tab" aria-controls="scenarioList" aria-selected="true" data-task-filter="simple">Simple tasks</button>
@@ -165,7 +165,7 @@
           </div>
 
           <div class="control-heading control-heading--section control-heading--examples">
-            <span>2. Choose an example</span>
+            <span>2. Example</span>
           </div>
           <div class="scenario-list" id="scenarioList" aria-label="Example tasks"></div>
 
@@ -186,7 +186,7 @@
             <div class="stage-head">
               <div>
                 <p class="section-kicker"><span id="stageRouteLabel">Simple route</span> <span class="simulation-tag">animated high-level simulation</span></p>
-                <h2 id="journeyTitle">Build the AI context window</h2>
+                <h2 id="journeyTitle">Information in the AI context window</h2>
                 <p id="stageQuestion">What information does the assistant have for this request?</p>
               </div>
               <div class="stage-status" aria-live="polite"><span id="phaseNumber">Scene 1 of 6</span><strong id="phaseStatus">Ready</strong></div>
@@ -195,7 +195,7 @@
             <div class="visual-stage" id="visualStage" role="img" aria-label="Visual simulation of how an AI assistant processes the selected task"></div>
 
             <div class="watch-bar">
-              <span>Watch for</span>
+              <span>Key point</span>
               <strong id="watchForText">The AI assistant can only use information that reaches its context window.</strong>
               <button id="replaySceneButton" type="button" aria-label="Replay the current visual animation"><i aria-hidden="true"></i> Replay animation</button>
             </div>
@@ -206,13 +206,13 @@
               <p class="section-kicker">In plain English</p>
               <h3 id="plainTitle">It gathers the context for the task</h3>
               <p id="plainBody">The product combines your request with higher-priority instructions and useful conversation history. Files or saved memory may be added when available.</p>
-              <div class="analogy-box"><span>Picture this</span><strong id="analogyText">A desk being prepared with the right brief, rules, and reference pages.</strong></div>
+              <div class="analogy-box"><span>Analogy</span><strong id="analogyText">A desk being prepared with the right brief, rules, and reference pages.</strong></div>
             </article>
             <article class="lesson-card lesson-card--technical card info-card">
-              <p class="section-kicker">One level deeper</p>
+              <p class="section-kicker">Technical term</p>
               <h3 id="technicalTitle">This workspace is called the AI context window</h3>
               <p id="technicalBody">It is different from training. Training shaped the model's weights earlier; context is the information supplied for this specific task.</p>
-              <div class="myth-box"><span>Common myth</span><strong id="mythText">The assistant does not automatically remember or search everything.</strong></div>
+              <div class="myth-box"><span>Important limitation</span><strong id="mythText">The assistant does not automatically remember or search everything.</strong></div>
             </article>
           </div>
 

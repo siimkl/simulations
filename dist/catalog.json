@@ -16,15 +16,15 @@
   },
   {
     "id": "ai-toimepidevus",
-    "title": "AI-võimestatud töötaja ja organisatsiooni toimepidevus",
-    "description": "Uuri, kuidas muutuvad töövõime ja kohustused, kui tehisaru tugi katkeb.",
+    "title": "Tehisaru tugi ja organisatsiooni toimepidevus",
+    "description": "Mudel selgitab, kuidas tehisaru toe katkemine võib mõjutada töövõimet ja kohustuste täitmist.",
     "topics": [
       "Tehisaru",
       "Organisatsioonid"
     ],
     "en": {
-      "description": "Explore how work capacity and obligations change when AI assistance is interrupted.",
-      "title": "AI-Assisted Work and Organizational Resilience"
+      "description": "The model explains how an interruption in AI assistance can affect work capacity and the fulfillment of obligations.",
+      "title": "AI Assistance and Organizational Resilience"
     },
     "keywords": [],
     "href": "https://siimkl.github.io/sim32/",
@@ -32,14 +32,15 @@
   },
   {
     "id": "avalik-raha",
-    "title": "Government Budget · Who Gets Public Money?",
-    "description": "Uuri, kuidas avaliku eelarve raha eri valdkondade vahel jaguneb.",
+    "title": "Avaliku eelarve jaotamine",
+    "description": "Animatsioon näitab, kuidas piiratud avalik eelarve jaguneb konkureerivate valdkondade vahel.",
     "topics": [
       "Ühiskond",
       "Majandus"
     ],
     "en": {
-      "description": "Explore how public funds are allocated across different sectors."
+      "description": "The animation shows how a limited public budget is allocated among competing policy areas.",
+      "title": "Public Budget Allocation"
     },
     "keywords": [],
     "href": "./labs/avalik-raha/",
@@ -109,13 +110,14 @@
   },
   {
     "id": "ai-assistendid",
-    "title": "How AI Assistants Work",
-    "description": "Jälgi, kuidas tekst jagatakse tokeniteks ja kuidas assistent vastust koostab.",
+    "title": "Kuidas tehisaru assistent päringut töötleb",
+    "description": "Selgitus eristab keelemudelit, konteksti, tööriistu ja vastuse koostamise töövoogu.",
     "topics": [
       "Tehisaru"
     ],
     "en": {
-      "description": "Follow how text is split into tokens and how an AI assistant generates a response."
+      "description": "The explainer distinguishes the language model, context, tools, and response-generation workflow.",
+      "title": "How an AI Assistant Processes a Request"
     },
     "keywords": [],
     "href": "./labs/ai-assistendid/",
@@ -123,13 +125,14 @@
   },
   {
     "id": "keelemudeli-treenimine",
-    "title": "How an LLM Learns",
-    "description": "Uuri, kuidas treeningtekstid ja järgmise tokeni ennustamine mudelit kujundavad.",
+    "title": "Kuidas keelemudel tekstist õpib",
+    "description": "Animatsioon selgitab järgmise tokeni ennustamist, veakadu ja mudeli kaalude uuendamist.",
     "topics": [
       "Tehisaru"
     ],
     "en": {
-      "description": "Explore how training text and next-token prediction shape a language model."
+      "description": "The animation explains next-token prediction, loss, and updates to model weights.",
+      "title": "How a Language Model Learns from Text"
     },
     "keywords": [],
     "href": "./labs/keelemudeli-treenimine/",
@@ -137,14 +140,15 @@
   },
   {
     "id": "ai-tooturg",
-    "title": "How AI May Change Work",
-    "description": "Katseta, kuidas tehisaru võib eri ametites tööülesandeid ja oskuste vajadust muuta.",
+    "title": "Tehisaru kasutuselevõtt ja töö muutumine",
+    "description": "Stsenaariumimudel seob tehisaru võimekuse, kasutuselevõtu tempo ning võimalikud muutused tööülesannetes ja värbamises.",
     "topics": [
       "Tehisaru",
       "Majandus"
     ],
     "en": {
-      "description": "Explore how AI may change tasks and skill requirements across occupations."
+      "description": "The scenario model connects AI capability, the pace of adoption, and possible changes in tasks and hiring.",
+      "title": "AI Adoption and Changes in Work"
     },
     "keywords": [],
     "href": "./labs/ai-tooturg/",
@@ -152,14 +156,15 @@
   },
   {
     "id": "generatiivne-ai",
-    "title": "Generative AI and the Mass Knowledge Society",
-    "description": "Uuri generatiivse tehisaru leviku mõju teadmiste loomisele ja kasutamisele.",
+    "title": "Generatiivne tehisaru ja ligipääs teadmistele",
+    "description": "Mudel seob tehisaru kättesaadavuse ja kasutusoskuse teadmiste leviku, kontrollimise ning platvormisõltuvusega.",
     "topics": [
       "Tehisaru",
       "Ühiskond"
     ],
     "en": {
-      "description": "Explore how the spread of generative AI changes the way people create and use knowledge."
+      "description": "The model connects AI access and literacy with the distribution, verification, and platform dependence of knowledge.",
+      "title": "Generative AI and Access to Knowledge"
     },
     "keywords": [],
     "href": "./labs/generatiivne-ai/",
@@ -167,14 +172,15 @@
   },
   {
     "id": "ai-toovoog",
-    "title": "AI Workflow Automation Dashboard",
-    "description": "Vaata, kuidas AI-agendid muudavad ettevõtte töövoogu ja töömahtu.",
+    "title": "Tehisaruga toetatud ja käsitsi töövoo võrdlus",
+    "description": "90 päeva mudel võrdleb kahe töökorralduse tsükliaega, valminud töö mahtu, erandeid ja kulusid.",
     "topics": [
       "Tehisaru",
       "Tööprotsessid"
     ],
     "en": {
-      "description": "See how AI agents change a business workflow and its workload."
+      "description": "The 90-day model compares cycle time, completed work, exceptions, and costs in two workflows.",
+      "title": "AI-Assisted and Manual Workflow Comparison"
     },
     "keywords": [],
     "href": "./labs/ai-toovoog/",
@@ -182,15 +188,16 @@
   },
   {
     "id": "ai-klienditugi",
-    "title": "AI Customer Support Automation",
-    "description": "Võrdle klienditoe automatiseerimist ja vabaneva tööaja kasutamist.",
+    "title": "Klienditoe automatiseerimine ja tööaja ümberjaotus",
+    "description": "90 päeva mudel võrdleb automatiseeritud ja käsitsi kliendituge ning näitab vabanenud tööaja võimalikku ümberjaotust.",
     "topics": [
       "Tehisaru",
       "Tööprotsessid",
       "Majandus"
     ],
     "en": {
-      "description": "Compare ways to automate customer support and use the staff time it frees up."
+      "description": "The 90-day model compares automated and manual customer support and shows one possible reallocation of staff time.",
+      "title": "Customer Support Automation and Staff Reallocation"
     },
     "keywords": [],
     "href": "./labs/ai-klienditugi/",
@@ -198,14 +205,15 @@
   },
   {
     "id": "ennustav-politseitoo",
-    "title": "Predictive Policing Feedback Loop",
-    "description": "Vaata, kuidas politseitöö valikud mõjutavad andmeid ja järgmisi prognoose.",
+    "title": "Ennustava politseitöö tagasisideahel",
+    "description": "Mudel näitab, kuidas patrullide suunamine võib mõjutada registreeritud juhtumeid ja järgmisi riskihinnanguid.",
     "topics": [
       "Ühiskond",
       "Andmepädevus"
     ],
     "en": {
-      "description": "See how policing decisions shape the data used for future forecasts."
+      "description": "The model shows how patrol allocation can affect recorded incidents and subsequent risk scores.",
+      "title": "Predictive Policing Feedback Loops"
     },
     "keywords": [],
     "href": "./labs/ennustav-politseitoo/",
@@ -213,15 +221,15 @@
   },
   {
     "id": "turvalisuse-prognoos",
-    "title": "Avaliku turvalisuse prognoosi näidis",
-    "description": "Tutvu Tartu avaliku turvalisuse prognoosi õppenäite ja andmete kasutamisega.",
+    "title": "Avaliku turvalisuse prognoosi õppenäide",
+    "description": "Tartu näide selgitab prognoosimudeli andmeid, väljundeid ja kasutamise piiranguid.",
     "topics": [
       "Ühiskond",
       "Andmepädevus"
     ],
     "en": {
-      "description": "Explore a public safety forecasting example set in Tartu and see how it uses data.",
-      "title": "Public Safety Forecasting Demo"
+      "description": "The Tartu example explains the data, outputs, and limitations of a public-safety forecasting model.",
+      "title": "Public Safety Forecasting Example"
     },
     "keywords": [],
     "href": "https://siimkl.github.io/CDS_Crime_Prediction/",
@@ -229,14 +237,15 @@
   },
   {
     "id": "tookulu",
-    "title": "Automated Workflow Time Cost Simulator",
-    "description": "Võrdle käsitsi ja automaatselt tehtava töö aja- ning kuluerinevusi.",
+    "title": "Käsitsi ja automaatse töövoo aja- ning kulumudel",
+    "description": "Mudel arvutab sama töömahu puhul käsitsi ja automaatselt tehtava töö aja, järeltegevused, kulu ning järjekorra.",
     "topics": [
       "Tööprotsessid",
       "Majandus"
     ],
     "en": {
-      "description": "Compare the time and cost of manual and automated work."
+      "description": "The model calculates time, follow-up work, labor cost, and backlog for the same workload in manual and automated workflows.",
+      "title": "Manual and Automated Workflow Costs"
     },
     "keywords": [],
     "href": "./labs/tookulu/",
@@ -244,14 +253,15 @@
   },
   {
     "id": "vastavusrisk",
-    "title": "Compliance Drift Simulator",
-    "description": "Vaata, kuidas väikesed kontrollilüngad võivad ajas kuhjuda.",
+    "title": "Kontrollilünkade kuhjumine",
+    "description": "500 tööpäeva mudel näitab, kuidas tegemata kontrollid ja puudulik dokumentatsioon võivad auditiriski kasvatada.",
     "topics": [
       "Organisatsioonid",
       "Tööprotsessid"
     ],
     "en": {
-      "description": "See how small gaps in controls can accumulate over time."
+      "description": "The 500-day model shows how missed checks and incomplete records can increase audit risk.",
+      "title": "How Compliance Gaps Accumulate"
     },
     "keywords": [],
     "href": "./labs/vastavusrisk/",
@@ -259,14 +269,15 @@
   },
   {
     "id": "platvormide-tookorraldus",
-    "title": "Marketplace Coordination Demo",
-    "description": "Katseta, kuidas platvormi koordineerimine muudab ooteaega ja tühikäiku.",
+    "title": "Sõitude jaotamine ja juhtide ooteaeg",
+    "description": "Näidismudel võrdleb peatuses ootamist ja keskset sõitude jaotamist sama nõudluse ning juhtide arvu puhul.",
     "topics": [
       "Tööprotsessid",
       "Majandus"
     ],
     "en": {
-      "description": "Change how a platform coordinates work and see how it affects waiting and idle time."
+      "description": "The illustrative model compares stand-based service with centralized dispatch under the same demand and driver supply.",
+      "title": "Dispatch Coordination and Driver Idle Time"
     },
     "keywords": [],
     "href": "./labs/platvormide-tookorraldus/",
@@ -274,14 +285,15 @@
   },
   {
     "id": "kliendivoog",
-    "title": "Customer Funnel Simulation",
-    "description": "Muuda klienditeekonna eeldusi ja leia koht, kus enim kliente kaob.",
+    "title": "Klienditeekonna etapid ja katkestamiskohad",
+    "description": "Mudel näitab, kuidas etappide konversioonimäärad ja esitluste läbilaskevõime kujundavad ostude arvu.",
     "topics": [
       "Majandus",
       "Tööprotsessid"
     ],
     "en": {
-      "description": "Change assumptions about the customer journey and find where the most customers drop off."
+      "description": "The model shows how stage conversion rates and demo capacity shape the number of purchases.",
+      "title": "Customer Journey Stages and Drop-off"
     },
     "keywords": [],
     "href": "./labs/kliendivoog/",
@@ -289,14 +301,15 @@
   },
   {
     "id": "muugilehter",
-    "title": "Sales Funnel Demo",
-    "description": "Jälgi, kuidas müügivihjed läbivad müügilehtri etappe.",
+    "title": "Müügivihjete liikumine läbi müügilehtri",
+    "description": "Mudel näitab, kuidas müügivihjed liiguvad kuue etapi vahel, langevad välja või toovad soovitusi.",
     "topics": [
       "Majandus",
       "Tööprotsessid"
     ],
     "en": {
-      "description": "Follow sales leads through the stages of a sales funnel."
+      "description": "The model shows how leads move through six stages, drop out, or generate referrals.",
+      "title": "Lead Movement Through a Sales Funnel"
     },
     "keywords": [],
     "href": "./labs/muugilehter/",
@@ -304,14 +317,15 @@
   },
   {
     "id": "tulude-stabiilsus",
-    "title": "Revenue Stabilization Simulation",
-    "description": "Võrdle, kuidas töövoo ja kontrolli valikud mõjutavad tulude stabiilsust.",
+    "title": "Töövoo võimekus ja tulude stabiilsus",
+    "description": "Mudel seob müügivihjete sissevoolu, reageerimisviivituse ja müügivõimekuse tulude stabiilsusega.",
     "topics": [
       "Majandus",
       "Organisatsioonid"
     ],
     "en": {
-      "description": "Compare how workflow and control decisions affect revenue stability."
+      "description": "The model connects lead inflow, response delay, and sales capacity with revenue stability.",
+      "title": "Workflow Capacity and Revenue Stability"
     },
     "keywords": [],
     "href": "./labs/tulude-stabiilsus/",
@@ -319,13 +333,14 @@
   },
   {
     "id": "dockflow",
-    "title": "DockFlow · Yard & Dock Stability",
-    "description": "Uuri, kuidas laadimisala töökorraldus mõjutab järjekordi ja stabiilsust.",
+    "title": "Laadimisala järjekorrad ja läbilaskevõime",
+    "description": "Mudel seob saabuvate veokite arvu, protsessi takistused ning laadimisvõimsuse järjekordade ja viivituskuluga.",
     "topics": [
       "Tööprotsessid"
     ],
     "en": {
-      "description": "See how yard and dock operations affect queues and stability."
+      "description": "The model connects truck arrivals, process friction, and dock capacity with queues and delay costs.",
+      "title": "Yard and Dock Queue Stability"
     },
     "keywords": [],
     "href": "./labs/dockflow/",
@@ -333,13 +348,14 @@
   },
   {
     "id": "strateegiline-joondumine",
-    "title": "Team Misalignment & Strategy Drift",
-    "description": "Jälgi, kuidas meeskonna erisuunalised otsused kujundavad strateegia tegelikku elluviimist.",
+    "title": "Meeskonna joondumine ja strateegia hajumine",
+    "description": "Võrgustikumudel näitab, kuidas eeldused, suhtlus ja juhtimise mõju kujundavad ühist suunda.",
     "topics": [
       "Organisatsioonid"
     ],
     "en": {
-      "description": "Follow how conflicting team decisions affect the implementation of a strategy."
+      "description": "The network model shows how assumptions, communication, and leadership influence a shared direction.",
+      "title": "Team Alignment and Strategy Drift"
     },
     "keywords": [],
     "href": "./labs/strateegiline-joondumine/",
@@ -347,14 +363,15 @@
   },
   {
     "id": "tehase-koordineerimine",
-    "title": "OpsSync AI Factory Coordination",
-    "description": "Võrdle, kuidas koordineerimine mõjutab tootmisvoogu ja kitsaskohti.",
+    "title": "Staatiline ja kohanduv tehase töökorraldus",
+    "description": "Mudel võrdleb staatilist ajastamist ja ülesannete kohanduvat ümberjaotamist koormuse ning rikete korral.",
     "topics": [
       "Tööprotsessid",
       "Tehisaru"
     ],
     "en": {
-      "description": "Compare how coordination affects production flow and bottlenecks."
+      "description": "The model compares static scheduling with adaptive task reallocation under changing load and failures.",
+      "title": "Static and Adaptive Factory Coordination"
     },
     "keywords": [],
     "href": "./labs/tehase-koordineerimine/",
@@ -362,13 +379,14 @@
   },
   {
     "id": "iseteenindus",
-    "title": "Retail Self-Service Simulation",
-    "description": "Katseta, kuidas teenindusvõimsus mõjutab poe järjekordi ja läbilaskevõimet.",
+    "title": "Kassade võimekus ja järjekordade kujunemine",
+    "description": "Tunnine mudel seob klientide saabumise, tavakassade, iseteeninduskassade ja abiliste arvu ooteajaga.",
     "topics": [
       "Tööprotsessid"
     ],
     "en": {
-      "description": "Test how service capacity affects queues and throughput in a store."
+      "description": "The one-hour model connects customer arrivals and checkout staffing with waiting times and completed checkouts.",
+      "title": "Checkout Capacity and Queue Formation"
     },
     "keywords": [],
     "href": "./labs/iseteenindus/",
@@ -376,14 +394,15 @@
   },
   {
     "id": "toote-tagastuskutse",
-    "title": "Product Traceability Impact Simulator",
-    "description": "Vaata, kuidas toote jälgitavus mõjutab tagasikutsumise ulatust.",
+    "title": "Jälgitavus ja toote tagasikutsumise ulatus",
+    "description": "Võrgumudel võrdleb täielikku ja partiipõhist tagasikutsumist sama defekti levikutee puhul.",
     "topics": [
       "Tööprotsessid",
       "Organisatsioonid"
     ],
     "en": {
-      "description": "See how product traceability affects the scope of a recall."
+      "description": "The network model compares a full recall with a lot-specific recall along the same defect path.",
+      "title": "Traceability and Product Recall Scope"
     },
     "keywords": [],
     "href": "./labs/toote-tagastuskutse/",
@@ -391,13 +410,14 @@
   },
   {
     "id": "turu-omaksvott",
-    "title": "Market Adoption Curve Simulator",
-    "description": "Uuri, kuidas uus lahendus jõuab esimeste kasutajate juurest laiemale turule.",
+    "title": "Turu omaksvõttu kujundavad tegurid",
+    "description": "Võrgumudel seob arusaamise, sotsiaalse tõendi ja rühmadevahelised sidemed lahenduse levikuga.",
     "topics": [
       "Majandus"
     ],
     "en": {
-      "description": "Explore how a new solution moves from early adopters to the wider market."
+      "description": "The network model connects understanding, social proof, and links between groups with market adoption.",
+      "title": "Drivers of Market Adoption"
     },
     "keywords": [],
     "href": "./labs/turu-omaksvott/",
@@ -405,13 +425,14 @@
   },
   {
     "id": "investeeringu-tasuvus",
-    "title": "Return on Investment Graphic",
-    "description": "Võrdle investeeringu kulusid ja tulusid ning leia tasuvuspunkt.",
+    "title": "Projekti kulud, tulud ja tasuvuspunkt",
+    "description": "Ajajoon seob algkulu, käivitamise viivituse, kuutulu ja püsikulu investeeringu tasuvusega.",
     "topics": [
       "Majandus"
     ],
     "en": {
-      "description": "Compare an investment’s costs and returns to find its break-even point."
+      "description": "The timeline connects upfront cost, launch delay, monthly revenue, and ongoing cost with investment payback.",
+      "title": "Project Costs, Revenue, and Break-Even"
     },
     "keywords": [],
     "href": "./labs/investeeringu-tasuvus/",
@@ -419,13 +440,14 @@
   },
   {
     "id": "aktsiainvesteering",
-    "title": "Stock Profit Calculator",
-    "description": "Arvuta aktsiainvesteeringu tulemus koos tehingutasude ja dividendidega.",
+    "title": "Aktsiainvesteeringu tootluse kalkulaator",
+    "description": "Kalkulaator arvestab ostu- ja müügihinda, tehingutasusid, dividende ning makse.",
     "topics": [
       "Majandus"
     ],
     "en": {
-      "description": "Calculate the return on a stock investment, including fees and dividends."
+      "description": "The calculator accounts for purchase and sale prices, transaction fees, dividends, and taxes.",
+      "title": "Stock Investment Return Calculator"
     },
     "keywords": [],
     "href": "./labs/aktsiainvesteering/",
@@ -433,13 +455,14 @@
   },
   {
     "id": "saagikus",
-    "title": "Plant Yield & Quality Simulator",
-    "description": "Katseta, kuidas kasvutingimused mõjutavad taimede saagikust ja kvaliteeti.",
+    "title": "Kasvutingimused, saagikus ja kvaliteet",
+    "description": "Õppemudel seob vee, toitained ja ilma taime seisundi ning saagi suurus- ja kvaliteedinäitajatega.",
     "topics": [
       "Keskkond"
     ],
     "en": {
-      "description": "Test how growing conditions affect crop yields and quality."
+      "description": "The educational model connects water, nutrients, and weather with plant condition, yield, and quality.",
+      "title": "Growing Conditions, Yield, and Quality"
     },
     "keywords": [],
     "href": "./labs/saagikus/",
@@ -447,15 +470,16 @@
   },
   {
     "id": "auto-kogukulu",
-    "title": "EV vs Hybrid vs Gas Car Cost Calculator",
-    "description": "Võrdle elektri-, hübriid- ja bensiiniauto kogukulu eri eeldustel.",
+    "title": "Elektri-, hübriid- ja bensiiniauto omamiskulu",
+    "description": "Kalkulaator võrdleb kolme autotüübi ostu-, energia-, hooldus-, kindlustus-, maksu- ja väärtuse languse kulu.",
     "topics": [
       "Igapäevaelu",
       "Majandus",
       "Keskkond"
     ],
     "en": {
-      "description": "Compare the total cost of electric, hybrid, and gasoline cars under different assumptions."
+      "description": "The calculator compares purchase, energy, maintenance, insurance, tax, and depreciation costs for three vehicle types.",
+      "title": "EV, Hybrid, and Gas Car Ownership Costs"
     },
     "keywords": [],
     "href": "./labs/auto-kogukulu/",
@@ -463,14 +487,15 @@
   },
   {
     "id": "ekraaniharjumused",
-    "title": "Real World vs Digital World Social Skills",
-    "description": "Vaata, kuidas ekraaniharjumused võivad muuta suhtlemist ja sotsiaalseid oskusi.",
+    "title": "Ekraaniharjumused ja vahetu suhtlus",
+    "description": "Võrgumudel seob vaba aja ekraanikasutuse, kohtumisvõimalused ja harjumuse tugevuse vahetu suhtluse näitajatega.",
     "topics": [
       "Igapäevaelu",
       "Ühiskond"
     ],
     "en": {
-      "description": "Explore how screen habits may affect communication and social skills."
+      "description": "The network model connects leisure screen use, opportunities to meet, and habit strength with in-person interaction.",
+      "title": "Screen Habits and In-Person Social Interaction"
     },
     "keywords": [],
     "href": "./labs/ekraaniharjumused/",
@@ -478,13 +503,14 @@
   },
   {
     "id": "scrollimise-harjumus",
-    "title": "The Doomscrolling Effect",
-    "description": "Uuri, kuidas lõputu voog, tähelepanu ja korduvad valikud harjumust kujundavad.",
+    "title": "Korduv kerimine ja tähelepanuvõime",
+    "description": "Kuue kuu mudel kujutab üht võimalikku seost igapäevase lühivideote kerimise, harjumuse tugevuse ja süvenemisvõime vahel.",
     "topics": [
       "Igapäevaelu"
     ],
     "en": {
-      "description": "Explore how an endless feed, attention, and repeated choices shape a habit."
+      "description": "The six-month model represents one possible relationship between daily short-form scrolling, habit strength, and capacity for sustained attention.",
+      "title": "Repeated Scrolling and Attention"
     },
     "keywords": [],
     "href": "./labs/scrollimise-harjumus/",
@@ -492,13 +518,14 @@
   },
   {
     "id": "simfluence-adoption",
-    "title": "Simfluence · Market Adoption Hero",
-    "description": "Vaata lühikest visualiseeringut uue lahenduse levikust turul.",
+    "title": "Arusaamine ja turu omaksvõtt",
+    "description": "Lühianimatsioon kujutab lahenduse levikut innovaatorite, varajaste kasutajate, peavoolu ja riskikartlike rühmade vahel.",
     "topics": [
       "Majandus"
     ],
     "en": {
-      "description": "Watch a short visualization of how a new product spreads through a market."
+      "description": "The short animation represents adoption across innovators, early adopters, the mainstream, and risk-averse groups.",
+      "title": "Understanding and Market Adoption"
     },
     "keywords": [],
     "href": "./labs/simfluence-adoption/",

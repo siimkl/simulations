@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Marketplace Coordination Demo: How Platforms Reduce Idle Time</title>
+  <title>Dispatch Coordination and Driver Idle Time</title>
   <meta
     name="description"
     content="Autorun ride-platform simulation comparing stand waiting with coordinated dispatch on identical demand."
@@ -32,18 +32,17 @@
       <header class="panel hero" id="hero">
         <div class="hero-top">
           <div class="hero-copy-block">
-            <p class="eyebrow">Scenario Comparison | 8-Hour Workday | Single Canvas</p>
-            <h1>Marketplace Coordination Demo: How Platforms Reduce Idle Time</h1>
+            <p class="eyebrow">Illustrative 8-hour workday</p>
+            <h1>Dispatch coordination and driver idle time</h1>
             <p class="hero-copy">
-              One city and one 10-driver pool, two operating models. The left panel shows customers facing expensive,
-              less certain street-style service while drivers burn time waiting at stands. The right panel coordinates
-              matching, ordering, and payment so more customers can afford to take trips and drivers can either finish
-              sooner for the same pay or stay out and earn more.
+              The model applies the same city, demand pattern, and 10-driver pool to two service arrangements.
+              One uses taxi stands; the other uses centralized matching, ordering, and payment. The comparison
+              covers completed trips, price, availability, driver idle time, and modeled take-home pay.
             </p>
           </div>
           <div class="hero-side">
             <div class="runtime-chip">
-              <span>Autorun mode</span>
+              <span>Automatic playback</span>
             </div>
             <label class="hero-speed-control" for="heroSpeedSelect">
               <select class="hero-speed-select" id="heroSpeedSelect" aria-label="Simulation speed">
@@ -69,8 +68,8 @@
         <section class="panel stage-panel" id="stagePanel" aria-labelledby="stageTitle">
             <div class="section-head">
               <div class="panel-copy-stack">
-                <p class="section-kicker">Live Stage</p>
-              <h2 id="stageTitle">Same city, same drivers, very different value created</h2>
+                <p class="section-kicker">Current model state</p>
+              <h2 id="stageTitle">The same demand and drivers under two service arrangements</h2>
               <p class="section-copy" id="outcomeText">
                 Morning demand is building. The coordinated side is already making rides feel easier to buy.
               </p>
@@ -105,7 +104,7 @@
                 </button>
                 <div class="summary-head">
                   <p class="summary-kicker">End of Run</p>
-                  <h3 id="summaryOverlayTitle">Coordination turned the same drivers into a customer-and-driver win-win.</h3>
+                  <h3 id="summaryOverlayTitle">Results for the two modeled service arrangements</h3>
                   <p class="summary-lead" id="summaryOverlayLead">
                     Lower customer cost, better availability, and easier ordering pulled in more trips while giving drivers
                     a shorter path to the same pay or more income if they keep driving.
@@ -114,7 +113,7 @@
                 <div class="summary-compare">
                   <article class="summary-side-card summary-side-a">
                     <span class="summary-side-tag">A | Stand Wait</span>
-                    <strong class="summary-side-title">Customers buy fewer, pricier trips and drivers wait around</strong>
+                    <strong class="summary-side-title">Stand-based service</strong>
                     <div class="summary-side-grid">
                       <div class="summary-stat">
                         <span>Rides</span>
@@ -152,7 +151,7 @@
                   </div>
                   <article class="summary-side-card summary-side-b">
                     <span class="summary-side-tag">B | Dispatch</span>
-                    <strong class="summary-side-title">Customers get better value and drivers turn saved time into upside</strong>
+                    <strong class="summary-side-title">Centralized dispatch</strong>
                     <div class="summary-side-grid">
                       <div class="summary-stat">
                         <span>Rides</span>
@@ -182,7 +181,7 @@
                   </article>
                 </div>
                 <p class="summary-foot" id="summaryOverlayFoot">
-                  Close this card, then press Run to replay the same workday.
+                  Closing this card returns to the completed model. The Run button repeats the same workday.
                 </p>
               </div>
             </div>
@@ -229,8 +228,8 @@
           <section class="panel metrics-panel">
             <div class="section-head">
               <div class="panel-copy-stack">
-                <p class="section-kicker">Comparison Scoreboard</p>
-                <h2>How B creates more value with the same drivers</h2>
+                <p class="section-kicker">Comparison table</p>
+                <h2>Results with the same driver supply</h2>
                 <p class="section-copy">
                   Lower customer cost, higher availability, and cleaner ordering on the coordinated side pull more rides
                   into the market. The same operational improvement then shows up as less wasted driver time and better
@@ -248,7 +247,7 @@
               </div>
 
               <div class="metric-group" role="row">
-                <span>Customer gains</span>
+                <span>Customer measures</span>
               </div>
 
               <div class="metric-row" role="row">
@@ -280,7 +279,7 @@
               </div>
 
               <div class="metric-group" role="row">
-                <span>Driver gains</span>
+                <span>Driver measures</span>
               </div>
 
               <div class="metric-row" role="row">
@@ -309,8 +308,8 @@
           <section class="panel footer-panel">
             <div class="takeaway-stack">
               <div class="panel-copy-stack">
-                <p class="section-kicker">Takeaway</p>
-                <h2>Coordination makes the market better for both customers and drivers</h2>
+                <p class="section-kicker">Interpretation</p>
+                <h2>How coordination changes the modeled outcomes</h2>
                 <p id="summaryText">
                   Better coordination lowers customer price, raises availability, and removes ordering friction. Those
                   customer gains feed directly into less wasted driver time and better pay choices.
@@ -318,14 +317,14 @@
               </div>
               <div class="benefit-grid">
                 <article class="benefit-card rider-benefit">
-                  <span>Customer win</span>
+                  <span>Customer outcomes</span>
                   <strong>More affordable, more available rides</strong>
                   <p id="riderValueText">
                     When rides are easier to order and cheaper to buy, more customers choose to travel.
                   </p>
                 </article>
                 <article class="benefit-card driver-benefit">
-                  <span>Driver win</span>
+                  <span>Driver outcomes</span>
                   <strong>Less wasted time, better pay options</strong>
                   <p id="driverValueText">
                     Saved idle time can become free personal time for the same pay or extra income if drivers stay out.

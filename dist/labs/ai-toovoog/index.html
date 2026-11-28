@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Workflow Automation Dashboard | AI Agents for Business</title>
+  <title>AI-Assisted and Manual Workflow Comparison</title>
   <meta
     name="description"
-    content="Interactive AI workflow automation dashboard comparing AI agents with a manual business process to show cycle time, cost savings, and automation ROI."
+    content="A 90-day educational model comparing cycle time, completed work, exceptions, and costs in AI-assisted and manual workflows."
   >
   <meta name="theme-color" content="#eef5f1">
   <link rel="stylesheet" href="styles.css">
@@ -16,18 +16,18 @@
     <section class="automation-widget" id="automationWidget" aria-labelledby="pageTitle">
       <header class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">AI workflow automation dashboard</p>
-          <h1 id="pageTitle">AI agents for business process automation</h1>
+          <p class="eyebrow">90-day workflow scenario</p>
+          <h1 id="pageTitle">AI-assisted and manual workflow comparison</h1>
           <p class="hero-lede">
-            Compare AI agent workflow automation with a people-only process and see how business
-            operations can reduce cycle time, lower manual work, and improve automation ROI.
+            The model applies the same workload to two simplified processes and compares cycle time,
+            completed work, exceptions, and cost. Results follow the model's assumptions rather than observed company data.
           </p>
         </div>
 
         <div class="hero-ops" aria-label="AI business process automation simulation playback">
           <div class="run-card" aria-live="polite">
             <div class="run-card__top">
-              <span>90-day automation ROI simulation</span>
+              <span>90-day workflow simulation</span>
               <output id="dayOutput">Day 1 / 90</output>
             </div>
             <div
@@ -44,8 +44,8 @@
           </div>
 
           <div class="playback-row">
-            <button class="button button--primary" id="toggleRun" type="button" aria-pressed="true">Pause</button>
-            <button class="button" id="resetRun" type="button">Replay</button>
+            <button class="button button--primary" id="toggleRun" type="button" aria-pressed="true">Pause simulation</button>
+            <button class="button" id="resetRun" type="button">Restart simulation</button>
             <label class="speed-field" for="speedSelect">
               <span>Speed</span>
               <select id="speedSelect" name="speedSelect">
@@ -74,10 +74,10 @@
           <small id="throughputMetric">Manual workflow: 0 delivered</small>
         </article>
         <article class="metric-card">
-          <span>Automation cost savings</span>
+          <span>Estimated cost difference</span>
           <em>AI agent workflow</em>
           <strong id="costMetric">$0k</strong>
-          <small id="focusMetric">Cycle time advantage: 0%</small>
+          <small id="focusMetric">Cycle time difference: 0%</small>
         </article>
         <article class="metric-card">
           <span>Exception rate</span>
@@ -93,8 +93,8 @@
           <div class="process-compare-grid">
             <article class="process-card process-card--agentic">
               <div class="process-card__head">
-                <span>With AI automation</span>
-                <strong>AI agent workflow automation</strong>
+                <span>AI-assisted process</span>
+                <strong>Workflow with automated routing</strong>
                 <small id="agentCanvasMetric">0 delivered</small>
               </div>
               <div class="canvas-frame">
@@ -111,7 +111,7 @@
             <article class="process-card process-card--people">
               <div class="process-card__head">
                 <span>Manual process</span>
-                <strong>People-only business workflow</strong>
+                <strong>Workflow without automated routing</strong>
                 <small id="peopleCanvasMetric">0 delivered</small>
               </div>
               <div class="canvas-frame canvas-frame--people">
@@ -139,8 +139,8 @@
         <section class="summary-dialog" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
           <button class="summary-close" id="summaryClose" type="button" aria-label="Close summary">Close</button>
           <p class="section-kicker">Run complete</p>
-          <h2 id="summaryTitle">AI automation ROI summary</h2>
-          <p id="summaryLead">AI workflow automation completed more work while people stayed focused on review, exceptions, and decisions.</p>
+          <h2 id="summaryTitle">Scenario results</h2>
+          <p id="summaryLead">The summary compares completed work, cycle time, exceptions, and estimated cost under the two modeled processes.</p>
           <div class="summary-grid">
             <article>
               <span>Work completed</span>

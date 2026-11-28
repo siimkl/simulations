@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Real World vs Digital World Social Skills Simulation</title>
+<title>Screen Habits and In-Person Social Interaction</title>
 <style>
 :root{--bg:#F2FBF8;--bg2:#DDEFEA;--card:rgba(255,255,255,.74);--stroke:rgba(93,145,135,.22);--text:rgba(28,56,60,.96);--muted:rgba(74,104,108,.82);--primary:#22B8C8;--secondary:#4AA3E0;--ok:#2FB37C;--risk:#F29C52;--shadow:0 18px 48px rgba(88,124,118,.16);--r2:22px;--font:"Aptos","Segoe UI Variable","Segoe UI",sans-serif}
 *{box-sizing:border-box}html,body{height:100%}html.embedMode,body.embedMode{height:auto;min-height:0}
@@ -1207,7 +1207,7 @@ select:hover,.btn:hover{
 <div class="app widgetCard">
   <div class="top">
     <div class="topMain">
-      <div class="topKicker">Real World vs Digital World Simulator</div>
+      <div class="topKicker">30-week network model</div>
       <div class="title titleRow">
         <svg class="icon" viewBox="0 0 48 48" aria-hidden="true">
           <defs>
@@ -1227,9 +1227,9 @@ select:hover,.btn:hover{
           <path d="M37.8 14.4c2.8 2.9 2.8 7.6 0 10.5" fill="none" stroke="#E9FBFF" stroke-width="1.6" stroke-linecap="round"/>
           <path d="M35.4 16.9c1.5 1.5 1.5 3.9 0 5.4" fill="none" stroke="#E9FBFF" stroke-width="1.4" stroke-linecap="round"/>
         </svg>
-        <span class="titleCopy"><span class="titleAccent">How Individual Digital Habits Shape Network Behavior</span></span>
+        <span class="titleCopy"><span class="titleAccent">Screen habits and in-person social interaction</span></span>
       </div>
-      <div class="sub">Adjust leisure screen time and real-world opportunities to see how small personal shifts can widen a coordination gap across the whole network.</div>
+      <div class="sub">The model links leisure screen time, opportunities to meet in person, and habit strength with interactions across a social network. It illustrates one possible mechanism, not a measured causal effect.</div>
     </div>
     <div class="topRight"><div class="pill" id="stepBadge"><span>Week</span><span id="stepVal">0 / 30</span></div></div>
   </div>
@@ -1246,7 +1246,7 @@ select:hover,.btn:hover{
       <span class="overviewMeta">The dominant behavioral pattern in the network right now.</span>
     </div>
     <div class="overviewCard overviewCardShare">
-      <span class="overviewLabel">Real World Share</span>
+      <span class="overviewLabel">In-person-oriented share</span>
       <strong class="overviewValue" id="heroOfflineShare">--</strong>
       <span class="overviewMeta">People spending enough time offline to reinforce in-person ties.</span>
     </div>
@@ -1262,16 +1262,16 @@ select:hover,.btn:hover{
       <div class="card controlCard"><div class="panel">
         <div class="panelHead panelHeadMain">
           <div>
-            <div class="panelTitle">Simulation Controls</div>
-            <div class="panelLead">Adjust digital pull, offline opportunity, and habit strength to see how the network reorganizes over 30 weeks.</div>
+            <div class="panelTitle">Scenario assumptions</div>
+            <div class="panelLead">Group size, leisure screen time, opportunities to meet, and habit strength determine the modeled 30-week network.</div>
           </div>
           <div class="panelStatus">30 Week Horizon</div>
         </div>
         <div class="group">
           <div class="groupHead"><div class="groupIntro"><div class="groupTitle">Core Drivers</div></div><div class="pill miniPill groupMode"><span style="opacity:.9;">Mode:</span><strong id="modeReadout">Balanced Worlds</strong></div></div>
           <div class="rowCtrl hasTip"><div class="labelWrap"><div class="lbl">Group Size</div><button class="infoBtn" type="button" aria-label="Group size info">i</button></div><input id="groupSize" type="range" min="1" max="300" step="1" value="50" /><div class="valPill" id="groupSizeVal">50</div><div class="infoTip">Number of connected agents in the social network.</div></div>
-          <div class="rowCtrl hasTip sliderTwoLine"><div class="labelWrap"><div class="lbl">Daily Digital World Entertainment</div><button class="infoBtn" type="button" aria-label="Digital world entertainment info">i</button></div><input id="avgScreen" type="range" min="0" max="12" step="0.1" value="3.0" /><div class="valPill" id="avgScreenVal">3.0h</div><div class="infoTip">Average daily leisure screen hours. Higher values crowd out time and make offline plans easier to abandon.</div></div>
-          <div class="rowCtrl hasTip sliderTwoLine"><div class="labelWrap"><div class="lbl">Daily Real World Entertainment</div><button class="infoBtn" type="button" aria-label="Real world entertainment info">i</button></div><input id="offlineOpp" type="range" min="0" max="12" step="0.1" value="5.0" /><div class="valPill" id="offlineOppVal">5.0h</div><div class="infoTip">Hours available for clubs, sports, hanging out, and other in-person leisure. Opportunity still needs willing peers to turn into actual meetups.</div></div>
+          <div class="rowCtrl hasTip sliderTwoLine"><div class="labelWrap"><div class="lbl">Daily leisure screen time</div><button class="infoBtn" type="button" aria-label="Leisure screen time info">i</button></div><input id="avgScreen" type="range" min="0" max="12" step="0.1" value="3.0" /><div class="valPill" id="avgScreenVal">3.0h</div><div class="infoTip">Average daily leisure screen hours. In this model, higher values leave less time for planned in-person activity.</div></div>
+          <div class="rowCtrl hasTip sliderTwoLine"><div class="labelWrap"><div class="lbl">Daily in-person leisure opportunity</div><button class="infoBtn" type="button" aria-label="In-person leisure opportunity info">i</button></div><input id="offlineOpp" type="range" min="0" max="12" step="0.1" value="5.0" /><div class="valPill" id="offlineOppVal">5.0h</div><div class="infoTip">Time available for clubs, sports, informal meetings, and other in-person leisure. Opportunity becomes interaction only when peers also participate.</div></div>
           <div class="rowCtrl hasTip"><div class="labelWrap"><div class="lbl">Habit Strength</div><button class="infoBtn" type="button" aria-label="Habit strength info">i</button></div><select id="habitLevel" aria-label="Habit strength"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select><div class="valPill" id="habitVal">1.00x</div><div class="infoTip">How quickly passive screen-heavy weeks become self-reinforcing and harder to reverse.</div></div>
         </div>
 
@@ -1289,15 +1289,15 @@ select:hover,.btn:hover{
           <div class="stageHeadline">Behavior Shift Map</div>
         </div>
         <div class="stageLegend">
-          <span class="legendChip legendChipOffline"><span class="legendDot"></span>Real World</span>
-          <span class="legendChip legendChipDigital"><span class="legendDot"></span>Digital World</span>
+          <span class="legendChip legendChipOffline"><span class="legendDot"></span>In-person-oriented</span>
+          <span class="legendChip legendChipDigital"><span class="legendDot"></span>Screen-focused</span>
         </div>
       </div>
       <div class="canvasHost" id="canvasHost">
         <canvas id="simCanvas" aria-label="Social network simulation"></canvas>
         <div class="stateHud" aria-live="polite">
           <div class="stateHudHead"><div class="stateHudTitle">System state</div><div class="stateLabel" id="mWeekState">Week 0/30</div></div>
-          <div class="stateHudMetric"><span>Real World Share</span><span class="stateHudMetricValue"><strong id="mOfflineShare">--</strong><span class="stateTrendArrow trendFlat" id="mOfflineTrend" aria-hidden="true">&rarr;</span></span></div>
+          <div class="stateHudMetric"><span>In-person-oriented share</span><span class="stateHudMetricValue"><strong id="mOfflineShare">--</strong><span class="stateTrendArrow trendFlat" id="mOfflineTrend" aria-hidden="true">&rarr;</span></span></div>
           <div class="stateHudMetric"><span>Avg In-Person Interactions / Week</span><span class="stateHudMetricValue"><strong id="mContacts">0.0</strong><span class="stateTrendArrow trendFlat" id="mContactsTrend" aria-hidden="true">&rarr;</span></span></div>
           <div class="stateHudMetric"><span>Offline Plans Kept</span><span class="stateHudMetricValue"><strong id="mMeetup">0%</strong><span class="stateTrendArrow trendFlat" id="mMeetupTrend" aria-hidden="true">&rarr;</span></span></div>
           <div class="stateHudMetric"><span>Isolation Risk (0-100)</span><span class="stateHudMetricValue"><strong id="mRisk">0</strong><span class="stateTrendArrow trendFlat" id="mRiskTrend" aria-hidden="true">&rarr;</span></span></div>
@@ -1313,10 +1313,10 @@ select:hover,.btn:hover{
               </div>
             </div>
             <div class="finalHeadline" id="finalHeadline">Social balance held through week 30</div>
-            <div class="finalSubline" id="finalSubline">Adjust the core drivers and rerun to compare final outcomes.</div>
+            <div class="finalSubline" id="finalSubline">A repeated run can be compared after changing one or more assumptions.</div>
             <div class="finalCharts">
               <div class="finalChartGrid">
-                <div class="finalChartRow chartOffline"><canvas class="finalChartCanvas" id="finalChartOffline" aria-label="Real World share trend"></canvas><div class="finalChartCenter"><div class="finalChartTitle">Real World Share</div><div class="finalChartValue" id="finalChartOfflineVal">--</div></div></div>
+                <div class="finalChartRow chartOffline"><canvas class="finalChartCanvas" id="finalChartOffline" aria-label="In-person-oriented share trend"></canvas><div class="finalChartCenter"><div class="finalChartTitle">In-person-oriented share</div><div class="finalChartValue" id="finalChartOfflineVal">--</div></div></div>
                 <div class="finalChartRow chartContacts"><canvas class="finalChartCanvas" id="finalChartContacts" aria-label="In-person interactions trend"></canvas><div class="finalChartCenter"><div class="finalChartTitle">In-Person Interactions</div><div class="finalChartValue" id="finalChartContactsVal">0.0</div></div></div>
                 <div class="finalChartRow chartMeetup"><canvas class="finalChartCanvas" id="finalChartMeetup" aria-label="Offline plans kept trend"></canvas><div class="finalChartCenter"><div class="finalChartTitle">Offline Plans Kept</div><div class="finalChartValue" id="finalChartMeetupVal">0%</div></div></div>
                 <div class="finalChartRow chartRisk"><canvas class="finalChartCanvas" id="finalChartRisk" aria-label="Isolation risk trend"></canvas><div class="finalChartCenter"><div class="finalChartTitle">Isolation Risk</div><div class="finalChartValue" id="finalChartRiskVal">0</div></div></div>
@@ -1934,10 +1934,10 @@ select:hover,.btn:hover{
       else if(STATE.avgMeetupSuccess < 0.48) modeText = "Coordination Squeeze";
       else if(STATE.avgDigital > STATE.avgContacts * 1.35 && pull > 0.8) modeText = "Habit Lock-In";
       else if(STATE.offlineShare >= 0.55 && STATE.risk < 38) modeText = "Offline Recovery";
-      else if(pull > 1.4) modeText = "Digital World Pull";
-      else if(pull < -1.0) modeText = "Real World Pull";
-    } else if(pull > 1.4) modeText = "Digital World Pull";
-    else if(pull < -1.0) modeText = "Real World Pull";
+      else if(pull > 1.4) modeText = "Screen-focused pattern";
+      else if(pull < -1.0) modeText = "In-person-oriented pattern";
+    } else if(pull > 1.4) modeText = "Screen-focused pattern";
+    else if(pull < -1.0) modeText = "In-person-oriented pattern";
     if(ui.modeReadout) ui.modeReadout.textContent = modeText;
     if(ui.heroMode) ui.heroMode.textContent = modeText;
   }
@@ -2114,7 +2114,7 @@ select:hover,.btn:hover{
     const meetupPct = Math.round(STATE.avgMeetupSuccess * 100);
     const riskRounded = Math.round(STATE.risk);
     const headline = finalHeadlineFromSnapshot();
-    const subline = `Week ${MAX_TICKS}: ${offlinePct}% stayed in Real World mode, and ${meetupPct}% of planned offline time turned into real meetups.`;
+    const subline = `Week ${MAX_TICKS}: ${offlinePct}% were in the in-person-oriented state, and ${meetupPct}% of planned in-person time became completed meetups.`;
 
     if(ui.finalHeadline) ui.finalHeadline.textContent = headline;
     if(ui.finalSubline) ui.finalSubline.textContent = subline;

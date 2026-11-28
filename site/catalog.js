@@ -18,7 +18,7 @@
   };
   const messages = {
     en: {
-      intro: "Interactive models for learning and exploring. Browse by topic or open a simulation directly.",
+      intro: "This catalog contains interactive learning models. Each entry states the subject of the model and the relationship it represents.",
       catalog: "Simulation catalog", language: "Language", filters: "Filter by topic",
       search: "Search the catalog", placeholder: "Title, topic, or keyword", all: "All",
       loading: "Loading the catalog…", error: "Couldn’t load the catalog. Refresh the page to try again.",
@@ -26,7 +26,7 @@
       count: total => `${total} ${total === 1 ? "simulation" : "simulations"}`
     },
     et: {
-      intro: "Interaktiivsed mudelid õppimiseks ja katsetamiseks. Vali teema või ava mõni simulatsioon otse.",
+      intro: "Kataloog sisaldab interaktiivseid õppemudeleid. Iga kirje nimetab mudeli teema ja seose, mida see kujutab.",
       catalog: "Simulatsioonide kataloog", language: "Keel", filters: "Teemafiltrid",
       search: "Otsi kataloogist", placeholder: "Pealkiri, teema või märksõna", all: "Kõik",
       loading: "Laadin kataloogi…", error: "Kataloogi ei õnnestunud laadida. Värskenda lehte ja proovi uuesti.",

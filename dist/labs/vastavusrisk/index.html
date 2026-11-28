@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Compliance Drift Simulator | How Small Control Failures Become Audit Disasters</title>
+<title>How Compliance Gaps Accumulate | 500-Day Model</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
@@ -953,14 +953,14 @@ button.primary {
 <div class="widget" id="widget">
   <header class="panel hero">
     <div class="hero-top">
-      <span class="kicker">Hidden Compliance Drift</span>
+      <span class="kicker">Compliance control model</span>
       <div class="hero-runtime" aria-live="polite">
         <span id="dayCounter" class="hero-runtime-day">Day 0 / 500</span>
       </div>
     </div>
-    <h1>Compliance Drift Simulator</h1>
-    <p class="hero-lede">How small control failures silently become audit disasters.</p>
-    <p>Watch missed checks, documentation gaps, and audit timing turn manual work into hidden risk across 500 workdays.<br />Small errors look harmless day to day, then stack into audit exposure.</p>
+    <h1>How compliance gaps accumulate</h1>
+    <p class="hero-lede">A 500-day comparison of manual controls and continuous monitoring.</p>
+    <p>The model links missed checks, incomplete documentation, and the timing of reviews with estimated audit exposure. It illustrates a mechanism rather than a measured organization.</p>
     <div class="hero-progress">
       <div class="hero-progress-fill" id="progressFill"></div>
     </div>
@@ -968,8 +968,8 @@ button.primary {
 
   <main class="layout">
     <aside class="panel controls" aria-label="Simulation controls">
-      <h2>Model Inputs</h2>
-      <p class="intro">Adjust workload and oversight to see how fast hidden compliance drift outgrows what the team notices.</p>
+      <h2>Scenario assumptions</h2>
+      <p class="intro">Team size, daily control volume, and review frequency determine how quickly unresolved gaps accumulate in the model.</p>
 
       <div class="control-list">
         <div class="control-row">
@@ -1005,7 +1005,7 @@ button.primary {
       <section class="brandPanel">
         <div class="brandInner">
           <img class="brandLogo" src="../../media/simfluence.webp" alt="Simfluence logo" />
-          <p class="brandCopy">Simulation stories for compliance buyers, audit leaders, and operations teams who need to see hidden risk before the audit does.<a class="brandLink" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">Visit website</a></p>
+          <p class="brandCopy">This educational model shows how small, repeated control gaps can affect a later audit result.<a class="brandLink" href="https://simfluence.io" target="_blank" rel="noopener noreferrer">About Simfluence</a></p>
         </div>
       </section>
     </aside>
@@ -1013,11 +1013,11 @@ button.primary {
     <section class="panel sim" aria-label="Simulation output">
       <div class="sim-top">
         <div class="story-shell" id="storyShell">
-          <p class="viz-superhead">Manual Process vs Automated Control System</p>
+          <p class="viz-superhead">Manual controls and continuous monitoring</p>
           <div class="story-panel" aria-live="polite">
-            <p class="story-kicker">How Does Risk Accumulate Without Anyone Noticing?</p>
-            <p class="story-title" id="storyTitle">Day 1-100: Everything looks fine</p>
-            <p class="story-text" id="storyText">Manual systems create invisible operational drift. Small skipped checks and inaccurate records quietly accumulate while automated controls keep verifying the process.</p>
+            <p class="story-kicker">How unresolved control gaps accumulate</p>
+            <p class="story-title" id="storyTitle">Days 1–100: few visible warning signs</p>
+            <p class="story-text" id="storyText">A small number of missed checks and incomplete records accumulate in the manual process, while continuous monitoring identifies more gaps during the same period.</p>
           </div>
         </div>
         <div class="viz-compare" id="vizCompare">
@@ -1035,8 +1035,8 @@ button.primary {
       <div class="sim-stats-modal" id="simStatsModal" role="dialog" aria-modal="true" aria-labelledby="simStatsTitle" aria-hidden="true">
         <div class="sim-stats" id="simStatsCard" aria-live="polite">
           <button type="button" class="sim-stats-close" id="simStatsClose" aria-label="Close simulation stats">X</button>
-          <h2 id="simStatsTitle">Audit Outcome</h2>
-          <p class="sim-stats-note">End-of-run snapshot after 500 workdays. This is where hidden drift becomes visible.</p>
+          <h2 id="simStatsTitle">Model results</h2>
+          <p class="sim-stats-note">The end-of-run snapshot compares estimated risk and findings after 500 modeled workdays.</p>
           <section class="risk-compare" aria-label="Process risk comparison diagram">
             <div class="risk-process-grid">
               <article class="risk-process manual">
@@ -1047,7 +1047,7 @@ button.primary {
                     <span class="risk-ring-band" id="manualRiskBand">Low risk</span>
                   </div>
                 </div>
-                <p class="risk-process-outcome" id="manualOutcomeText">Hidden compliance drift detected. Multiple control failures accumulated unnoticed.</p>
+                <p class="risk-process-outcome" id="manualOutcomeText">The manual process has accumulated unresolved control gaps.</p>
                 <div class="process-metrics">
                   <div class="metric-chip"><span>Hidden Risk</span><strong id="manualHiddenMetric">0.0</strong></div>
                   <div class="metric-chip"><span>Open Findings</span><strong id="manualOpenMetric">0.0</strong></div>
@@ -1068,7 +1068,7 @@ button.primary {
                     <span class="risk-ring-band" id="automatedRiskBand">Low risk</span>
                   </div>
                 </div>
-                <p class="risk-process-outcome" id="automatedOutcomeText">Continuous monitoring prevented risk escalation.</p>
+                <p class="risk-process-outcome" id="automatedOutcomeText">Continuous monitoring identified and resolved more gaps during the run.</p>
                 <div class="process-metrics">
                   <div class="metric-chip"><span>Hidden Risk</span><strong id="automatedHiddenMetric">0.0</strong></div>
                   <div class="metric-chip"><span>Open Findings</span><strong id="automatedOpenMetric">0.0</strong></div>
@@ -1082,7 +1082,7 @@ button.primary {
               </article>
             </div>
             <div class="risk-delta" id="riskDelta">Risk gap: 0.0 pts</div>
-            <p class="narrative insight" id="insightText">Insight: Compliance failures rarely happen in a single moment. They emerge slowly from hundreds of small missed controls.</p>
+            <p class="narrative insight" id="insightText">Interpretation: In this model, repeated missed controls accumulate between reviews and affect the later audit result.</p>
           </section>
         </div>
       </div>
@@ -1515,20 +1515,20 @@ button.primary {
   function getStoryStage(day, manualState, automatedState) {
     if (manualState.auditJustTriggered || automatedState.auditJustTriggered) {
       return {
-        title: "Audit day: hidden drift becomes visible",
-        text: "The audit does not fix the system. It converts hidden issues into open findings, raises remediation pressure, and makes the short-term disruption visible."
+        title: "Audit day: unresolved gaps become findings",
+        text: "The audit converts previously unresolved gaps into open findings and adds remediation work to the process."
       };
     }
     if (manualState.auditShockDaysRemaining > 0 || automatedState.auditShockDaysRemaining > 0) {
       return {
-        title: "Post-audit: remediation slows the operation",
-        text: "Manual operations are under strain while teams chase findings, document corrective action, and absorb extra oversight. Automated controls recover faster because fewer issues were exposed."
+        title: "Post-audit: findings require remediation",
+        text: "Teams address findings, document corrective action, and work under additional oversight. The two processes carry different numbers of findings under the model assumptions."
       };
     }
     if (day <= 100) {
       return {
-        title: "Day 1-100: Everything looks fine",
-        text: "Manual systems still appear stable. A few skipped checks and weak records disappear into the daily workload while automated controls keep verifying the process."
+        title: "Days 1–100: few visible warning signs",
+        text: "A small number of missed checks and incomplete records accumulate in the manual process, while continuous monitoring identifies more gaps during the same period."
       };
     }
     if (day <= 200) {
@@ -1539,26 +1539,26 @@ button.primary {
     }
     if (day <= 350) {
       return {
-        title: "Day 201-350: Hidden risk growing",
-        text: "Missed checks, documentation gaps, and delayed reviews are compounding into hidden exposure. Automated controls keep stripping out risk before it can accumulate."
+        title: "Days 201–350: unresolved gaps increase",
+        text: "Missed checks, documentation gaps, and delayed reviews increase estimated exposure. Continuous monitoring identifies and resolves a larger share during the run."
       };
     }
     if (day < 420) {
       return {
-        title: "Day 351-419: Audit still feels far away",
-        text: "The manual process still looks manageable on the surface, but concentrated exposure is now sitting in the system waiting for the next audit."
+        title: "Days 351–419: gaps remain unresolved between reviews",
+        text: "The manual process now carries a larger backlog of unresolved gaps before the next formal audit."
       };
     }
     return {
-      title: "Day 420-500: Audit reveals accumulated failures",
-      text: "The audit turns invisible drift into visible failure. What looked like isolated misses is now a pattern of accumulated control breakdowns."
+      title: "Days 420–500: the audit records accumulated findings",
+      text: "The final audit converts unresolved gaps into findings and determines the modeled severity and remediation period."
     };
   }
 
   function getOutcomeMessage(automated, state) {
     if (!automated) {
       if (state.severityLevel === "severe" || state.auditShockDaysRemaining > 18 || state.openFindings > 40) {
-        return "Severe hidden drift detected.<br>Missed controls piled up unnoticed. Remediation is under way.";
+        return "The model reports severe exposure.<br>Many missed controls became open findings, and remediation is under way.";
       }
       if (state.severityLevel === "moderate" || state.openFindings > 15) {
         return "Compliance drift exposed.<br>Corrective action is now slowing the manual process.";
@@ -1566,19 +1566,19 @@ button.primary {
       if (state.hiddenBacklog < 6 && state.openFindings < 6) {
         return "Minor drift is visible.<br>The manual process still needs follow-up work.";
       }
-      return "Hidden drift is still building quietly.<br>The manual process has not corrected it yet.";
+      return "Unresolved gaps continue to accumulate.<br>The manual process has not corrected them yet.";
     }
 
     if (state.severityLevel === "severe" || state.openFindings > 25) {
-      return "Findings were detected.<br>Automation contained the spread and recovery remains controlled.";
+      return "Findings were detected.<br>Continuous monitoring limited the unresolved backlog in this run.";
     }
     if (state.severityLevel === "moderate" || state.openFindings > 8) {
-      return "Limited findings detected.<br>Continuous controls kept recovery fast and contained.";
+      return "Limited findings were detected.<br>The modeled remediation period remains short.";
     }
     if (state.hiddenBacklog < 4 && state.openFindings < 4) {
-      return "Continuous controls kept drift visible.<br>Risk escalation was prevented.";
+      return "Continuous monitoring identified most gaps.<br>The modeled exposure remains low.";
     }
-    return "Automation is containing drift.<br>It has not become a larger audit problem.";
+    return "Continuous monitoring is resolving gaps.<br>The modeled exposure remains limited.";
   }
 
   function queueAuditExposure(scenario, revealed, hiddenCap) {

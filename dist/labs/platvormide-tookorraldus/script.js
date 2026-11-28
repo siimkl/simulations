@@ -1369,41 +1369,41 @@
     updateReadouts();
     updateSummaryOverlay();
     setSummaryOverlayVisible(true);
-    dom.summaryLive.textContent = `${buildFinalLiveSummary()} Close the card and press Run to replay.`;
+    dom.summaryLive.textContent = `${buildFinalLiveSummary()} Closing the card returns to the completed run.`;
   }
 
   function getPhase(minute) {
     if (minute < 1) {
       return {
         runtime: "Opening minute",
-        phase: "The workday opens with the same city demand. The right side can only unlock extra trips if it stays cheap, available, and easy to use.",
+        phase: "Both arrangements begin with the same city demand and driver supply.",
         demandLabel: "Opening demand",
       };
     }
     if (minute < 90) {
       return {
         runtime: formatWorkdayProgress(minute),
-        phase: "Morning ramp: customers test whether the coordinated side actually feels easier to order from.",
+        phase: "Morning: trip requests begin to reveal differences in price, availability, and driver waiting.",
         demandLabel: "Morning",
       };
     }
     if (minute < 240) {
       return {
         runtime: formatWorkdayProgress(minute),
-        phase: "Midday pressure: better availability and lower customer cost should now be pulling clearly more trips to the right.",
+        phase: "Midday: the model links availability and customer cost with the number of requested and completed trips.",
         demandLabel: "Midday",
       };
     }
     if (minute < 420) {
       return {
         runtime: formatWorkdayProgress(minute),
-        phase: "Afternoon flow: the same fleet should now be creating both stronger customer value and better driver time economics on the right.",
+        phase: "Afternoon: cumulative trips, driver idle time, and take-home pay begin to diverge between the arrangements.",
         demandLabel: "Afternoon",
       };
     }
     return {
       runtime: formatWorkdayProgress(minute),
-      phase: "Closeout window: watch whether right-side drivers can reach the same pay target sooner or stay active for more take-home.",
+      phase: "Late shift: the model compares time to the pay target and take-home pay at the end of the workday.",
       demandLabel: "Late shift",
     };
   }
@@ -1580,12 +1580,12 @@
     const idleLift = metricsB.idleHoursPerDriver - metricsA.idleHoursPerDriver;
     const incomeLift = metricsB.driverTakeHomePerDriver - metricsA.driverTakeHomePerDriver;
 
-    dom.summaryOverlayTitle.textContent = "Coordination turned the same drivers into a customer-and-driver win-win.";
-    dom.summaryOverlayLead.textContent = `The coordinated side made rides cheaper, more available, and easier to buy. That translated into ${Math.max(
+    dom.summaryOverlayTitle.textContent = "Results for the two modeled service arrangements";
+    dom.summaryOverlayLead.textContent = `Under the model assumptions, centralized dispatch produced ${Math.max(
       0,
       ridesLift
-    )} extra completed trips and a faster path to the same pay target for drivers.`;
-    dom.summaryOverlayFoot.textContent = "Close this card, then press Run to replay the same workday.";
+    )} additional completed trips. The table shows the associated differences in price, availability, idle time, and pay.`;
+    dom.summaryOverlayFoot.textContent = "Closing this card returns to the completed run. The Run button repeats the same workday.";
 
     dom.overlayRidesA.textContent = String(metricsA.completedTrips);
     dom.overlayCostA.textContent = formatCurrency(metricsA.avgRideCost);
@@ -1636,7 +1636,7 @@
   function dismissSummaryOverlay() {
     clearReplayTimer();
     setSummaryOverlayVisible(false);
-    dom.summaryLive.textContent = `${buildFinalLiveSummary()} Ready to replay when Run is pressed.`;
+    dom.summaryLive.textContent = `${buildFinalLiveSummary()} Pressing Run starts the same scenario again.`;
   }
 
   function syncPlaybackButton() {

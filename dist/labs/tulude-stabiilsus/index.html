@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Revenue Stabilization Simulation</title>
+<title>Workflow Capacity and Revenue Stability</title>
 <style>
   :root{
     --bg:#E8F4FF;
@@ -409,9 +409,9 @@
           <path fill="#4BC8FF" d="M12 2l8 3v6c0 5.2-3.4 9.7-8 11-4.6-1.3-8-5.8-8-11V5l8-3z"/>
           <path fill="#1C3658" d="M12.5 6L9 12h2.6l-.9 5L15 10h-2.4l1.2-4z"/>
         </svg>
-        <span>Revenue Stabilization Simulation</span>
+        <span>Workflow Capacity and Revenue Stability</span>
       </div>
-      <div class="sub">See how manual sales workflows break under marketing spikes, then stabilize lead flow to protect revenue.</div>
+      <div class="sub">The model connects lead inflow, response delay, and sales capacity with backlog and estimated revenue stability.</div>
     </div>
     <div class="topRight">
       <div class="pill" id="stepBadge">Step 0 / 300</div>
@@ -423,7 +423,7 @@
       <div class="card">
         <div class="panel">
           <div class="panelHead">
-            <div class="panelTitle">Controls</div>
+            <div class="panelTitle">Scenario controls</div>
             <div class="pill" style="padding:6px 10px;">
               <span style="opacity:.9;">Mode:</span>
               <strong id="modeReadout">Baseline</strong>
@@ -433,8 +433,8 @@
           <div class="group">
             <div class="groupHead">
               <div>
-                <div class="groupTitle">Dynamics</div>
-                <div class="groupSub">Tune load, delay and capacity.</div>
+                <div class="groupTitle">Model assumptions</div>
+                <div class="groupSub">The controls set incoming demand, delay, capacity, and client value.</div>
               </div>
             </div>
 
@@ -483,7 +483,7 @@
 
             <div class="rowCtrl hasTip" id="rowSolution">
               <div class="labelWrap">
-                <div class="lbl">Activate</div>
+                <div class="lbl">Workflow support</div>
                 <button class="infoBtn" data-tip="tipSolution" aria-label="Stabilizer info">i</button>
               </div>
               <button class="btn btnFlow" id="solutionBtn">
@@ -519,12 +519,12 @@
       <div class="simInner">
         <div class="simHead">
           <div>
-            <div class="h" id="simTitle">Flow under stress</div>
-            <div class="muted" id="simSub">Move sliders. Toggle solution to stabilize.</div>
+            <div class="h" id="simTitle">Workflow under variable demand</div>
+            <div class="muted" id="simSub">The chart shows how the current assumptions affect throughput, backlog, and revenue.</div>
           </div>
           <div class="pill" style="padding:6px 10px;">
             <span style="opacity:.9;">Story:</span>
-            <strong id="storyReadout">Leak -> Collapse -> Stabilize</strong>
+            <strong id="storyReadout">Demand -> Backlog -> Capacity response</strong>
           </div>
         </div>
         <div class="canvasHost" id="canvasHost">

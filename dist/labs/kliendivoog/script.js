@@ -2853,65 +2853,65 @@
         }
       }
       const copyMap = {
-        clickGate: "Most future revenue is dying before engagement happens.",
-        signupPool: "Interest exists, but too few prospects are making it through onboarding.",
-        demoBridge: "The queue is proving that capacity can become a revenue leak on its own.",
-        purchaseEngine: "Qualified demand is arriving, but close friction is still large.",
-        loyaltyLoop: "Acquisition is working better than retention and repeat behavior.",
+        clickGate: "The click gate currently accounts for the largest drop-off.",
+        signupPool: "The signup stage currently accounts for the largest drop-off.",
+        demoBridge: "Demonstration capacity currently accounts for the largest drop-off.",
+        purchaseEngine: "The purchase stage currently accounts for the largest drop-off.",
+        loyaltyLoop: "The repeat-purchase stage currently accounts for the largest drop-off.",
       };
       return { key, value, copy: copyMap[key] };
     }
 
     getHeroNarrative(bottleneckKey, ctr, closeRate) {
       if (bottleneckKey === "demoBridge") {
-        return "The bridge is now the choke point. Marketing is feeding more demand than demos can absorb.";
+        return "The demonstration queue is growing because bookings exceed current session capacity.";
       }
       if (bottleneckKey === "purchaseEngine") {
-        return "Traffic is making it deeper into the funnel, but the close stage is still thinning revenue sharply.";
+        return "More prospects are reaching the purchase stage, where the largest current drop-off occurs.";
       }
       if (bottleneckKey === "loyaltyLoop") {
-        return "First purchases are happening, but the repeat loop is still fragile.";
+        return "First purchases are occurring, while the repeat-purchase rate remains low.";
       }
       if (ctr < this.settings.clickRate * 0.8) {
-        return "The click gate is filtering most of the traffic before downstream conversion can even matter.";
+        return "The click gate is filtering most traffic before later stages are reached.";
       }
       if (closeRate > 0.22) {
-        return "Upstream friction is easing enough that downstream revenue is starting to compound.";
+        return "A larger share of prospects is reaching the purchase stage.";
       }
-      return "The click gate remains the largest visible leak in the current run.";
+      return "The click gate remains the largest drop-off point in the current run.";
     }
 
     getLiveReadSlides(bottleneckKey) {
       const slideMap = {
         clickGate: [
-          "Most traffic is leaking at the click gate.",
-          "Too few visitors are turning into engaged prospects.",
-          "Every extra click feeds all later stages.",
-          "This is still the highest-leverage fix.",
+          "Most drop-off currently occurs at the click gate.",
+          "Few impressions are becoming clicks.",
+          "The number of clicks limits every later stage.",
+          "This is the largest current difference between entries and exits.",
         ],
         signupPool: [
-          "Signup friction is starving the bridge.",
-          "Interest is arriving, but onboarding is thinning it.",
-          "More clean exits here would lift demo flow.",
-          "The pool is now the clearest conversion drag.",
+          "Most drop-off currently occurs at signup.",
+          "Some clicked prospects leave before completing signup.",
+          "Signup completions determine the flow into demonstrations.",
+          "The signup pool has the largest current loss count.",
         ],
         demoBridge: [
-          "The demo bridge is the active choke point.",
-          "Booked prospects are queueing before sales.",
-          "Capacity is limiting progress more than traffic.",
-          "A wider bridge would cut downstream churn.",
+          "The demonstration queue is the current capacity constraint.",
+          "Booked prospects are waiting for available sessions.",
+          "Session capacity is limiting progress more than incoming traffic.",
+          "Additional capacity would reduce modeled queue drop-off.",
         ],
         purchaseEngine: [
-          "Closing is the next multiplier to fix.",
+          "The purchase stage has the largest current drop-off.",
           "Qualified demand is reaching the sales stage.",
-          "Too many strong prospects still stall before purchase.",
-          "Better closes would amplify revenue fast.",
+          "Some qualified prospects leave before purchase.",
+          "The close rate determines how many demonstrations become purchases.",
         ],
         loyaltyLoop: [
-          "Repeat revenue is still a thin gold loop.",
+          "The repeat-purchase rate remains low.",
           "First purchases are landing, but loyalty is light.",
-          "A wider return loop would compound revenue.",
-          "Retention is the next layer of growth.",
+          "Repeat purchases add revenue after the first purchase.",
+          "The loyalty stage has the largest current loss count.",
         ],
       };
       return slideMap[bottleneckKey] || slideMap.clickGate;
@@ -2961,15 +2961,15 @@
     getStageNarrative(bottleneckKey) {
       switch (bottleneckKey) {
         case "clickGate":
-          return "Most particles are bouncing off the click gate. Small CTR gains here would feed every later stage.";
+          return "Most particles leave at the click gate. The click-through rate determines how many enter every later stage.";
         case "signupPool":
-          return "Prospects are entering the pool, but too few are finding the signup portal before they sink away.";
+          return "Prospects enter the signup pool, where some leave before completing signup.";
         case "demoBridge":
-          return "Signup volume is arriving faster than demo capacity can move it, so queue friction is creating churn.";
+          return "Signup volume exceeds current demonstration capacity, so the queue creates additional drop-off.";
         case "purchaseEngine":
-          return "The funnel is healthy enough to produce demos, but the purchase engine is still dissolving too many leads.";
+          return "Demonstrations are occurring, while some prospects leave at the purchase stage.";
         case "loyaltyLoop":
-          return "First purchases are happening, but the loop back to repeat revenue remains thin and inconsistent.";
+          return "First purchases are occurring, while comparatively few buyers make a repeat purchase.";
         default:
           return "Neutral particles start as impressions, blue particles have progressed, orange particles have purchased, and gold particles are returning buyers.";
       }
@@ -3030,7 +3030,7 @@
       this.dom.queueValue.textContent = `${whole(this.queue.length)} waiting`;
       this.dom.queueCopy.textContent =
         this.queue.length > this.settings.bridgeCapacity * 2
-          ? "The demo bridge is now capacity-bound, so some prospects are dying while they wait."
+          ? "The demonstration stage is capacity-bound, so some prospects leave while waiting."
           : "Demo capacity is still keeping up with demand.";
       this.dom.efficiencyValue.textContent = money(revenuePerThousand);
       this.dom.efficiencyCopy.textContent = `Peak queue reached ${whole(this.state.peakQueue)} prospects in this run.`;
@@ -3039,8 +3039,8 @@
         this.metrics.demos === 0
           ? "No booked demos have reached session completion yet."
           : demoHeldRate < 0.75
-            ? "Bridge throughput is leaving too many booked demos unresolved before they can be held."
-            : "Most booked demos are clearing into real sessions without much bridge loss.";
+            ? "Some booked demonstrations remain unresolved before the run ends."
+            : "Most booked demonstrations become completed sessions.";
       this.dom.repeatRevenueValue.textContent = pct(repeatRevenueShare);
       this.dom.repeatRevenueCopy.textContent =
         this.metrics.revenue <= 0
@@ -3069,23 +3069,23 @@
       const { ctr, signupRate, closeRate, repeatRate } = this.getObservedRates();
       const messages = {
         clickGate: {
-          title: "Most traffic is leaking at the click gate.",
+          title: "Most drop-off occurs at the click gate.",
           body: `Only ${pct(ctr)} of resolved click-gate outcomes have become clicks so far. A small CTR gain compounds through every later stage.`,
         },
         signupPool: {
-          title: "Signup friction is starving the bridge.",
+          title: "Most drop-off occurs at signup.",
           body: `The pool is collecting prospects, but only ${pct(signupRate)} of resolved signup-pool outcomes are turning into signups.`,
         },
         demoBridge: {
-          title: "The demo bridge is now overloaded.",
+          title: "The demonstration queue exceeds current capacity.",
           body: `${whole(this.queue.length)} prospects are currently waiting, and delayed prospects are starting to churn before the sales stage.`,
         },
         purchaseEngine: {
-          title: "Closing is the next multiplier to fix.",
+          title: "Most drop-off occurs at the purchase stage.",
           body: `The current close rate is ${pct(closeRate)} across resolved purchase outcomes. Better sales conversion would lift both revenue and repeat potential.`,
         },
         loyaltyLoop: {
-          title: "Repeat revenue is the thinnest gold stream.",
+          title: "The repeat-purchase rate is the lowest stage rate.",
           body: `${pct(repeatRate)} of resolved loyalty outcomes are coming back in this run. Retention work would widen the loyalty loop.`,
         },
       };
@@ -3102,8 +3102,8 @@
       const bottleneck = this.getBottleneck();
       this.dom.summaryTitle.textContent =
         purchaseYield > 0.02
-          ? "The funnel produced buyers, but the leak pattern still tells you where the next growth comes from."
-          : "Small leaks compounded into a very thin buyer stream.";
+            ? "The run produced purchases and identified the largest drop-off point."
+          : "The combined stage rates produced a low purchase yield.";
       this.dom.summaryLead.textContent =
         `Out of ${whole(this.metrics.impressions)} impressions, ${whole(this.metrics.purchases)} reached purchase and ` +
         `${whole(this.metrics.repeats)} returned to buy again. The largest leak formed at ${stageLabel(bottleneck.key)}.`;
@@ -3112,7 +3112,7 @@
       this.dom.summaryRepeatYield.textContent = pct(repeatYield);
       this.dom.summaryRevenue.textContent = money(this.metrics.revenue);
       this.dom.summaryFoot.textContent =
-        `Replay to run the current settings again. Peak queue in this run: ${whole(this.state.peakQueue)}.`;
+        `The Replay button repeats the current settings. Peak queue in this run: ${whole(this.state.peakQueue)}.`;
       this.dom.summaryBackdrop.hidden = false;
       this.state.summaryVisible = true;
       this.emit("summary", { metrics: this.snapshotMetrics(), bottleneck: bottleneck.key });

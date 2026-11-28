@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Stock Profit Calculator | ROI, Fees, Dividends & Break-Even</title>
-  <meta name="description" content="Use this stock profit calculator to estimate profit, ROI, fees, dividends, taxes, and break-even price across a share-price range.">
+  <title>Stock Investment Return Calculator</title>
+  <meta name="description" content="An educational stock-return calculator that includes purchase and sale prices, fees, dividends, taxes, and break-even price.">
   <meta name="theme-color" content="#0A2540">
   <style>
     :root{--bg1:#e6eef8;--bg2:#f6eee2;--panel:#f7fbff;--text:#102438;--muted:#516b86;--stroke:rgba(15,36,56,.12);--accent:#1e96ec;--accent2:#8fd7ff;--gold:#ff7f22;--profit:#37d07e;--loss:#ff7474;--shadow:0 26px 56px rgba(13,34,54,.16);--soft:0 16px 32px rgba(13,34,54,.11);--radius-xl:30px;--radius-lg:22px;--radius-md:16px;--font:"Sora","Manrope","Avenir Next","Segoe UI",sans-serif}
@@ -36,15 +36,15 @@
     <section class="widget" id="stockWidget">
       <header class="header">
         <div>
-          <p class="badge">Stock Profit Calculator</p>
-          <h1>Estimate stock profit, ROI, fees, and break-even.</h1>
-          <p class="subtitle">Use this stock profit calculator to compare your investment, sale value, dividends, taxes, and projected return in one clear browser tool.</p>
+          <p class="badge">Educational investment calculator</p>
+          <h1>Stock investment return calculator</h1>
+          <p class="subtitle">The calculation combines the starting investment, sale value, transaction fees, dividends, and taxes into net profit and return.</p>
         </div>
         <div class="header-side">
           <select class="currency-pick" id="currency" name="currency" aria-label="Choose currency">
-            <option value="USD">Choose currency - USD</option>
-            <option value="EUR">Choose currency - EUR</option>
-            <option value="GBP">Choose currency - GBP</option>
+            <option value="USD">Currency: USD</option>
+            <option value="EUR">Currency: EUR</option>
+            <option value="GBP">Currency: GBP</option>
           </select>
         </div>
       </header>
@@ -72,7 +72,7 @@
           </div>
 
           <div class="surface" id="chartSurface">
-            <div class="empty" id="emptyState" hidden>Enter shares, buy price, and current price to calculate your result.</div>
+            <div class="empty" id="emptyState" hidden>A result is calculated after the number of shares, purchase price, and current price are provided.</div>
             <svg id="chart" viewBox="0 0 960 560" preserveAspectRatio="none" aria-hidden="true" role="presentation" focusable="false">
               <defs>
                 <linearGradient id="barBuyFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#fff0e2" stop-opacity=".96"></stop><stop offset="22%" stop-color="#ffd2af" stop-opacity=".9"></stop><stop offset="68%" stop-color="#ff9b56" stop-opacity=".82"></stop><stop offset="100%" stop-color="#ff7f22" stop-opacity=".72"></stop></linearGradient>
@@ -121,17 +121,17 @@
           </div>
 
           <article class="explainer">
-            <p class="kicker">How it works</p>
-            <h3>What the timeline shows</h3>
-            <p>The timeline moves from buy to current to predicted. Hover any stage to see the fee, dividend, tax, and return details behind it. Buy shows your starting position, current shows where the holding stands now, and predicted shows where the scenario could end up next.</p>
+            <p class="kicker">Calculation sequence</p>
+            <h3>What the timeline represents</h3>
+            <p>The timeline moves from purchase to current and projected values. Each stage contains the applicable fee, dividend, tax, and return details. The projected stage is a scenario based on the entered price, not a market forecast.</p>
           </article>
         </section>
 
         <section class="panel inputs" aria-labelledby="controlsTitle">
           <div class="panel-head">
-            <p class="kicker">Inputs</p>
-            <h2 id="controlsTitle">Scenario inputs</h2>
-            <p class="panel-copy">Run different scenarios and compare the outputs.</p>
+            <p class="kicker">Scenario assumptions</p>
+            <h2 id="controlsTitle">Values used in the calculation</h2>
+            <p class="panel-copy">The outputs update from the position, prices, fees, dividends, and tax assumptions below.</p>
           </div>
 
           <div class="presets" aria-label="Scenario slots">
